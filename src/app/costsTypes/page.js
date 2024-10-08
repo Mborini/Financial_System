@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import AddDrawer from "../components/Drawers/add";
 import { FaPlus } from "react-icons/fa";
 import CostsTypesTable from "./costsTypesTable";
-import CostsTypesForm from "./CostsTypesForm";
+import CostsTypesForm from './CostsTypesForm';
 
 export default function CostsTypes() {
   const [open, setOpen] = useState(false);
