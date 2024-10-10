@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import PolarAreaChartCard from "./components/AriaChartCard";
 import LineChartCard from "./components/LineChartCard";
 import BarChartCard from "./components/BarChartCard";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 // Fetch Data from API (replace the URL with your actual API endpoints)
 const fetchData = async (url) => {
@@ -27,25 +28,26 @@ export default function Home() {
   const [purchases, setPurchases] = useState([]);
   const [sales, setSales] = useState([]);
   const [staffFood, setStaffFood] = useState([]); // New state for staff food
-  const [salesStartDate, setSalesStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 30))
-  );
-  const [salesEndDate, setSalesEndDate] = useState(new Date());
+  const [costStartDate, setCostStartDate] = useState(startOfMonth(new Date()));
+  const [costEndDate, setCostEndDate] = useState(endOfMonth(new Date()));
 
-  // Individual date ranges for Withdrawals, Costs, and Purchases
-  const [withdrawalStartDate, setWithdrawalStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 30))
-  );
-  const [withdrawalEndDate, setWithdrawalEndDate] = useState(new Date());
-  const [costStartDate, setCostStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 30))
-  );
-  const [costEndDate, setCostEndDate] = useState(new Date());
-  const [purchaseStartDate, setPurchaseStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 30))
-  );
-  const [purchaseEndDate, setPurchaseEndDate] = useState(new Date());
+  const [salesDateRange, setSalesDateRange] = useState([
+    startOfMonth(new Date()),
+    endOfMonth(new Date()),
+  ]);
 
+  const [withdrawalDateRange, setWithdrawalDateRange] = useState([
+    startOfMonth(new Date()),
+    endOfMonth(new Date()),
+  ]);
+  const [costDateRange, setCostDateRange] = useState([
+    startOfMonth(new Date()),
+    endOfMonth(new Date()),
+  ]);
+  const [purchaseDateRange, setPurchaseDateRange] = useState([
+    startOfMonth(new Date()),
+    endOfMonth(new Date()),
+  ]);
   // Fetch withdrawals, suppliers, costs, purchases, and sales when the component mounts
   useEffect(() => {
     fetchData("/api/withdrawals").then(setWithdrawals);
@@ -65,16 +67,16 @@ export default function Home() {
     });
   };
 
-  const filteredCosts = filterByDate(costs, costStartDate, costEndDate);
+  const filteredCosts = filterByDate(costs, costDateRange[0], costDateRange[1]);
   const filteredWithdrawals = filterByDate(
     withdrawals,
-    withdrawalStartDate,
-    withdrawalEndDate
+    withdrawalDateRange[0],
+    withdrawalDateRange[1]
   );
   const filteredPurchases = filterByDate(
     purchases,
-    purchaseStartDate,
-    purchaseEndDate
+    purchaseDateRange[0],
+    purchaseDateRange[1]
   );
 
   // Get current month and year
@@ -428,7 +430,7 @@ export default function Home() {
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Summary Section */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      {/* Total Employees */}
+        {/* Total Employees */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
           <p className="text-base font-bold">Employees</p>
           <p className="text-xl">{employees.length}</p>
@@ -491,8 +493,8 @@ export default function Home() {
             data={costsByTypeChartData}
           />
         </div>
-         {/* Purchases by Supplier Chart */}
-         <div className="p-4 bg-white shadow-lg rounded-lg">
+        {/* Purchases by Supplier Chart */}
+        <div className="p-4 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl font-bold mb-4">Purchases by Supplier</h2>
           <BarChartCard
             title="Purchases by Supplier"
@@ -501,31 +503,19 @@ export default function Home() {
         </div>
       </div>
       {/* Charts Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {/* Purchases Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl font-bold mb-4">Purchases</h2>
           <div className="flex items-center justify-between mb-4">
-            <div className="w-1/2 mr-2">
-              <label className="block text-sm font-bold mb-2">Start Date</label>
+            <div className="w-full">
+              <label className="block text-sm font-bold mb-2">Date Range</label>
               <DatePicker
-                selected={purchaseStartDate}
-                onChange={(date) => setPurchaseStartDate(date)}
-                selectsStart
-                startDate={purchaseStartDate}
-                endDate={purchaseEndDate}
-                dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="block text-sm font-bold mb-2">End Date</label>
-              <DatePicker
-                selected={purchaseEndDate}
-                onChange={(date) => setPurchaseEndDate(date)}
-                selectsEnd
-                startDate={purchaseStartDate}
-                endDate={purchaseEndDate}
+                selected={purchaseDateRange[0]}
+                onChange={(update) => setPurchaseDateRange(update)}
+                startDate={purchaseDateRange[0]}
+                endDate={purchaseDateRange[1]}
+                selectsRange
                 dateFormat="yyyy/MM/dd"
                 className="border p-2 rounded-md w-full"
               />
@@ -538,26 +528,14 @@ export default function Home() {
         <div className="p-4 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl font-bold mb-4">Withdrawals</h2>
           <div className="flex items-center justify-between mb-4">
-            <div className="w-1/2 mr-2">
-              <label className="block text-sm font-bold mb-2">Start Date</label>
+            <div className="w-full">
+              <label className="block text-sm font-bold mb-2">Date Range</label>
               <DatePicker
-                selected={withdrawalStartDate}
-                onChange={(date) => setWithdrawalStartDate(date)}
-                selectsStart
-                startDate={withdrawalStartDate}
-                endDate={withdrawalEndDate}
-                dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="block text-sm font-bold mb-2">End Date</label>
-              <DatePicker
-                selected={withdrawalEndDate}
-                onChange={(date) => setWithdrawalEndDate(date)}
-                selectsEnd
-                startDate={withdrawalStartDate}
-                endDate={withdrawalEndDate}
+                selected={withdrawalDateRange[0]}
+                onChange={(update) => setWithdrawalDateRange(update)}
+                startDate={withdrawalDateRange[0]}
+                endDate={withdrawalDateRange[1]}
+                selectsRange
                 dateFormat="yyyy/MM/dd"
                 className="border p-2 rounded-md w-full"
               />
@@ -565,30 +543,19 @@ export default function Home() {
           </div>
           <DoughnutChartCard title="Withdrawals" data={withdrawalsChartData} />
         </div>
+
         {/* Sales Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl font-bold mb-4">Sales</h2>
           <div className="flex items-center justify-between mb-4">
-            <div className="w-1/2 mr-2">
-              <label className="block text-sm font-bold mb-2">Start Date</label>
+            <div className="w-full">
+              <label className="block text-sm font-bold mb-2">Date Range</label>
               <DatePicker
-                selected={salesStartDate}
-                onChange={(date) => setSalesStartDate(date)}
-                selectsStart
-                startDate={salesStartDate}
-                endDate={salesEndDate}
-                dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="block text-sm font-bold mb-2">End Date</label>
-              <DatePicker
-                selected={salesEndDate}
-                onChange={(date) => setSalesEndDate(date)}
-                selectsEnd
-                startDate={salesStartDate}
-                endDate={salesEndDate}
+                selected={salesDateRange[0]}
+                onChange={(update) => setSalesDateRange(update)}
+                startDate={salesDateRange[0]}
+                endDate={salesDateRange[1]}
+                selectsRange
                 dateFormat="yyyy/MM/dd"
                 className="border p-2 rounded-md w-full"
               />
@@ -596,11 +563,29 @@ export default function Home() {
           </div>
           <DoughnutChartCard title="Sales" data={salesChartData} />
         </div>
-       
 
+        {/* Costs Chart */}
+        <div className="p-4 bg-white shadow-lg rounded-lg">
+          <h2 className="text-xl font-bold mb-4">Costs</h2>
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-full">
+              <label className="block text-sm font-bold mb-2">Date Range</label>
+              <DatePicker
+                selected={costDateRange[0]}
+                onChange={(update) => setCostDateRange(update)}
+                startDate={costDateRange[0]}
+                endDate={costDateRange[1]}
+                selectsRange
+                dateFormat="yyyy/MM/dd"
+                className="border p-2 rounded-md w-full"
+              />
+            </div>
+          </div>
+          <PolarAreaChartCard title="Costs" data={costChartData} />
+        </div>
         {/* Payment Status Distribution Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="text-xl font-bold lg:mb-24 mb-4">
             Payment Status Distribution
           </h2>
           <DoughnutChartCard
@@ -610,47 +595,17 @@ export default function Home() {
         </div>
 
         {/* Remaining Amount by Supplier Chart */}
-        <div className="p-4 bg-white shadow-lg rounded-lg">
+        <div className="p-4 col-span-3 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl font-bold mb-4">
             Remaining Amount by Supplier
           </h2>
-          <DoughnutChartCard
+          <LineChartCard
             title="Remaining Amount by Supplier"
             data={remainingBySupplierChartData}
           />
         </div>
 
-        {/* Costs Chart */}
-        <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Costs</h2>
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-1/2 mr-2">
-              <label className="block text-sm font-bold mb-2">Start Date</label>
-              <DatePicker
-                selected={costStartDate}
-                onChange={(date) => setCostStartDate(date)}
-                selectsStart
-                startDate={costStartDate}
-                endDate={costEndDate}
-                dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="block text-sm font-bold mb-2">End Date</label>
-              <DatePicker
-                selected={costEndDate}
-                onChange={(date) => setCostEndDate(date)}
-                selectsEnd
-                startDate={costStartDate}
-                endDate={costEndDate}
-                dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
-              />
-            </div>
-          </div>
-          <PolarAreaChartCard title="Costs" data={costChartData} />
-        </div>
+        
       </div>
     </div>
   );

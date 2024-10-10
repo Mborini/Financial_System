@@ -12,8 +12,7 @@ export default function LineChartCard({ title, data }) {
         position: 'top',
       },
       title: {
-        display: true,
-        text: title,
+        display: false,
       },
     },
     scales: {
@@ -28,7 +27,6 @@ export default function LineChartCard({ title, data }) {
 
   return (
     <div className="rounded-lg bg-white">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
       <Line data={data} options={chartOptions} />
     </div>
   );

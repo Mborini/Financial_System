@@ -12,7 +12,7 @@ export default function PolarAreaChartCard({ title, data }) {
         position: 'top',
       },
       title: {
-        display: true,
+        display: false,
         text: title,
       },
     },
@@ -20,7 +20,6 @@ export default function PolarAreaChartCard({ title, data }) {
 
   return (
     <div className="rounded-lg bg-white">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
       <PolarArea data={data} options={chartOptions} />
     </div>
   );

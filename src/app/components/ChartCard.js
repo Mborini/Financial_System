@@ -11,15 +11,13 @@ export default function DoughnutChartCard({ title, data }) {
         position: 'top',
       },
       title: {
-        display: true,
-        text: title,
+        display: false,
       },
     },
   };
 
   return (
     <div className="  rounded-lg bg-white">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
       <Doughnut data={data} options={chartOptions} />
     </div>
   );
