@@ -6,13 +6,12 @@ import SalesForm from "./SalesForm";
 import AddDrawer from "../components/Drawers/add";
 import SalesTable from "./SalesTable";
 
-
 export default function Withdrawals() {
   const [open, setOpen] = useState(false);
-  const [costsTypesUpdated, setCostsTypesUpdated] = useState(false);
+  const [salesUpdated, setSalesUpdated] = useState(false);
 
-  const refetchCostsTypes = useCallback(() => {
-    setCostsTypesUpdated((prev) => !prev);
+  const refetchSales = useCallback(() => {
+    setSalesUpdated((prev) => !prev); // Toggle to refetch sales
   }, []);
 
   return (
@@ -25,10 +24,11 @@ export default function Withdrawals() {
         </button>
       </div>
 
-      <SalesTable costsTypesUpdated={costsTypesUpdated} refetchCostsTypes={refetchCostsTypes} />
+      {/* Pass salesUpdated and refetchSales */}
+      <SalesTable salesUpdated={salesUpdated} refetchSales={refetchSales} />
 
       <AddDrawer title="Add supplier" open={open} setOpen={setOpen}>
-        <SalesForm refetchSales={refetchCostsTypes} setOpen={setOpen} />
+        <SalesForm refetchSales={refetchSales} setOpen={setOpen} />
       </AddDrawer>
     </div>
   );

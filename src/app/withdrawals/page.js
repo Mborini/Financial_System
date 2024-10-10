@@ -28,7 +28,7 @@ export default function Withdrawals() {
 
       <WithdrawalsTable costsTypesUpdated={costsTypesUpdated} refetchCostsTypes={refetchCostsTypes} />
 
-      <AddDrawer title="Add supplier" open={open} setOpen={setOpen}>
+      <AddDrawer title="Add Withdrawal" open={open} setOpen={setOpen}>
         <WithdrawalsForm refetchCosts={refetchCostsTypes} setOpen={setOpen} />
       </AddDrawer>
     </div>
