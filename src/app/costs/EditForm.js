@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { format } from 'date-fns'; // Import format from date-fns
 
 export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
   const [amount, setAmount] = useState("");
@@ -15,7 +16,7 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
     if (selectedCost) {
       setAmount(selectedCost.amount);
       setDescription(selectedCost.description);
-      setDate(selectedCost.date);
+      setDate(format(new Date(selectedCost.date), 'yyyy-MM-dd')); // Format the date for input[type="date"]
       setName(selectedCost.name);
       setType(selectedCost.type.toLowerCase()); 
     }

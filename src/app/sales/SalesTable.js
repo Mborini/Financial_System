@@ -73,6 +73,7 @@ function SalesTable({ costsUpdated, refetchCosts }) {
       }
     }
   };
+
   const handlePrint = (e) => {
     e.preventDefault();
     const printContents = document.getElementById("printTable").outerHTML;
@@ -87,6 +88,7 @@ function SalesTable({ costsUpdated, refetchCosts }) {
     document.body.innerHTML = originalContents;
     window.location.reload(); // Optional: reload the page to ensure state is restored
   };
+
   if (loading) {
     return (
       <div className="flex justify-center">
@@ -111,8 +113,16 @@ function SalesTable({ costsUpdated, refetchCosts }) {
     return saleDate >= startDate && saleDate <= endDate;
   });
 
-  // Calculate the total amount of the filtered sales
-  const totalFilteredSales = filteredSales.reduce(
+  // Calculate the total cash, visa, and total sales from the filtered sales
+  const totalCash = filteredSales.reduce(
+    (sum, sale) => sum + parseFloat(sale.cash_amount || 0),
+    0
+  );
+  const totalVisa = filteredSales.reduce(
+    (sum, sale) => sum + parseFloat(sale.visa_amount || 0),
+    0
+  );
+  const totalSales = filteredSales.reduce(
     (sum, sale) => sum + parseFloat(sale.total || 0),
     0
   );
@@ -129,7 +139,7 @@ function SalesTable({ costsUpdated, refetchCosts }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="container mx-auto px-4">
+    <div  id="printTable" className="container mx-auto px-4 ">
       {/* Date Range Filter */}
       <div className="flex justify-between my-4">
         <DatePicker
@@ -151,33 +161,52 @@ function SalesTable({ costsUpdated, refetchCosts }) {
         </div>
       </div>
 
-      {/* Total of Filtered Sales */}
-      <div className="text-left mb-4">
-        <span className="font-semibold text-lg">
-          Total of Filtered Sales: {totalFilteredSales.toFixed(2)}
-        </span>
+      {/* Summary Table */}
+      <div className="mb-4">
+        <h2 className="font-bold mb-2">Sales Summary</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border-collapse border border-gray-200">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 px-4 py-2 text-center">Total Cash</th>
+                <th className="border border-gray-300 px-4 py-2 text-center">Total Visa</th>
+                <th className="border border-gray-300 px-4 py-2 text-center">Total Sales</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {totalCash.toFixed(2)}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {totalVisa.toFixed(2)}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {totalSales.toFixed(2)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
+      {/* Sales Table */}
       <table
-        id="printTable"
+       
         className="min-w-full table-auto border-collapse border border-gray-200"
       >
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
             <th className="border border-gray-300 px-4 py-2">Date</th>
             <th className="border border-gray-300 px-4 py-2">Cash</th>
             <th className="border border-gray-300 px-4 py-2">Visa</th>
             <th className="border border-gray-300 px-4 py-2">Total</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {currentSales.map((sale) => (
             <tr key={sale.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {sale.id}
-              </td>
+              
               <td className="border border-gray-300 px-4 py-2 text-center">
                 {format(parseISO(sale.sale_date), "yyyy-MM-dd")}
               </td>
@@ -190,20 +219,7 @@ function SalesTable({ costsUpdated, refetchCosts }) {
               <td className="border border-gray-300 px-4 py-2 text-center">
                 {parseFloat(sale.total).toFixed(2)}
               </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
-                  onClick={() => handleEditClick(sale)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                  onClick={() => handleDelete(sale.id)}
-                >
-                  Delete
-                </button>
-              </td>
+            
             </tr>
           ))}
         </tbody>

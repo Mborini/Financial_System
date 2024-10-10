@@ -27,6 +27,7 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
   const [selectedSupplier, setSelectedSupplier] = useState("");
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("");
   const [searchName, setSearchName] = useState(""); // Search input for name
+  const [isPrinting, setIsPrinting] = useState(false); // Add this line
 
   // Fetch data when component mounts or costsUpdated changes
   useEffect(() => {
@@ -98,8 +99,6 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
   if (error) {
     return <div className="text-center text-red-600">Error: {error}</div>; // Show error message if there's any
   }
-
-  // Handle filtering logic
   const filteredPurchases = purchases.filter((purchase) => {
     const matchesSupplier = selectedSupplier
       ? purchase.supplier === selectedSupplier
@@ -110,17 +109,46 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
     const matchesSearchName = purchase.name
       .toLowerCase()
       .includes(searchName.toLowerCase());
-
-    return matchesSupplier && matchesPaymentStatus && matchesSearchName;
+  
+    const matchesDateRange = !startDate || !endDate 
+      ? true 
+      : new Date(purchase.date) >= startDate && new Date(purchase.date) <= endDate;
+  
+    return matchesSupplier && matchesPaymentStatus && matchesSearchName && matchesDateRange;
   });
+  const totalAmount = filteredPurchases.reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  });
+  const totalPaidAmount = filteredPurchases.reduce((acc, curr) => acc + parseFloat(curr.paid_amount || 0), 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  });
+  const totalRemainingAmount = filteredPurchases.reduce((acc, curr) => acc + parseFloat(curr.remaining_amount || 0), 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  });
+  
+  
+const paymentStatusCounts = {
+  Paid: filteredPurchases.filter(purchase => purchase.payment_status === "Paid").length,
+  Partial: filteredPurchases.filter(purchase => purchase.payment_status === "Partial").length,
+  Debt: filteredPurchases.filter(purchase => purchase.payment_status === "Debt").length
+};
 
   // Calculate the current records for the current page
   const indexOfLastPurchase = currentPage * purchasesPerPage;
   const indexOfFirstPurchase = indexOfLastPurchase - purchasesPerPage;
-  const currentPurchases = filteredPurchases.slice(
-    indexOfFirstPurchase,
-    indexOfLastPurchase
-  );
+  const currentPurchases = isPrinting
+  ? filteredPurchases // Display all purchases when printing
+  : filteredPurchases.slice(
+      (currentPage - 1) * purchasesPerPage,
+      currentPage * purchasesPerPage
+    );
+
 
   // Get total pages
   const totalPages = Math.ceil(filteredPurchases.length / purchasesPerPage);
@@ -129,220 +157,227 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const handlePrint = (e) => {
     e.preventDefault();
-    const printContents = document.getElementById("printTable").outerHTML;
-    const originalContents = document.body.innerHTML;
-
-    // Replace body content with just the table for printing
-    document.body.innerHTML = printContents;
-
-    window.print(); // Trigger the print dialog
-
-    // Restore original contents after printing
-    document.body.innerHTML = originalContents;
-    window.location.reload(); // Optional: reload the page to ensure state is restored
+    setIsPrinting(true); // Disable pagination for printing
+    setTimeout(() => {
+      window.print(); // Trigger the print dialog
+      setIsPrinting(false); // Restore pagination after printing
+    }, 500); // Small delay to ensure the table is rendered before printing
   };
+  
   return (
     <div className="container mx-auto px-4">
-      {/* Filters Section */}
-      <div className="mb-4 flex justify-between">
-        <div className="flex space-x-4 mb-4">
-          {/* Filter by Supplier */}
-          <div>
-            <label
-              htmlFor="supplier-filter"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Filter by Supplier
-            </label>
-            <select
-              id="supplier-filter"
-              value={selectedSupplier}
-              onChange={(e) => setSelectedSupplier(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="">All Suppliers</option>
-              {suppliers.map((supplier) => (
-                <option key={supplier.id} value={supplier.name}>
-                  {supplier.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Filter by Payment Status */}
-          <div>
-            <label
-              htmlFor="payment-status-filter"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Filter by Payment Status
-            </label>
-            <select
-              id="payment-status-filter"
-              value={selectedPaymentStatus}
-              onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="">All Payment Statuses</option>
-              {paymentStatuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Search by Name */}
-          <div>
-            <label
-              htmlFor="name-search"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Search by Name
-            </label>
-            <input
-              id="name-search"
-              type="text"
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-              placeholder="Search by name"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-
-          {/* Date Range Filter */}
-          <div>
-            <label
-              htmlFor="name-search"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Search by Date
-            </label>
-
-            <DatePicker
-              selected={startDate}
-              onChange={(update) => setDateRange(update)}
-              startDate={startDate}
-              endDate={endDate}
-              selectsRange
-              isClearable
-              placeholderText="Select a date range"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-        </div>
-        <div>
-        <button
-          onClick={handlePrint}
-          className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+     <div className="container mx-auto px-4">
+  {/* Filters Section */}
+  <div className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
+    <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full md:w-auto">
+      {/* Filter by Supplier */}
+      <div className="mb-4 md:mb-0 w-full md:w-auto">
+       
+        <select
+          id="supplier-filter"
+          value={selectedSupplier}
+          onChange={(e) => setSelectedSupplier(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <FaPrint className="inline-block " />
-        </button>
+          <option value="">All Suppliers</option>
+          {suppliers.map((supplier) => (
+            <option key={supplier.id} value={supplier.name}>
+              {supplier.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
+      {/* Filter by Payment Status */}
+      <div className="mb-4 md:mb-0 w-full md:w-auto">
+        
+        <select
+          id="payment-status-filter"
+          value={selectedPaymentStatus}
+          onChange={(e) => setSelectedPaymentStatus(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">All Payment Statuses</option>
+          {paymentStatuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {/* Search by Name */}
+      <div className="mb-4 md:mb-0 w-full md:w-auto">
+       
+        <input
+          id="name-search"
+          type="text"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+          placeholder="Search by name"
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
       </div>
-<br/>
-      <h1>total of  .....
-              
-      </h1>
-      {/* Table Section */}
-      <table
-        id="printTable"
-        className="min-w-full table-auto border-collapse border border-gray-200"
+
+      {/* Date Range Filter */}
+      <div className="mb-4 md:mb-0 w-full md:w-auto">
+        
+
+        <DatePicker
+          selected={startDate}
+          onChange={(update) => setDateRange(update)}
+          startDate={startDate}
+          endDate={endDate}
+          selectsRange
+          isClearable
+          placeholderText="Select a date range"
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+      </div>
+    </div>
+
+    {/* Align the Print Button Responsively */}
+    <div className="flex justify-end md:justify-start mt-4 md:mt-0">
+      <button
+        onClick={handlePrint}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
+        <FaPrint className="inline-block" />
+      </button>
+    </div>
+    </div>
+ 
+
+
+  {/* Summary Table */}
+  <div className="mb-4">
+    <h2 className="font-bold mb-2">Summary</h2>
+    <div className="overflow-x-auto"> {/* Ensures the table is scrollable on small screens */}
+      <table className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">Name</th>
-            <th className="border border-gray-300 px-4 py-2">Amount</th>
-            <th className="border border-gray-300 px-4 py-2">Paid Amount</th>
-            <th className="border border-gray-300 px-4 py-2">
-              Remaining Amount
-            </th>{" "}
-            {/* Add remaining amount column */}
-            <th className="border border-gray-300 px-4 py-2">Payment Status</th>
-            <th className="border border-gray-300 px-4 py-2">Supplier</th>
-            <th className="border border-gray-300 px-4 py-2">Date</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Total Amount</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Total Paid Amount</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Total Remaining Amount</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Paid</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Partial</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Debt</th>
           </tr>
         </thead>
         <tbody>
-          {currentPurchases.map((purchase) => (
-            <tr key={purchase.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {purchase.id}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {purchase.name}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {purchase.amount}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {purchase.paid_amount}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {purchase.remaining_amount}
-              </td>{" "}
-              {/* Display remaining amount */}
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {purchase.payment_status}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {purchase.supplier}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {new Date(purchase.date).toLocaleDateString()}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
-                  onClick={() => handleEditClick(purchase)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                  onClick={() => handleDelete(purchase.id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
+          <tr>
+            <td className="border border-gray-300 px-4 py-2 text-center">{totalAmount}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{totalPaidAmount}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{totalRemainingAmount}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{paymentStatusCounts.Paid}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{paymentStatusCounts.Partial}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{paymentStatusCounts.Debt}</td>
+          </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
 
-      {/* Pagination Section */}
-      <div className="flex justify-center my-4">
-        <button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-        >
-          Previous
-        </button>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => paginate(i + 1)}
-            className={`px-4 py-2 mx-1 rounded ${
-              i + 1 === currentPage
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 hover:bg-gray-400"
-            }`}
-          >
-            {i + 1}
-          </button>
+
+      {/* Table Section */}
+      <div className="container mx-auto px-4">
+  {/* Responsive Table Section */}
+  <div className="overflow-x-auto">
+    <table
+      id="printTable"
+      className="min-w-full table-auto border-collapse border border-gray-200"
+    >
+      <thead>
+        <tr className="bg-gray-100">
+          <th className="border border-gray-300 px-4 py-2">Name</th>
+          <th className="border border-gray-300 px-4 py-2">Amount</th>
+          <th className="border border-gray-300 px-4 py-2">Paid Amount</th>
+          <th className="border border-gray-300 px-4 py-2">Remaining Amount</th>
+          <th className="border border-gray-300 px-4 py-2">Payment Status</th>
+          <th className="border border-gray-300 px-4 py-2">Supplier</th>
+          <th className="border border-gray-300 px-4 py-2">Date</th>
+          <th className="border border-gray-300 px-4 py-2 no-print">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {currentPurchases.map((purchase) => (
+          <tr key={purchase.id} className="bg-white hover:bg-gray-50">
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {purchase.name}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {purchase.amount}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {purchase.paid_amount}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {purchase.remaining_amount}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {purchase.payment_status}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {purchase.supplier}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {new Date(purchase.date).toLocaleDateString()}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center no-print">
+              <button
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
+                onClick={() => handleEditClick(purchase)}
+              >
+                Edit
+              </button>
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                onClick={() => handleDelete(purchase.id)}
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
         ))}
-        <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      </tbody>
+    </table>
+  </div>
+
+  {!isPrinting && (
+  <div className="flex justify-center my-4">
+    <button
+      onClick={() => paginate(currentPage - 1)}
+      disabled={currentPage === 1}
+      className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+    >
+      Previous
+    </button>
+    {Array.from({ length: totalPages }, (_, i) => (
+      <button
+        key={i + 1}
+        onClick={() => paginate(i + 1)}
+        className={`px-4 py-2 mx-1 rounded ${
+          i + 1 === currentPage
+            ? "bg-blue-500 text-white"
+            : "bg-gray-300 hover:bg-gray-400"
+        }`}
+      >
+        {i + 1}
+      </button>
+    ))}
+    <button
+      onClick={() => paginate(currentPage + 1)}
+      disabled={currentPage === totalPages}
+      className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+    >
+      Next
+    </button>
+  </div>
+)}
+
+</div>
+
 
       {/* Edit Drawer */}
       <EditDrawer title="Edit Purchase" open={open} setOpen={setOpen}>

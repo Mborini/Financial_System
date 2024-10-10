@@ -87,7 +87,6 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
       <table className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
             <th className="border border-gray-300 px-4 py-2">Name</th>
             <th className="border border-gray-300 px-4 py-2">Description</th>
            
@@ -97,7 +96,6 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
         <tbody>
           {currentcostsTypes.map((costType) => (
             <tr key={costType.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">{costType.id}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.description}</td>
              

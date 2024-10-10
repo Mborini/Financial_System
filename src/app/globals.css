@@ -16,9 +16,52 @@
   }
 }
 
-body {
- 
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    zoom: 90%; /* Adjust zoom to fit the table nicely within the page */
+  }
+
+  .container, table {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  table {
+    table-layout: auto;
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: avoid; /* Avoid breaking rows across pages */
+  }
+
+  th, td {
+    word-wrap: break-word; /* Ensure text does not overflow */
+    padding: 8px;
+  }
+
+  tr {
+    page-break-inside: avoid; /* Ensure rows do not break between pages */
+  }
+
+  /* Hide unnecessary elements during printing */
+  nav, .no-print, .pagination-controls {
+    display: none !important;
+  }
+
+  /* Optional: remove link styles for better printing */
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  /* Remove print margins or paddings */
+  @page {
+    margin: 0;
+  }
 }
+
 
 @layer utilities {
   .text-balance {
