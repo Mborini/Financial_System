@@ -242,7 +242,9 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
       </div>
       </div>
 <br/>
-      <h1>total</h1>
+      <h1>total of  .....
+              
+      </h1>
       {/* Table Section */}
       <table
         id="printTable"
