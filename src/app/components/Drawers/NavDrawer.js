@@ -6,7 +6,7 @@ import { Fragment } from 'react'
 
 export default function NavDrawer({ title, children, open, setOpen }) {
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition.Root  dir="rtl" show={open} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={setOpen}>
         <Transition.Child
           as={Fragment}
@@ -35,7 +35,7 @@ export default function NavDrawer({ title, children, open, setOpen }) {
                 {/* Ensuring full height */}
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-md h-full bg-blue-500 shadow-xl transform transition-all flex flex-col">
                   <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 rtl">
-                    <Dialog.Title className="text-xl font-bold text-white">
+                    <Dialog.Title className="text-xl font-bold text-yellow-300">
                       {title}
                     </Dialog.Title>
                     <button
@@ -52,9 +52,7 @@ export default function NavDrawer({ title, children, open, setOpen }) {
                     {children}
                   </div>
                   {/* Optional footer area */}
-                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rtl">
-                    {/* Footer content */}
-                  </div>
+                  
                 </Dialog.Panel>
               </Transition.Child>
             </div>

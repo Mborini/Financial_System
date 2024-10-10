@@ -427,8 +427,8 @@ export default function Home() {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {/* Summary Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        {/* Total Employees */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      {/* Total Employees */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
           <p className="text-base font-bold">Employees</p>
           <p className="text-xl">{employees.length}</p>

@@ -10,20 +10,23 @@ export default function Layout({ children }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
-    <html lang="en" dir="rtl">
+    <html lang="en" >
       {" "}
       {/* Setting the whole page to RTL */}
       <body>
-        <nav className="relative">
+        <nav dir="rtl" className="relative">
           {/* Mobile Navigation */}
-          <div className="p-4 bg-blue-500 text-white font-bold flex justify-between items-center md:hidden">
+          <div  className="p-4 bg-blue-500 text-white font-bold flex justify-between items-center md:hidden">
             <button
               className="text-white hover:text-yellow-300"
               onClick={() => setIsDrawerOpen(true)}
-            >
-              <FaListUl />
+            ><div>
+              <FaListUl className="" size={20} /></div>
             </button>{" "}
-            <Image width={25} height={25} src="/logoHotDog.jpg" />
+          <div className="flex gap-2 items-center">
+          <h1>MR. HOTDOG</h1>
+          <Image width={25} height={25} src="/logoHotDog.jpg" />
+          </div>
           </div>
 
           {/* Drawer for mobile */}
@@ -33,7 +36,7 @@ export default function Layout({ children }) {
             setOpen={setIsDrawerOpen}
           >
             <ul className="space-y-4">
-              <li>
+              <li >
                 <a href="/" className="hover:text-yellow-300">
                   لوحة القيادة {/* Dashboard */}
                 </a>
