@@ -594,17 +594,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Remaining Amount by Supplier Chart */}
-        <div className="p-4 col-span-3 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">
-            Remaining Amount by Supplier
-          </h2>
-          <LineChartCard
-            title="Remaining Amount by Supplier"
-            data={remainingBySupplierChartData}
-          />
-        </div>
-
+        
         
       </div>
     </div>
