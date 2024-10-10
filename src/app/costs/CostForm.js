@@ -141,7 +141,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
         >
           <option value="">Select type</option>
           {loading ? (
-            <option disabled>Loading...</option>
+            <option disabled>Loading ...</option>
           ) : error ? (
             <option disabled>{error}</option>
           ) : (
