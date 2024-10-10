@@ -238,9 +238,11 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
         >
           <FaPrint className="inline-block " />
         </button>
-      </div>
-      </div>
 
+      </div>
+      </div>
+<br/>
+      <h1>total</h1>
       {/* Table Section */}
       <table
         id="printTable"
