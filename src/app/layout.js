@@ -28,18 +28,20 @@ export default function Layout({ children }) {
   const [navbarOpacity, setNavbarOpacity] = useState(1);
   const dropdownRef = useRef(null);
   const costDropdownRef = useRef(null);
+  const [isEmployeesDropdownOpen, setIsEmployeesDropdownOpen] = useState(false);
+  const employeesDropdownRef = useRef(null);
 
   // Handle click outside to close the dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
         costDropdownRef.current &&
-        !costDropdownRef.current.contains(event.target)
+        !costDropdownRef.current.contains(event.target) &&
+        employeesDropdownRef.current &&
+        !employeesDropdownRef.current.contains(event.target)
       ) {
-        setIsDropdownOpen(false); // Close Employees dropdown
-        setIsCostDropdownOpen(false); // Close Costs dropdown
+        setIsCostDropdownOpen(false);
+        setIsEmployeesDropdownOpen(false);
       }
     };
 
@@ -62,7 +64,17 @@ export default function Layout({ children }) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+ // Handle toggling the Costs dropdown
+ const toggleCostDropdown = () => {
+  setIsCostDropdownOpen(!isCostDropdownOpen);
+  setIsEmployeesDropdownOpen(false); // Close Employees dropdown when Costs is opened
+};
 
+// Handle toggling the Employees dropdown
+const toggleEmployeesDropdown = () => {
+  setIsEmployeesDropdownOpen(!isEmployeesDropdownOpen);
+  setIsCostDropdownOpen(false); // Close Costs dropdown when Employees is opened
+};
   // Handle closing dropdown after clicking a link
   const handleLinkClick = () => {
     setIsDropdownOpen(false);
@@ -94,41 +106,74 @@ export default function Layout({ children }) {
             </div>
           </div>
 
-          {/* Drawer for mobile */}
-          <NavDrawer
-            title="التنقل"
-            open={isDrawerOpen}
-            setOpen={setIsDrawerOpen}
+          <NavDrawer  open={isDrawerOpen} setOpen={setIsDrawerOpen} title="التنقل">
+      <ul className="space-y-4">
+        <li>
+          <a href="/" className="hover:text-yellow-300">
+            الاحصائيات {/* Dashboard */}
+          </a>
+        </li>
+
+        {/* Costs Dropdown */}
+        <li ref={costDropdownRef} className="relative">
+          <button
+            onClick={toggleCostDropdown}
+            className="hover:text-yellow-300 flex w-full text-left"
           >
-            <ul className="space-y-4">
-              <li>
-                <a href="/" className="hover:text-yellow-300">
-                  لوحة التحكم {/* Dashboard */}
-                </a>
-              </li>
+            الكلف التشغيلية {/* Costs */}
+          </button>
+          {isCostDropdownOpen && (
+            <ul className="space-y-2 ml-4">
               <li>
                 <a href="/costs" className="hover:text-yellow-300">
-                  التكاليف {/* Costs */}
+                  ادارة التشغيلية {/* Costs */}
                 </a>
               </li>
               <li>
-                <a href="/sales" className="hover:text-yellow-300">
-                  المبيعات {/* Sales */}
+                <a href="/costsTypes" className="hover:text-yellow-300">
+                  أنواع الكلف {/* Cost Types */}
                 </a>
               </li>
-              <li>
-                <a href="/purchases" className="hover:text-yellow-300">
-                  المشتريات {/* Purchases */}
-                </a>
-              </li>
-              <li>
-                <a href="/suppliers" className="hover:text-yellow-300">
-                  الموردون {/* Suppliers */}
-                </a>
-              </li>
+            </ul>
+          )}
+        </li>
+
+        <li>
+          <a href="/sales" className="hover:text-yellow-300">
+            المبيعات اليومية {/* Sales */}
+          </a>
+        </li>
+
+        <li>
+          <a href="/purchases" className="hover:text-yellow-300">
+            فواتير المشتريات {/* Purchases */}
+          </a>
+        </li>
+
+        <li>
+          <a href="/suppliers" className="hover:text-yellow-300">
+            ادارة الموردين {/* Suppliers */}
+          </a>
+        </li>
+
+        {/* Employees Dropdown */}
+        <li ref={employeesDropdownRef} className="relative">
+          <button
+            onClick={toggleEmployeesDropdown}
+            className="hover:text-yellow-300 flex w-full text-left"
+          >
+            ادارة الموظفين و الحسابات {/* Employees */}
+          </button>
+          {isEmployeesDropdownOpen && (
+            <ul className="space-y-2 ml-4">
               <li>
                 <a href="/employees" className="hover:text-yellow-300">
                   الموظفين {/* Employees */}
+                </a>
+              </li>
+              <li>
+                <a href="/deductions" className="hover:text-yellow-300">
+                  الخصومات {/* Deductions */}
                 </a>
               </li>
               <li>
@@ -143,22 +188,17 @@ export default function Layout({ children }) {
               </li>
               <li>
                 <a href="/attendance" className="hover:text-yellow-300">
-                  الحضور {/* Attendance */}
-                </a>
-              </li>
-              <li>
-                <a href="/costsTypes" className="hover:text-yellow-300">
-                  أنواع التكاليف {/* Costs Types */}
+                  الدوام اليومي {/* Attendance */}
                 </a>
               </li>
               <li>
                 <a href="/overTime" className="hover:text-yellow-300">
-                  العمل الإضافي {/* Over Time */}
+                  ساعات العمل الإضافي {/* Over Time */}
                 </a>
               </li>
               <li>
                 <a href="/staffFood" className="hover:text-yellow-300">
-                  طعام الموظفين {/* Staff Food */}
+                  الوجبات {/* Staff Food */}
                 </a>
               </li>
               <li>
@@ -167,7 +207,10 @@ export default function Layout({ children }) {
                 </a>
               </li>
             </ul>
-          </NavDrawer>
+          )}
+        </li>
+      </ul>
+    </NavDrawer>
 
           {/* Desktop Navigation */}
           <ul className="hidden md:flex justify-around p-4 bg-blue-500 text-white font-bold items-center space-x-4">
