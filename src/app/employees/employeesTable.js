@@ -82,34 +82,32 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
       <table className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">Name</th>
-            <th className="border border-gray-300 px-4 py-2">salary</th>
            
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
+            <th className="border border-gray-300 px-4 py-2"></th>
+            <th className="border border-gray-300 px-4 py-2">الراتب</th>
+            <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
           </tr>
         </thead>
         <tbody>
           {currentcostsTypes.map((costType) => (
             <tr key={costType.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">{costType.id}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
-                <td className="border border-gray-300 px-4 py-2 text-center">{costType.salary}</td>
-             
               <td className="border border-gray-300 px-4 py-2 text-center">
                 <button
                   className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
                   onClick={() => handleEditClick(costType)}
                 >
-                  Edit
+                  تعديل
                 </button>
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
                   onClick={() => handleDelete(costType.id)}
                 >
-                  Delete
+                  حذف
                 </button>
               </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{costType.salary}</td>
+              <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
+             
             </tr>
           ))}
         </tbody>
@@ -142,7 +140,7 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
         </button>
       </div>
 
-      <EditDrawer title="Edit Cost Type" open={open} setOpen={setOpen}>
+      <EditDrawer title="تعديل معلومات الموظف" open={open} setOpen={setOpen}>
       <EditEmployee selectedCost={selectedCost} refetchCosts={refetchCostsTypes} setOpen={setOpen} />
       </EditDrawer>
     </div>

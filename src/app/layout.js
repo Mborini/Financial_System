@@ -27,11 +27,17 @@ export default function Layout({ children }) {
   const [isCostDropdownOpen, setIsCostDropdownOpen] = useState(false);
   const [navbarOpacity, setNavbarOpacity] = useState(1);
   const dropdownRef = useRef(null);
+  const costDropdownRef = useRef(null);
 
   // Handle click outside to close the dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        costDropdownRef.current &&
+        !costDropdownRef.current.contains(event.target)
+      ) {
         setIsDropdownOpen(false); // Close Employees dropdown
         setIsCostDropdownOpen(false); // Close Costs dropdown
       }
@@ -56,6 +62,12 @@ export default function Layout({ children }) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // Handle closing dropdown after clicking a link
+  const handleLinkClick = () => {
+    setIsDropdownOpen(false);
+    setIsCostDropdownOpen(false);
+  };
 
   return (
     <html lang="en">
@@ -157,25 +169,29 @@ export default function Layout({ children }) {
             </ul>
           </NavDrawer>
 
-          <ul className="hidden md:flex justify-around p-4 bg-blue-500 text-white font-bold space-x-4">
+          {/* Desktop Navigation */}
+          <ul className="hidden md:flex justify-around p-4 bg-blue-500 text-white font-bold items-center space-x-4">
             <li>
               <a
                 className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                 href="/"
               >
-                <FaChartBar className="flex-shrink-0" /> لوحة التحكم{" "}
+                <FaChartBar className="flex-shrink-0" /> الاحصائيات{" "}
                 {/* Dashboard */}
               </a>
             </li>
 
             {/* Costs dropdown */}
-            <li className="relative" ref={dropdownRef}>
+            <li className="relative" ref={costDropdownRef}>
               <button
                 className="cursor-pointer hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform"
-                onClick={() => setIsCostDropdownOpen(!isCostDropdownOpen)}
+                onClick={() => {
+                  setIsCostDropdownOpen(!isCostDropdownOpen);
+                  setIsDropdownOpen(false); // Close other dropdown
+                }}
               >
                 <FaCog className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                التكاليف {/* Costs */}
+               ادارة الكلف التشغيلية{/* Costs */}
               </button>
 
               {isCostDropdownOpen && (
@@ -184,18 +200,20 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/costs"
+                      onClick={handleLinkClick}
                     >
                       <FaCog className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      التكاليف {/* Costs */}
+                      الكلف التشغيلية{/* Costs */}
                     </a>
                   </li>
                   <li>
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/costsTypes"
+                      onClick={handleLinkClick}
                     >
                       <FaListAlt className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      أنواع التكاليف {/* Cost Types */}
+                      أنواع الكلف {/* Cost Types */}
                     </a>
                   </li>
                 </ul>
@@ -208,7 +226,7 @@ export default function Layout({ children }) {
                 href="/sales"
               >
                 <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                المبيعات {/* Sales */}
+                المبيعات اليومية{/* Sales */}
               </a>
             </li>
 
@@ -218,7 +236,7 @@ export default function Layout({ children }) {
                 href="/purchases"
               >
                 <FaShoppingCart className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                المشتريات {/* Purchases */}
+              فواتير المشتريات {/* Purchases */}
               </a>
             </li>
 
@@ -228,7 +246,7 @@ export default function Layout({ children }) {
                 href="/suppliers"
               >
                 <FaTruck className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                الموردون {/* Suppliers */}
+              ادارة الموردين {/* Suppliers */}
               </a>
             </li>
 
@@ -236,10 +254,13 @@ export default function Layout({ children }) {
             <li className="relative" ref={dropdownRef}>
               <button
                 className="cursor-pointer hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClick={() => {
+                  setIsDropdownOpen(!isDropdownOpen);
+                  setIsCostDropdownOpen(false); // Close other dropdown
+                }}
               >
                 <FaUsers className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                الموظفين {/* Employees */}
+              ادارة الموظفين و الحسابات{/* Employees */}
               </button>
 
               {isDropdownOpen && (
@@ -248,6 +269,7 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/employees"
+                      onClick={handleLinkClick}
                     >
                       <FaUsers className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                       الموظفين {/* Employees */}
@@ -258,6 +280,7 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/deductions"
+                      onClick={handleLinkClick}
                     >
                       <FaWallet className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                       الخصومات {/* Deductions */}
@@ -268,6 +291,7 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/withdrawals"
+                      onClick={handleLinkClick}
                     >
                       <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                       السحوبات {/* Withdrawals */}
@@ -278,6 +302,7 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/salaryAccount"
+                      onClick={handleLinkClick}
                     >
                       <FaWallet className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                       حساب الرواتب {/* Salary Account */}
@@ -288,9 +313,10 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/attendance"
+                      onClick={handleLinkClick}
                     >
                       <FaClock className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      الحضور {/* Attendance */}
+                     الدوام اليومي{/* Attendance */}
                     </a>
                   </li>
 
@@ -298,9 +324,10 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/overTime"
+                      onClick={handleLinkClick}
                     >
                       <FaClock className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      العمل الإضافي {/* Over Time */}
+                     ساعات العمل الإضافي {/* Over Time */}
                     </a>
                   </li>
 
@@ -308,9 +335,10 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/staffFood"
+                      onClick={handleLinkClick}
                     >
                       <FaUtensils className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      طعام الموظفين {/* Staff Food */}
+                     الوجبات  {/* Staff Food */}
                     </a>
                   </li>
 
@@ -318,6 +346,7 @@ export default function Layout({ children }) {
                     <a
                       className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/Vacations"
+                      onClick={handleLinkClick}
                     >
                       <FaPlaneDeparture className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                       الإجازات {/* Vacations */}
@@ -325,6 +354,17 @@ export default function Layout({ children }) {
                   </li>
                 </ul>
               )}
+            </li>
+            <li className=" bg-blue-500 text-white font-bold hidden md:flex justify-center items-center md:justify-between">
+              <div className="flex gap-3 items-center">
+                <h1 className="text-lg">MR. HOTDOG</h1>{" "}
+                <Image
+                  width={30}
+                  height={30}
+                  src="/logoHotDog.jpg"
+                  alt="MR. HOTDOG Logo"
+                />
+              </div>
             </li>
           </ul>
         </nav>

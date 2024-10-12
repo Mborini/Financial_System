@@ -19,7 +19,7 @@ export default function Purchases() {
     <div>
       <div className="flex justify-between mb-4 mx-12">
         <h1></h1>
-        <h2 className="text-2xl font-semibold text-center my-4">Purchases Table</h2>
+        <h2 className="text-2xl font-semibold text-center my-4">المشتريات</h2>
         <button
           onClick={() => setOpen(true)}
           
@@ -30,7 +30,7 @@ export default function Purchases() {
 
       <PurchasesTable costsUpdated={costsUpdated} refetchCosts={refetchCosts} />
 
-      <AddDrawer title="Add Purchases" open={open} setOpen={setOpen}>
+      <AddDrawer title=" اضافة فاتورة مشتريات جديدة" open={open} setOpen={setOpen}>
         <PurchasesForm refetchCosts={refetchCosts} setOpen={setOpen} /> 
       </AddDrawer>
     </div>

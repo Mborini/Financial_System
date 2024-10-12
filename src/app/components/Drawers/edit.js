@@ -6,7 +6,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 export default function EditDrawer({ title, children, open, setOpen }) {
   return (
     <Transition.Root show={open} as="div">
-      <Dialog as="div" className="relative z-50" onClose={setOpen}>
+      <Dialog dir='rtl' as="div" className="relative z-50" onClose={setOpen}>
         <Transition.Child
           as="div"
           enter="ease-out duration-300"

@@ -79,28 +79,26 @@ function SuppliersTable({ costsTypesUpdated, refetchCostsTypes }) {
 
   return (
     <div className="container mx-auto px-4">
-      <table className="min-w-full table-auto border-collapse border border-gray-200">
+      <table dir='rtl' className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">Name</th>
-            <th className="border border-gray-300 px-4 py-2">address</th>
-            <th className="border border-gray-300 px-4 py-2">Phone Number</th>
+            <th className="border border-gray-300 px-4 py-2">اسم المورد</th>
+            <th className="border border-gray-300 px-4 py-2">عنوان المورد</th>
+            <th className="border border-gray-300 px-4 py-2">رقم الهاتف</th>
            
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
+            <th className="border border-gray-300 px-4 py-2"></th>
           </tr>
         </thead>
         <tbody>
           {currentcostsTypes.map((costType) => (
             <tr key={costType.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">{costType.id}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.address}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.phonenumber}</td>
              
-              <td className="border border-gray-300 px-4 py-2 text-center">
+              <td className="border border-gray-300 px-4  py-2 text-center">
                 <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
+                  className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
                   onClick={() => handleEditClick(costType)}
                 >
                   Edit
@@ -144,7 +142,7 @@ function SuppliersTable({ costsTypesUpdated, refetchCostsTypes }) {
         </button>
       </div>
 
-      <EditDrawer title="Edit Cost Type" open={open} setOpen={setOpen}>
+      <EditDrawer title="تعديل معلومات المورد" open={open} setOpen={setOpen}>
       <EditSuppliers selectedSupplier={selectedCost} refetchSuppliers={refetchCostsTypes} setOpen={setOpen} />
       </EditDrawer>
     </div>

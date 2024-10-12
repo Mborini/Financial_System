@@ -38,14 +38,14 @@ export default function SuppliersForm({ refetchcostsTypes, setOpen }) {
           htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
-          Name
+          اسم المورد
         </label>
         <input
           id="name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Enter name"
+          placeholder="ادخل اسم المورد"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
@@ -57,14 +57,14 @@ export default function SuppliersForm({ refetchcostsTypes, setOpen }) {
           htmlFor="address"
           className="block text-sm font-medium text-gray-700"
         >
-          Address
+          عنوان المورد
         </label>
         <input
           id="address"
           type="text"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          placeholder="Enter address"
+          placeholder="ادخل عنوان المورد"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
@@ -76,14 +76,14 @@ export default function SuppliersForm({ refetchcostsTypes, setOpen }) {
           htmlFor="phonenumber"
           className="block text-sm font-medium text-gray-700"
         >
-          Phone Number
+         رقم الهاتف 
         </label>
         <input
           id="phonenumber"
           type="text"
           value={phonenumber}
           onChange={(e) => setPhonenumber(e.target.value)}
-          placeholder="Enter phone number"
+          placeholder="ادخل رقم هاتف المورد"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
@@ -95,7 +95,7 @@ export default function SuppliersForm({ refetchcostsTypes, setOpen }) {
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Add Supplier
+          اضافة مورد جديد
         </button>
       </div>
 

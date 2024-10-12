@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 
-export default function EditSuppliers({ selectedSupplier, refetchSuppliers, setOpen }) {
+export default function EditSuppliers({
+  selectedSupplier,
+  refetchSuppliers,
+  setOpen,
+}) {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phonenumber, setPhoneNumber] = useState("");
@@ -49,8 +53,11 @@ export default function EditSuppliers({ selectedSupplier, refetchSuppliers, setO
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Name field */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700"
+        >
+          اسم المورد
         </label>
         <input
           id="name"
@@ -65,8 +72,11 @@ export default function EditSuppliers({ selectedSupplier, refetchSuppliers, setO
 
       {/* Address field */}
       <div>
-        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-          Address
+        <label
+          htmlFor="address"
+          className="block text-sm font-medium text-gray-700"
+        >
+          عنوان المورد
         </label>
         <input
           id="address"
@@ -81,8 +91,11 @@ export default function EditSuppliers({ selectedSupplier, refetchSuppliers, setO
 
       {/* Phone number field */}
       <div>
-        <label htmlFor="phonenumber" className="block text-sm font-medium text-gray-700">
-          Phone number
+        <label
+          htmlFor="phonenumber"
+          className="block text-sm font-medium text-gray-700"
+        >
+          رقم الهاتف{" "}
         </label>
         <input
           id="phonenumber"
@@ -101,16 +114,12 @@ export default function EditSuppliers({ selectedSupplier, refetchSuppliers, setO
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Update Supplier
+          حفظ وتعديل
         </button>
       </div>
 
       {/* Error display */}
-      {error && (
-        <div className="text-red-500 text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-red-500 text-sm">{error}</div>}
     </form>
   );
 }

@@ -19,7 +19,7 @@ export default function Suppliers() {
     <div>
       <div className="flex justify-between mb-4 mx-12">
         <h1></h1>
-        <h2 className="text-2xl font-semibold text-center my-4">Suppliers Table</h2>
+        <h2 className="text-2xl font-semibold text-center my-4">الموردين</h2>
         <button onClick={() => setOpen(true)}>
           <FaPlus size={25} color="blue" />
         </button>
@@ -27,7 +27,7 @@ export default function Suppliers() {
 
       <SuppliersTable costsTypesUpdated={costsTypesUpdated} refetchCostsTypes={refetchCostsTypes} />
 
-      <AddDrawer title="Add supplier" open={open} setOpen={setOpen}>
+      <AddDrawer title="اضافة مورد جديد" open={open} setOpen={setOpen}>
         <SuppliersForm refetchcostsTypes={refetchCostsTypes} setOpen={setOpen} />
       </AddDrawer>
     </div>

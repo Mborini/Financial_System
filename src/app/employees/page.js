@@ -19,7 +19,7 @@ export default function CostsTypes() {
     <div>
       <div className="flex justify-between mb-4 mx-12">
         <h1></h1>
-        <h2 className="text-2xl font-semibold text-center my-4">Employees Table</h2>
+        <h2 className="text-2xl font-semibold text-center my-4">الموظفين</h2>
         <button onClick={() => setOpen(true)}>
           <FaPlus size={25} color="blue" />
         </button>
@@ -27,7 +27,7 @@ export default function CostsTypes() {
 
       <EmployeesTable costsTypesUpdated={costsTypesUpdated} refetchCostsTypes={refetchCostsTypes} />
 
-      <AddDrawer title="Add employee" open={open} setOpen={setOpen}>
+      <AddDrawer title="اضافة موظف جديد" open={open} setOpen={setOpen}>
         <EmployeeForm refetchcostsTypes={refetchCostsTypes} setOpen={setOpen} />
       </AddDrawer>
     </div>
