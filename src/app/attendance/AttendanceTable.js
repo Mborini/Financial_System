@@ -128,16 +128,18 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
       </div>
 
       {/* Attendance Table */}
+      <div dir="rtl" className="overflow-x-auto">
+
       
       <table id='printTable' className="min-w-full table-auto border-collapse border border-gray-200 ">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">Employee Name</th>
-            <th className="border border-gray-300 px-4 py-2">Check-in</th>
-            <th className="border border-gray-300 px-4 py-2">Check-out</th>
-            <th className="border border-gray-300 px-4 py-2">Work Hours</th>
-            <th className="border border-gray-300 px-4 py-2">Overtime Hours</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
+            <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
+            <th className="border border-gray-300 px-4 py-2">وقت الحضور</th>
+            <th className="border border-gray-300 px-4 py-2">وقت الانصراف</th>
+            <th className="border border-gray-300 px-4 py-2">ساعات العمل</th>
+            <th className="border border-gray-300 px-4 py-2">ساعات العمل الاضافية</th>
+            <th className="border border-gray-300 px-4 py-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -167,7 +169,7 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
                     className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
                     onClick={() => handleOpenDrawer(record)}
                   >
-                    Add Check-out
+                  اضافة وقت الانصراف
                   </button>
                 )}
               </td>
@@ -175,6 +177,7 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
           ))}
         </tbody>
       </table>
+      </div>
 </div>
       {/* Drawer for check-out form */}
       <AddDrawer title="Check-out Time" open={openDrawer} setOpen={setOpenDrawer}>

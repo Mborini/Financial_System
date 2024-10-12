@@ -12,7 +12,6 @@ export default function DeductionTable({ deductionsUpdated, refetchDeductions, s
   const [dateRange, setDateRange] = useState([startOfMonth(new Date()), endOfMonth(new Date())]);
   const [startDate, endDate] = dateRange;
 
-  // Fetch deductions whenever deductionsUpdated changes
   useEffect(() => {
     const fetchDeductions = async () => {
       try {
@@ -26,21 +25,17 @@ export default function DeductionTable({ deductionsUpdated, refetchDeductions, s
       }
     };
     fetchDeductions();
-  }, [deductionsUpdated]); // Re-fetch when deductionsUpdated toggles
+  }, [deductionsUpdated]);
 
-  // Function to handle deletion of a deduction
   const handleDelete = async (deduction) => {
     try {
       const response = await fetch(`/api/deductions`, {
         method: 'DELETE',
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: deduction.id })
       });
-
       if (response.ok) {
-        refetchDeductions(); // Re-fetch the table after deletion
+        refetchDeductions();
       } else {
         console.error("Failed to delete deduction");
       }
@@ -50,7 +45,6 @@ export default function DeductionTable({ deductionsUpdated, refetchDeductions, s
   };
 
   const filteredDeductions = deductions.filter((deduction) => {
-    if (!startDate || !endDate) return true;
     const deductionDate = new Date(deduction.date);
     return deductionDate >= startDate && deductionDate <= endDate;
   });
@@ -64,7 +58,7 @@ export default function DeductionTable({ deductionsUpdated, refetchDeductions, s
   if (deductions.length === 0) return <div>No deductions found.</div>;
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto ">
       <div className="flex justify-center my-4">
         <DatePicker
           selected={startDate}
@@ -77,47 +71,46 @@ export default function DeductionTable({ deductionsUpdated, refetchDeductions, s
           className="border border-gray-300 p-2 rounded"
         />
       </div>
-
-      <table className="min-w-full table-auto border-collapse border border-gray-200">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">Employee Name</th>
-            <th className="border border-gray-300 px-4 py-2">Amount</th>
-            <th className="border border-gray-300 px-4 py-2">Deduction Type</th>
-            <th className="border border-gray-300 px-4 py-2">Date</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentDeductions.map((deduction) => (
-            <tr key={deduction.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">{deduction.id}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{deduction.employee_name}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{deduction.amount}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{deduction.deduction_type}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{new Date(deduction.date).toLocaleDateString()}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
-                  onClick={() => {
-                    setSelectedDeduction(deduction);
-                    setOpen(true); // Open the drawer when editing
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                  onClick={() => handleDelete(deduction)}
-                >
-                  Delete
-                </button>
-              </td>
+      <div className="overflow-x-auto">
+        <table dir='rtl' className="min-w-full table-auto border-collapse border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300  py-2">اسم الموضف</th>
+              <th className="border border-gray-300  py-2">قيمة الخصم</th>
+              <th className="border border-gray-300  py-2">نع الخصم</th>
+              <th className="border border-gray-300  py-2">التاريخ</th>
+              <th className="border border-gray-300  py-2"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentDeductions.map((deduction) => (
+              <tr key={deduction.id} className="bg-white hover:bg-gray-50">
+                <td className="border border-gray-300  py-2 text-center">{deduction.employee_name}</td>
+                <td className="border border-gray-300  py-2 text-center">{deduction.amount}</td>
+                <td className="border border-gray-300  py-2 text-center">{deduction.deduction_type}</td>
+                <td className="border border-gray-300  py-2 text-center">{new Date(deduction.date).toLocaleDateString()}</td>
+                <td className="border border-gray-300  py-2 text-center">
+                  <button
+                    className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
+                    onClick={() => {
+                      setSelectedDeduction(deduction);
+                      setOpen(true);
+                    }}
+                  >
+                    تعديل
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                    onClick={() => handleDelete(deduction)}
+                  >
+                    حذف
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

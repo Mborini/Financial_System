@@ -54,8 +54,11 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Date Picker */}
       <div>
-        <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-          Date
+        <label
+          htmlFor="date"
+          className="block text-sm font-medium text-gray-700"
+        >
+          التاريخ
         </label>
         <input
           id="date"
@@ -69,8 +72,11 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
 
       {/* Amount field */}
       <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-          Amount
+        <label
+          htmlFor="amount"
+          className="block text-sm font-medium text-gray-700"
+        >
+          القيمة السحب
         </label>
         <input
           id="amount"
@@ -85,8 +91,11 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
 
       {/* Employee dropdown */}
       <div>
-        <label htmlFor="employee" className="block text-sm font-medium text-gray-700">
-          Employee
+        <label
+          htmlFor="employee"
+          className="block text-sm font-medium text-gray-700"
+        >
+          الموظف
         </label>
         <select
           id="employee"
@@ -95,14 +104,16 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <option value="">Select employee</option>
+          <option value="">اختر</option>
           {loading ? (
             <option disabled>Loading...</option>
           ) : error ? (
             <option disabled>{error}</option>
           ) : (
             types.map((t) => (
-              <option key={t.id} value={t.id}> {/* Use the employee ID here */}
+              <option key={t.id} value={t.id}>
+                {" "}
+                {/* Use the employee ID here */}
                 {t.name}
               </option>
             ))
@@ -112,8 +123,11 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
 
       {/* Salary Period (Month Picker) */}
       <div>
-        <label htmlFor="salaryPeriod" className="block text-sm font-medium text-gray-700">
-          Salary Period
+        <label
+          htmlFor="salaryPeriod"
+          className="block text-sm font-medium text-gray-700"
+        >
+          من حساب شهر{" "}
         </label>
         <input
           id="salaryPeriod"
@@ -131,7 +145,7 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Add Withdrawal
+          حفظ
         </button>
       </div>
     </form>

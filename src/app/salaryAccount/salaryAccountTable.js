@@ -136,22 +136,22 @@ function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
           <FaPrint className="inline-block " />
         </button>
       </div>
-      <div id="printTable">
+      <div id="printTable" className='overflow-x-auto'>
 
-      <table className="min-w-full table-auto border-collapse border border-gray-200">
+      <table dir='rtl' className="min-w-full table-auto  border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-1 py-1">Employee Name</th>
-            <th className="border border-gray-300 px-1 py-1">Total Overtime Hours</th>
-            <th className="border border-gray-300 px-1 py-1">Total Vacations</th>
-            <th className="border border-gray-300 px-1 py-1">Not Allowed Vacations</th> {/* New column for not allowed vacations */}
-            <th className="border border-gray-300 px-1 py-1">Salary</th>
-            <th className="border border-gray-300 px-1 py-1">Overtime Pay</th>
-            <th className="border border-gray-300 px-1 py-1">Total Withdrawn</th>
-            <th className="border border-gray-300 px-1 py-1">Total Staff Food</th>
-            <th className="border border-gray-300 px-1 py-1">Total Deduction </th>
-            <th className="border border-gray-300 px-1 py-1">Vacation Cost</th> {/* New column for vacation cost */}
-            <th className="border border-gray-300 px-1 py-1">Remaining Salary</th> {/* New column for adjusted remaining salary */}
+            <th className="border border-gray-300 px-1 py-1">اسم الموضف</th>
+            <th className="border border-gray-300 px-1 py-1">مجموع ساعات العمل الاضافية</th>
+            <th className="border border-gray-300 px-1 py-1">مجموع ايام الاجازات</th>
+            <th className="border border-gray-300 px-1 py-1">ايام الاجازات الزائدة</th> {/* New column for excess vacations */}
+            <th className="border border-gray-300 px-1 py-1">الراتب الشهري</th>
+            <th className="border border-gray-300 px-1 py-1">مكافأة العمل الاضافي</th>
+            <th className="border border-gray-300 px-1 py-1">مجموع السحب</th>
+            <th className="border border-gray-300 px-1 py-1">مجموع حساب وجبات الاكل</th>
+            <th className="border border-gray-300 px-1 py-1">مجموع الخصومات</th>
+            <th className="border border-gray-300 px-1 py-1">خصم الاجازات الزائدة</th> {/* New column for vacation cost */}
+            <th className="border border-gray-300 px-1 py-1">الراتب المتبقي</th> {/* New column for adjusted remaining salary */}
           </tr>
         </thead>
         <tbody>
@@ -166,9 +166,9 @@ function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {formatOvertimeHours(costType.total_overtime_hours)}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_vacations}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_vacations}{' '} يوم</td>
                 <td className="border border-gray-300  px-4 py-2 text-center">
-                  {calculateNotAllowedVacations(costType.total_vacations)}
+                  {calculateNotAllowedVacations(costType.total_vacations)}{' '} يوم
                 </td> {/* Display calculated not allowed vacations */}
                 <td className="border border-gray-700 bg-blue-300 px-4 py-2 text-center">JOD {costType.total_salary}</td>
                 <td className="border border-gray-700  bg-green-200 px-4 py-2 text-center">

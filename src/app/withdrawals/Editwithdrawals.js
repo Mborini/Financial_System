@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 
-export default function EditWithdrawals({ selectedCost, refetchCosts, setOpen }) {
+export default function EditWithdrawals({
+  selectedCost,
+  refetchCosts,
+  setOpen,
+}) {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [employee, setEmployee] = useState("");
@@ -67,8 +71,11 @@ export default function EditWithdrawals({ selectedCost, refetchCosts, setOpen })
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Employee field */}
       <div>
-        <label htmlFor="employee" className="block text-sm font-medium text-gray-700">
-          Employee
+        <label
+          htmlFor="employee"
+          className="block text-sm font-medium text-gray-700"
+        >
+          الموظف
         </label>
         <select
           id="employee"
@@ -77,7 +84,7 @@ export default function EditWithdrawals({ selectedCost, refetchCosts, setOpen })
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <option value="">Select employee</option>
+          <option value="">اختر</option>
           {loading ? (
             <option disabled>Loading...</option>
           ) : error ? (
@@ -94,8 +101,11 @@ export default function EditWithdrawals({ selectedCost, refetchCosts, setOpen })
 
       {/* Date Picker */}
       <div>
-        <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-          Date
+        <label
+          htmlFor="date"
+          className="block text-sm font-medium text-gray-700"
+        >
+          التاريخ
         </label>
         <input
           id="date"
@@ -109,8 +119,11 @@ export default function EditWithdrawals({ selectedCost, refetchCosts, setOpen })
 
       {/* Amount field */}
       <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-          Amount
+        <label
+          htmlFor="amount"
+          className="block text-sm font-medium text-gray-700"
+        >
+          قيمة السحب
         </label>
         <input
           id="amount"
@@ -125,8 +138,11 @@ export default function EditWithdrawals({ selectedCost, refetchCosts, setOpen })
 
       {/* Salary Period (Month Picker) */}
       <div>
-        <label htmlFor="salaryPeriod" className="block text-sm font-medium text-gray-700">
-          Salary Period
+        <label
+          htmlFor="salaryPeriod"
+          className="block text-sm font-medium text-gray-700"
+        >
+          من حساب شهر
         </label>
         <input
           id="salaryPeriod"
@@ -142,9 +158,9 @@ export default function EditWithdrawals({ selectedCost, refetchCosts, setOpen })
       <div>
         <button
           type="submit"
-          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-400 hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Edit Withdrawal
+          حفظ وتعديل{" "}
         </button>
       </div>
     </form>

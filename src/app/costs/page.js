@@ -18,18 +18,17 @@ export default function Costs() {
     <div>
       <div className="flex justify-between mb-4 mx-12">
         <h1></h1>
-        <h2 className="text-2xl font-semibold text-center my-4">Cost Table</h2>
-        <button
-          onClick={() => setOpen(true)}
-          
-        >
-          <FaPlus size={25} color="blue"/>
+        <h2 className="text-2xl font-semibold text-center my-4">
+          الكلف التشغيلية
+        </h2>
+        <button onClick={() => setOpen(true)}>
+          <FaPlus size={25} color="blue" />
         </button>
       </div>
 
       <CostTable costsUpdated={costsUpdated} refetchCosts={refetchCosts} />
 
-      <AddDrawer title="Add Cost" open={open} setOpen={setOpen}>
+      <AddDrawer title="اضافة كلفة تشغيلية جديدة" open={open} setOpen={setOpen}>
         <CostForm refetchCosts={refetchCosts} setOpen={setOpen} />
       </AddDrawer>
     </div>

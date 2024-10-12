@@ -55,14 +55,14 @@ export default function CostForm({ refetchCosts, setOpen }) {
           htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
-          Name
+          اسم الكلفة
         </label>
         <input
           id="name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Enter name"
+          placeholder="اسم الكلفة"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
@@ -74,7 +74,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
           htmlFor="date"
           className="block text-sm font-medium text-gray-700"
         >
-          Date
+          التاريخ
         </label>
         <input
           id="date"
@@ -92,14 +92,14 @@ export default function CostForm({ refetchCosts, setOpen }) {
           htmlFor="amount"
           className="block text-sm font-medium text-gray-700"
         >
-          Amount
+        القيمة
         </label>
         <input
           id="amount"
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder="Enter amount"
+          placeholder="ادخل القيمة"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
@@ -111,14 +111,14 @@ export default function CostForm({ refetchCosts, setOpen }) {
           htmlFor="description"
           className="block text-sm font-medium text-gray-700"
         >
-          Description
+          الوصف
         </label>
         <input
           id="description"
           type="text"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter description"
+          placeholder="ادخل الوصف"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
@@ -130,7 +130,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
           htmlFor="type"
           className="block text-sm font-medium text-gray-700"
         >
-          Type
+          النوع
         </label>
         <select
           id="type"
@@ -139,7 +139,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <option value="">Select type</option>
+          <option value="">اختر</option>
           {loading ? (
             <option disabled>Loading ...</option>
           ) : error ? (
@@ -160,7 +160,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Add Cost
+          اضافة ككلفة تشغلية 
         </button>
       </div>
     </form>

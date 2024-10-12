@@ -19,7 +19,8 @@ export default function StaffFoodPage() {
     <div>
       {/* Header Section */}
       <div className="flex justify-between mb-4 mx-12">
-        <h1 className="text-2xl font-semibold text-center my-4">Staff Food Table</h1>
+        <h1></h1>
+        <h1 className="text-2xl font-semibold text-center my-4">وجبات الموظفين</h1>
         {/* Add Button */}
         <button onClick={() => setOpen(true)}>
           <FaPlus size={25} color="blue" />
@@ -30,7 +31,8 @@ export default function StaffFoodPage() {
       <StaffFoodTable foodUpdated={foodUpdated} refetchFood={refetchFood} />
 
       {/* Add Form Drawer */}
-      <AddDrawer title="Add Staff Food Entry" open={open} setOpen={setOpen}>
+      <AddDrawer title="اضافة وجبة جديدة"
+       open={open} setOpen={setOpen}>
         <StaffFoodForm refetchFood={refetchFood} setOpen={setOpen} />
       </AddDrawer>
     </div>

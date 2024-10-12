@@ -139,7 +139,7 @@ function SalesTable({ costsUpdated, refetchCosts }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div  id="printTable" className="container mx-auto px-4 ">
+    <div dir="rtl" id="printTable" className="container mx-auto px-4 ">
       {/* Date Range Filter */}
       <div className="flex justify-between my-4">
         <DatePicker
@@ -163,14 +163,23 @@ function SalesTable({ costsUpdated, refetchCosts }) {
 
       {/* Summary Table */}
       <div className="mb-4">
-        <h2 className="font-bold mb-2">Sales Summary</h2>
+        <h2 className="font-bold mb-2">ملخص التصفية</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border border-gray-200">
+          <table
+            
+            className="min-w-full table-auto border-collapse border border-gray-200"
+          >
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-center">Total Cash</th>
-                <th className="border border-gray-300 px-4 py-2 text-center">Total Visa</th>
-                <th className="border border-gray-300 px-4 py-2 text-center">Total Sales</th>
+                <th className="border border-gray-300 px-4 py-2 text-center">
+                  مجموع الكاش 
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-center">
+                  مجموع الفيزا
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-center">
+                  المجموع الكلي
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -191,35 +200,30 @@ function SalesTable({ costsUpdated, refetchCosts }) {
       </div>
 
       {/* Sales Table */}
-      <table
-       
-        className="min-w-full table-auto border-collapse border border-gray-200"
-      >
+      <table className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">Date</th>
-            <th className="border border-gray-300 px-4 py-2">Cash</th>
-            <th className="border border-gray-300 px-4 py-2">Visa</th>
-            <th className="border border-gray-300 px-4 py-2">Total</th>
+            <th className="border border-gray-300 px-4 py-2">المجموع الكلي</th>
+            <th className="border border-gray-300 px-4 py-2">الفيزا</th>
+            <th className="border border-gray-300 px-4 py-2">الكاش</th>
+            <th className="border border-gray-300 px-4 py-2">التاريخ</th>
           </tr>
         </thead>
         <tbody>
           {currentSales.map((sale) => (
             <tr key={sale.id} className="bg-white hover:bg-gray-50">
-              
               <td className="border border-gray-300 px-4 py-2 text-center">
-                {format(parseISO(sale.sale_date), "yyyy-MM-dd")}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {parseFloat(sale.cash_amount).toFixed(2)}
+                {parseFloat(sale.total).toFixed(2)}
               </td>
               <td className="border border-gray-300 px-4 py-2 text-center">
                 {parseFloat(sale.visa_amount).toFixed(2)}
               </td>
               <td className="border border-gray-300 px-4 py-2 text-center">
-                {parseFloat(sale.total).toFixed(2)}
+                {parseFloat(sale.cash_amount).toFixed(2)}
               </td>
-            
+              <td className="border border-gray-300 px-4 py-2 text-center">
+                {format(parseISO(sale.sale_date), "yyyy-MM-dd")}
+              </td>
             </tr>
           ))}
         </tbody>

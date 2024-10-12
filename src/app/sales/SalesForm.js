@@ -39,7 +39,7 @@ export default function SalesForm({ refetchSales, setOpen }) {
       {/* Date Picker */}
       <div>
         <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-          Date
+          التاريخ
         </label>
         <input
           id="date"
@@ -54,14 +54,14 @@ export default function SalesForm({ refetchSales, setOpen }) {
       {/* Cash Amount */}
       <div>
         <label htmlFor="cashAmount" className="block text-sm font-medium text-gray-700">
-          Cash Amount
+          قيمة الكاش
         </label>
         <input
           id="cashAmount"
           type="number"
           value={cashAmount}
           onChange={(e) => setCashAmount(e.target.value)}
-          placeholder="Enter cash amount"
+          placeholder="ادخل قيمة الكاش"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
@@ -70,14 +70,14 @@ export default function SalesForm({ refetchSales, setOpen }) {
       {/* Visa Amount */}
       <div>
         <label htmlFor="visaAmount" className="block text-sm font-medium text-gray-700">
-          Visa Amount
+          قيمة الفيزا
         </label>
         <input
           id="visaAmount"
           type="number"
           value={visaAmount}
           onChange={(e) => setVisaAmount(e.target.value)}
-          placeholder="Enter visa amount"
+          placeholder="ادخل قيمة الفيزا"
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />

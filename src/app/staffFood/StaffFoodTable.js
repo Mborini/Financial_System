@@ -16,7 +16,10 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
   const [open, setOpen] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(""); // Employee name filter
-  const [dateRange, setDateRange] = useState([startOfMonth(new Date()), endOfMonth(new Date())]); // Default to current month
+  const [dateRange, setDateRange] = useState([
+    startOfMonth(new Date()),
+    endOfMonth(new Date()),
+  ]); // Default to current month
   const [startDate, endDate] = dateRange;
   const [isPrinting, setIsPrinting] = useState(false); // Added to disable pagination when printing
 
@@ -59,7 +62,7 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
 
   // Edit entry handler
   const handleEditClick = (food) => {
-    console.log(food)
+    console.log(food);
     setSelectedFood(food); // Set the selected entry for editing
     setOpen(true); // Open the drawer for editing
   };
@@ -88,13 +91,18 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
     ? staffFood.filter((food) => {
         const foodDate = new Date(food.date);
         const dateMatches = foodDate >= startDate && foodDate <= endDate;
-        const employeeMatches = selectedEmployee ? food.employee_name === selectedEmployee : true;
+        const employeeMatches = selectedEmployee
+          ? food.employee_name === selectedEmployee
+          : true;
         return dateMatches && employeeMatches;
       })
     : [];
 
   // Calculate the total amount for the filtered entries
-  const totalAmount = filteredFood.reduce((sum, food) => sum + parseFloat(food.amount || 0), 0);
+  const totalAmount = filteredFood.reduce(
+    (sum, food) => sum + parseFloat(food.amount || 0),
+    0
+  );
 
   // Pagination logic
   const indexOfLastFood = currentPage * foodPerPage;
@@ -128,54 +136,58 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
   return (
     <div className="container mx-auto px-4">
       {/* Date Range and Employee Name Filter */}
-      <div className="flex justify-between items-center my-4">
-        {/* Date Range Filter */}
-        <div className="flex items-center">
-          <DatePicker
-            selected={startDate}
-            onChange={(update) => setDateRange(update)}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            isClearable
-            className="border border-gray-300 p-2 rounded"
-            dateFormat="yyyy/MM/dd"
-          />
-        </div>
-
-        {/* Employee Name Filter */}
-        <div className="flex items-center">
-          <select
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-            className="border border-gray-300 p-2 rounded"
-          >
-            <option value="">All Employees</option>
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.name}>
-                {employee.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <button
-            onClick={handlePrint}
-            className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            <FaPrint className="inline-block " />
-          </button>
-        </div>
+      <div className="flex flex-col md:flex-row justify-between items-start my-4">
+  <div className="flex flex-col md:flex-row items-center my-4 w-full">
+    <div className="flex justify-start items-center w-full">
+      {/* Date Range Filter and Employee Name Filter */}
+      <div className="flex flex-col sm:flex-row items-start w-full space-y-2 sm:space-y-0 sm:space-x-4">
+        <DatePicker
+          selected={startDate}
+          onChange={(update) => setDateRange(update)}
+          startDate={startDate}
+          endDate={endDate}
+          selectsRange
+          isClearable
+          className="border border-gray-300 p-2 rounded w-full sm:w-auto"
+          dateFormat="yyyy/MM/dd"
+        />
+        <select
+          value={selectedEmployee}
+          onChange={(e) => setSelectedEmployee(e.target.value)}
+          className="border border-gray-300 p-2 rounded w-full sm:w-auto"
+        >
+          <option value="">All Employees</option>
+          {employees.map((employee) => (
+            <option key={employee.id} value={employee.name}>
+              {employee.name}
+            </option>
+          ))}
+        </select>
       </div>
+    </div>
+  </div>
+
+  <div className="w-25 flex items-start md:w-auto">
+    <button
+      onClick={handlePrint}
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+    >
+      <FaPrint className="inline-block" />
+    </button>
+  </div>
+</div>
+
 
       {/* Summary Table */}
       <div className="mb-4">
-        <h2 className="font-bold mb-2">Summary</h2>
+        <h2 className="font-bold mb-2">ملخص التصفية</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-center">Total Amount</th>
+                <th className="border border-gray-300 px-4 py-2 text-center">
+                  Total Amount
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -188,38 +200,59 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
           </table>
         </div>
       </div>
-
-      {/* Staff Food Entries Table */}
-      <table id="printTable" className="min-w-full table-auto border-collapse border border-gray-200">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">Employee Name</th>
-            <th className="border border-gray-300 px-4 py-2">Date</th>
-            <th className="border border-gray-300 px-4 py-2">Note</th>
-            <th className="border border-gray-300 px-4 py-2">Amount</th>
-            <th className="border border-gray-300 px-4 py-2 no-print">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentFood.map((food) => (
-            <tr key={food.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">{food.employee_name}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{new Date(food.date).toLocaleDateString()}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{food.note}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{food.amount}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center no-print">
-                <button className="text-orange-500 font-bold py-1 px-2 rounded" onClick={() => handleEditClick(food)}>
-                  <FaEdit />
-                </button>
-                <button className="text-red-700 font-bold py-1 px-2 rounded ml-2" onClick={() => handleDelete(food.id)}>
-                  <FaTrashAlt />
-                </button>
-              </td>
+      <div id="printTable" className="overflow-x-auto">
+        {/* Staff Food Entries Table */}
+        <table
+          id="printTable"
+          className="min-w-full table-auto border-collapse border border-gray-200"
+        >
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2">
+                Employee Name
+              </th>
+              <th className="border border-gray-300 px-4 py-2">Date</th>
+              <th className="border border-gray-300 px-4 py-2">Note</th>
+              <th className="border border-gray-300 px-4 py-2">Amount</th>
+              <th className="border border-gray-300 px-4 py-2 no-print">
+                Actions
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
+          </thead>
+          <tbody>
+            {currentFood.map((food) => (
+              <tr key={food.id} className="bg-white hover:bg-gray-50">
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {food.employee_name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {new Date(food.date).toLocaleDateString()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {food.note}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {food.amount}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center no-print">
+                  <button
+                    className="text-orange-500 font-bold py-1 px-2 rounded"
+                    onClick={() => handleEditClick(food)}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="text-red-700 font-bold py-1 px-2 rounded ml-2"
+                    onClick={() => handleDelete(food.id)}
+                  >
+                    <FaTrashAlt />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {/* Pagination */}
       {!isPrinting && (
         <div className="flex justify-center my-4">
@@ -234,7 +267,11 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
             <button
               key={i + 1}
               onClick={() => paginate(i + 1)}
-              className={`px-4 py-2 mx-1 rounded ${i + 1 === currentPage ? "bg-blue-500 text-white" : "bg-gray-300 hover:bg-gray-400"}`}
+              className={`px-4 py-2 mx-1 rounded ${
+                i + 1 === currentPage
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 hover:bg-gray-400"
+              }`}
             >
               {i + 1}
             </button>
@@ -251,7 +288,11 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
 
       {/* Edit Drawer */}
       <EditDrawer title="Edit Staff Food Entry" open={open} setOpen={setOpen}>
-        <StaffFoodForm selectedFood={selectedFood} refetchFood={refetchFood} setOpen={setOpen} />
+        <StaffFoodForm
+          selectedFood={selectedFood}
+          refetchFood={refetchFood}
+          setOpen={setOpen}
+        />
       </EditDrawer>
     </div>
   );

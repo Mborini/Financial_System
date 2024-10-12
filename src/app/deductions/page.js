@@ -18,7 +18,8 @@ export default function Deductions() {
   return (
     <div>
       <div className="flex justify-between mb-4 mx-12">
-        <h2 className="text-2xl font-semibold text-center my-4">Deductions Table</h2>
+      <h1></h1>
+        <h2 className="text-2xl font-semibold text-center my-4">الخصومات على الرواتب</h2>
         <button onClick={() => { setOpen(true); setSelectedDeduction(null); }}>
           <FaPlus size={25} color="blue" />
         </button>
@@ -32,7 +33,7 @@ export default function Deductions() {
         setOpen={setOpen} // Open the form drawer when editing
       />
 
-      <AddDrawer title={selectedDeduction ? "Edit Deduction" : "Add Deduction"} open={open} setOpen={setOpen}>
+      <AddDrawer title={selectedDeduction ? "تعديل خصم راتب" : "اضافة خصم راتب"} open={open} setOpen={setOpen}>
         <DeductionForm
           refetchDeductions={refetchDeductions}
           setOpen={setOpen}

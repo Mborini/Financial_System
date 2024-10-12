@@ -324,114 +324,97 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
       </div>
 
       {/* Table Section */}
-      <div className="container mx-auto px-4">
-        {/* Responsive Table Section */}
-        <div className="overflow-x-auto">
-          <table
-            dir="rtl"
-            id="printTable"
-            className="min-w-full table-auto border-collapse border border-gray-200"
-          >
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">اسم الصنف</th>
-                <th className="border border-gray-300 px-4 py-2"> القيمة الفاتورة</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  القيمة المدفوعة
-                </th>
-                <th className="border border-gray-300 px-4 py-2">
-                  القيمة المتبقية{" "}
-                </th>
-                <th className="border border-gray-300 px-4 py-2">حالة الدفع</th>
-                <th className="border border-gray-300 px-4 py-2">المورد</th>
-                <th className="border border-gray-300 px-4 py-2">التاريخ</th>
-                <th className="border border-gray-300 px-4 py-2 no-print"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentPurchases.map((purchase) => (
-                <tr key={purchase.id} className="bg-white hover:bg-gray-50">
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {purchase.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {purchase.amount}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {purchase.paid_amount}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {purchase.remaining_amount}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {purchase.payment_status === "Partial"
-                      ? "جزئي"
-                      : purchase.payment_status === "Paid"
-                      ? "مدفوع"
-                      : "دين"}
-                  </td>
-
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {purchase.supplier}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
-                    {new Date(purchase.date).toLocaleDateString()}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center no-print">
-                    <button
-                      className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
-                      onClick={() => handleEditClick(purchase)}
-                    >
-                      تعديل
-                    </button>
-                    <button
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                      onClick={() => handleDelete(purchase.id)}
-                    >
-                      حذف
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {!isPrinting && (
-          <div className="flex justify-center my-4">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => (
+     {/* Table Section */}
+<div className="container mx-auto px-4">
+  {/* Responsive Table Section */}
+  <div className="overflow-x-auto "> {/* Set max height and enable vertical scrolling */}
+    <table
+      dir="rtl"
+      id="printTable"
+      className="min-w-full table-auto border-collapse border border-gray-200"
+    >
+      <thead>
+        <tr className="bg-gray-100">
+          <th className="border border-gray-300 px-4 py-2">اسم الصنف</th>
+          <th className="border border-gray-300 px-4 py-2"> القيمة الفاتورة</th>
+          <th className="border border-gray-300 px-4 py-2"> القيمة المدفوعة</th>
+          <th className="border border-gray-300 px-4 py-2"> القيمة المتبقية</th>
+          <th className="border border-gray-300 px-4 py-2">حالة الدفع</th>
+          <th className="border border-gray-300 px-4 py-2">المورد</th>
+          <th className="border border-gray-300 px-4 py-2">التاريخ</th>
+          <th className="border border-gray-300 px-4 py-2 no-print"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {currentPurchases.map((purchase) => (
+          <tr key={purchase.id} className="bg-white hover:bg-gray-50">
+            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.name}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.amount}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.paid_amount}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.remaining_amount}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">
+              {purchase.payment_status === "Partial"
+                ? "جزئي"
+                : purchase.payment_status === "Paid"
+                ? "مدفوع"
+                : "دين"}
+            </td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.supplier}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center">{new Date(purchase.date).toLocaleDateString()}</td>
+            <td className="border border-gray-300 px-4 py-2 text-center no-print">
               <button
-                key={i + 1}
-                onClick={() => paginate(i + 1)}
-                className={`px-4 py-2 mx-1 rounded ${
-                  i + 1 === currentPage
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-300 hover:bg-gray-400"
-                }`}
+                className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
+                onClick={() => handleEditClick(purchase)}
               >
-                {i + 1}
+                تعديل
               </button>
-            ))}
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        )}
-      </div>
+              <button
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                onClick={() => handleDelete(purchase.id)}
+              >
+                حذف
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {!isPrinting && (
+    <div className="flex justify-center my-4">
+      <button
+        onClick={() => paginate(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+      >
+        Previous
+      </button>
+      {Array.from({ length: totalPages }, (_, i) => (
+        <button
+          key={i + 1}
+          onClick={() => paginate(i + 1)}
+          className={`px-4 py-2 mx-1 rounded ${
+            i + 1 === currentPage ? "bg-blue-500 text-white" : "bg-gray-300 hover:bg-gray-400"
+          }`}
+        >
+          {i + 1}
+        </button>
+      ))}
+      <button
+        onClick={() => paginate(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+      >
+        Next
+      </button>
+    </div>
+  )}
+</div>
+
 
       {/* Edit Drawer */}
-      <EditDrawer title="Edit Purchase" open={open} setOpen={setOpen}>
+      <EditDrawer title="تعديل فاتورة مشتريات" open={open} setOpen={setOpen}>
         <EditPurchasesForm
           selectedPurchase={selectedPurchase}
           refetchCosts={refetchCosts}

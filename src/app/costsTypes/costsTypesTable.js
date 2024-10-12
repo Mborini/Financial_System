@@ -84,13 +84,13 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
 
   return (
     <div className="container mx-auto px-4">
-      <table className="min-w-full table-auto border-collapse border border-gray-200">
+      <table dir='rtl' className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">Name</th>
-            <th className="border border-gray-300 px-4 py-2">Description</th>
+            <th className="border border-gray-300 px-4 py-2">النوع</th>
+            <th className="border border-gray-300 px-4 py-2">الوصف</th>
            
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
+            <th className="border border-gray-300 px-4 py-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -101,16 +101,16 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
              
               <td className="border border-gray-300 px-4 py-2 text-center">
                 <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
+                  className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
                   onClick={() => handleEditClick(costType)}
                 >
-                  Edit
+                  تعديل
                 </button>
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
                   onClick={() => handleDelete(costType.id)}
                 >
-                  Delete
+                  حذف
                 </button>
               </td>
             </tr>
@@ -145,7 +145,7 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
         </button>
       </div>
 
-      <EditDrawer title="Edit Cost Type" open={open} setOpen={setOpen}>
+      <EditDrawer title="تعديل نوع كلفة تشغيلية" open={open} setOpen={setOpen}>
       <EditCostTypesForm selectedCost={selectedCost} refetchCosts={refetchCostsTypes} setOpen={setOpen} />
       </EditDrawer>
     </div>

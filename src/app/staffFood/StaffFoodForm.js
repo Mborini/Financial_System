@@ -67,7 +67,7 @@ export default function StaffFoodForm({ selectedFood, refetchFood, setOpen }) {
             {/* Employee Name Dropdown */}
             <div>
                 <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700">
-                    Employee Name
+                    اختر الموظف
                 </label>
                 <select
                     id="employeeId"
@@ -88,7 +88,7 @@ export default function StaffFoodForm({ selectedFood, refetchFood, setOpen }) {
             {/* Date Picker */}
             <div>
                 <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                    Date
+                    التاريخ
                 </label>
                 <input
                     id="date"
@@ -103,7 +103,7 @@ export default function StaffFoodForm({ selectedFood, refetchFood, setOpen }) {
             {/* Note field */}
             <div>
                 <label htmlFor="note" className="block text-sm font-medium text-gray-700">
-                    Note
+                    ملاحظات
                 </label>
                 <textarea
                     id="note"
@@ -116,7 +116,7 @@ export default function StaffFoodForm({ selectedFood, refetchFood, setOpen }) {
             {/* Amount field */}
             <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-                    Amount
+                    القيمة
                 </label>
                 <input
                     id="amount"
@@ -131,12 +131,13 @@ export default function StaffFoodForm({ selectedFood, refetchFood, setOpen }) {
 
             {/* Submit button */}
             <div>
-                <button
-                    type="submit"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    {selectedFood ? "Edit Entry" : "Add Entry"}
-                </button>
+            <button
+    type="submit"
+    className={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${selectedFood ? 'bg-orange-500 hover:bg-orange-600' : 'bg-indigo-600 hover:bg-indigo-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${selectedFood ? 'orange-500' : 'indigo-500'}`}
+>
+    {selectedFood ? "تعديل" : "اضافة"}
+</button>
+
             </div>
         </form>
     );

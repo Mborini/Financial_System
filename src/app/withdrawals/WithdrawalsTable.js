@@ -126,35 +126,33 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
         />
       </div>
 
-      <table className="min-w-full table-auto border-collapse border border-gray-200">
+      <table dir='rtl' className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">Employee Name</th>
-            <th className="border border-gray-300 px-4 py-2">Amount</th>
-            <th className="border border-gray-300 px-4 py-2">Date</th>
-            <th className="border border-gray-300 px-4 py-2">Actions</th>
+            <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
+            <th className="border border-gray-300 px-4 py-2">القيمة</th>
+            <th className="border border-gray-300 px-4 py-2">التاريخ</th>
+            <th className="border border-gray-300 px-4 py-2"></th>
           </tr>
         </thead>
         <tbody>
           {currentWithdrawals.map((withdrawal) => (
             <tr key={withdrawal.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2 text-center">{withdrawal.id}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{withdrawal.employee_name}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{withdrawal.amount}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{new Date(withdrawal.date).toLocaleDateString()}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">
                 <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
+                  className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
                   onClick={() => handleEditClick(withdrawal)}
                 >
-                  Edit
+                  تعديل
                 </button>
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
                   onClick={() => handleDelete(withdrawal)}
                 >
-                  Delete
+                  حذف
                 </button>
               </td>
             </tr>
@@ -190,7 +188,7 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
       </div>
 
       {/* Uncomment and edit the drawer for editing functionality */}
-      <EditDrawer title="Edit Withdrawal" open={open} setOpen={setOpen}>
+      <EditDrawer title="تعديل سحوبات من الراتب" open={open} setOpen={setOpen}>
         <Editwithdrawals selectedCost={selectedWithdrawal} refetchCosts={refetchCostsTypes} setOpen={setOpen} />
       </EditDrawer>
     </div>

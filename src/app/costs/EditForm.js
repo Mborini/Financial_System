@@ -75,7 +75,7 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
       {/* Form fields */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name
+          اسم الكلفة
         </label>
         <input
           id="name"
@@ -90,7 +90,7 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
 
       <div>
         <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-          Date
+          التاريخ
         </label>
         <input
           id="date"
@@ -104,7 +104,7 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
 
       <div>
         <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-          Amount
+          القيمة
         </label>
         <input
           id="amount"
@@ -119,7 +119,7 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description
+          الوصف
         </label>
         <input
           id="description"
@@ -134,7 +134,7 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
 
       <div>
         <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-          Type
+          النوع
         </label>
         <select
           id="type"
@@ -161,9 +161,9 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
       <div>
         <button
           type="submit"
-          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-400 hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Edit Cost
+          حفظ و تعديل
         </button>
       </div>
     </form>

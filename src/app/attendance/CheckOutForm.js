@@ -29,7 +29,8 @@ export default function CheckOutForm({ selectedRecord, onSubmit, setOpenDrawer }
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="datetime" className="block text-sm font-medium text-gray-700">
-          Check-out Date & Time for {selectedRecord.name}
+         وقت الخروج للموظف:
+          {selectedRecord.name}
         </label>
         <input
           type="datetime-local"
@@ -49,9 +50,9 @@ export default function CheckOutForm({ selectedRecord, onSubmit, setOpenDrawer }
       <div>
         <button
           type="submit"
-          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-400 hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Submit Check-out Time
+        حفظ و تسجيل وقت الخروج
         </button>
         <button
           type="button"

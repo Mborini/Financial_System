@@ -18,7 +18,7 @@ export default function CostsTypes() {
     <div>
       <div className="flex justify-between mb-4 mx-12">
         <h1></h1>
-        <h2 className="text-2xl font-semibold text-center my-4">Cost Type Table</h2>
+        <h2 className="text-2xl font-semibold text-center my-4">إدارة أنواع الكلف التشغيلية</h2>
         <button onClick={() => setOpen(true)}>
           <FaPlus size={25} color="blue" />
         </button>
@@ -26,7 +26,7 @@ export default function CostsTypes() {
 
       <CostsTypesTable costsTypesUpdated={costsTypesUpdated} refetchCostsTypes={refetchCostsTypes} />
 
-      <AddDrawer title="Add Cost Type" open={open} setOpen={setOpen}>
+      <AddDrawer title="اضافة نوع كلفة تشغيلية جديد" open={open} setOpen={setOpen}>
         <CostsTypesForm refetchcostsTypes={refetchCostsTypes} setOpen={setOpen} />
       </AddDrawer>
     </div>

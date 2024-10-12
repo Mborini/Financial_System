@@ -87,7 +87,7 @@ const toggleEmployeesDropdown = () => {
         {/* Navigation Bar */}
         <nav
           dir="rtl"
-          className="sticky top-0 z-50 bg-blue-500 relative transition-opacity duration-300"
+          className="sticky top-0 z-50 bg-indigo-600 relative transition-opacity duration-300"
           style={{ opacity: navbarOpacity }}
         >
           {/* Mobile Navigation */}
@@ -163,7 +163,7 @@ const toggleEmployeesDropdown = () => {
             className="hover:text-yellow-300 flex w-full text-left"
           >
             ادارة الموظفين و الحسابات {/* Employees */}
-          </button>
+          </button> 
           {isEmployeesDropdownOpen && (
             <ul className="space-y-2 ml-4">
               <li>

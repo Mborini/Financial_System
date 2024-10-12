@@ -26,7 +26,7 @@ export default function SalaryAccount() {
     <div>
       <div className="flex justify-center mb-4 mx-12">
         
-        <h2 className="text-2xl font-semibold text-center my-4">Salary Account</h2>
+        <h2 className="text-2xl font-semibold text-center my-4">حساب الرواتب </h2>
        
       </div>
 

@@ -74,7 +74,7 @@ export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen 
       {/* Form fields */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name
+          اسم النوع
         </label>
         <input
           id="name"
@@ -89,7 +89,7 @@ export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen 
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description
+          الوصف
         </label>
         <input
           id="description"
@@ -105,9 +105,9 @@ export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen 
       <div>
         <button
           type="submit"
-          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white  bg-orange-400 hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Edit Cost Type
+          حفظ و تعديل
         </button>
       </div>
     </form>

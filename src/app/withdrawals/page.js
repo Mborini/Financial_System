@@ -20,7 +20,7 @@ export default function Withdrawals() {
     <div>
       <div className="flex justify-between mb-4 mx-12">
         <h1></h1>
-        <h2 className="text-2xl font-semibold text-center my-4">Withdrawals Table</h2>
+        <h2 className="text-2xl font-semibold text-center my-4">سحوبات الرواتب</h2>
         <button onClick={() => setOpen(true)}>
           <FaPlus size={25} color="blue" />
         </button>
@@ -28,7 +28,7 @@ export default function Withdrawals() {
 
       <WithdrawalsTable costsTypesUpdated={costsTypesUpdated} refetchCostsTypes={refetchCostsTypes} />
 
-      <AddDrawer title="Add Withdrawal" open={open} setOpen={setOpen}>
+      <AddDrawer title="اضافة سحوبات" open={open} setOpen={setOpen}>
         <WithdrawalsForm refetchCosts={refetchCostsTypes} setOpen={setOpen} />
       </AddDrawer>
     </div>
