@@ -97,7 +97,6 @@ async function handleCheckIn(client, employee_id, checkInDateTime) {
   }
 }
 
-// Handle Employee Check-out
 async function handleCheckOut(client, employee_id, checkOutDateTime) {
   try {
     const checkOut = new Date(checkOutDateTime);
@@ -106,7 +105,7 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
     const result = await client.query(
       `SELECT id, check_in FROM Attendance 
        WHERE employee_id = $1 AND check_out IS NULL
-       ORDER BY check_in DESC LIMIT 1`, // Fetch the most recent open check-in
+       ORDER BY check_in DESC LIMIT 1`,
       [employee_id]
     );
 
@@ -119,13 +118,20 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
     const workHours = calculateWorkHours(check_in, checkOut);
     const overtimeHours = calculateOvertime(workHours);
 
+// Calculate non-working hours (assuming standard is 8 hours)
+const standardHours = 10;
+const nonWorkingHours = Math.max(0, standardHours - workHours); // Calculate non-working hours
+
+
     // Update the Attendance record
-    await client.query(
-      `UPDATE Attendance 
-       SET check_out = $1, work_hours = $2, overtime_hours = $3 
-       WHERE id = $4`,
-      [checkOut, workHours.toFixed(2), overtimeHours.toFixed(2), id]
-    );
+   // Update the Attendance record
+await client.query(
+  `UPDATE Attendance 
+   SET check_out = $1, work_hours = $2, overtime_hours = $3, non_working_hours = $4 
+   WHERE id = $5`,
+  [checkOut, workHours.toFixed(2), overtimeHours.toFixed(2), nonWorkingHours.toFixed(2), id]
+);
+
   } catch (error) {
     console.error("Error during check-out:", error);
     throw error;
@@ -133,14 +139,19 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
 }
 
 // Utility: Calculate work hours
+// Utility: Calculate work hours
 function calculateWorkHours(check_in, check_out) {
   const checkInDate = new Date(check_in);
   const checkOutDate = new Date(check_out);
-  return (checkOutDate - checkInDate) / (1000 * 60 * 60); // Convert milliseconds to hours
+  
+  // Calculate difference in milliseconds and convert to hours
+  const hoursDifference = (checkOutDate - checkInDate) / (1000 * 60 * 60); // Convert milliseconds to hours
+  return hoursDifference; // Return as decimal hours
 }
+
 
 // Utility: Calculate overtime hours (assuming a standard 8-hour day)
 function calculateOvertime(workHours) {
-  const standardHours = 8;
+  const standardHours = 10;
   return Math.max(0, workHours - standardHours); // Overtime is any time beyond 8 hours
 }

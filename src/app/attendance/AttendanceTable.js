@@ -87,6 +87,7 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
       console.error("Error during check-out");
     }
   };
+
   const handlePrint = (e) => {
     e.preventDefault();
     const printContents = document.getElementById("printTable").outerHTML;
@@ -104,81 +105,90 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
 
   return (
     <div>
-      {/* Date Filter */}<div className="container mx-auto px-4">
-      <div className="mb-4 flex justify-between">
-      <div>
-        <label htmlFor="dateFilter" className="block text-sm font-medium text-gray-700">
-          Filter by Date
-        </label>
-        <input
-          type="date"
-          id="dateFilter"
-          value={selectedDate}
-          onChange={handleDateChange}
-          className="mt-1 block w-25 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        /></div>
-        <div>
-        <button
-          onClick={handlePrint}
-          className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          <FaPrint className="inline-block " />
-        </button>
-      </div>
-      </div>
+      <div className="container mx-auto px-4">
+        <div className="mb-4 flex justify-between">
+          <div>
+            <label htmlFor="dateFilter" className="block text-sm font-medium text-gray-700">
+              Filter by Date
+            </label>
+            <input
+              type="date"
+              id="dateFilter"
+              value={selectedDate}
+              onChange={handleDateChange}
+              className="mt-1 block w-25 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <button
+              onClick={handlePrint}
+              className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              <FaPrint className="inline-block" />
+            </button>
+          </div>
+        </div>
 
-      {/* Attendance Table */}
-      <div dir="rtl" className="overflow-x-auto">
+        {/* Attendance Table */}
+        <div dir="rtl" className="overflow-x-auto">
+          <table id="printTable" className="min-w-full table-auto border-collapse border border-gray-200">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
+                <th className="border border-gray-300 px-4 py-2">وقت الحضور</th>
+                <th className="border border-gray-300 px-4 py-2">وقت الانصراف</th>
+                <th className="border border-gray-300 px-4 py-2">ساعات العمل</th>
+                <th className="border border-gray-300 px-4 py-2">ساعات العمل الاضافية</th>
+                <th className="border border-gray-300 px-4 py-2">الساعات غير العامل بها</th> {/* Non-working hours */}
+                <th className="border border-gray-300 px-4 py-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAttendance.map((record) => {
+                const standardHours = 10; // Standard working hours per shift
+                const actualWorkHours = record.work_hours || 0; // Actual work hours
 
-      
-      <table id='printTable' className="min-w-full table-auto border-collapse border border-gray-200 ">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
-            <th className="border border-gray-300 px-4 py-2">وقت الحضور</th>
-            <th className="border border-gray-300 px-4 py-2">وقت الانصراف</th>
-            <th className="border border-gray-300 px-4 py-2">ساعات العمل</th>
-            <th className="border border-gray-300 px-4 py-2">ساعات العمل الاضافية</th>
-            <th className="border border-gray-300 px-4 py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredAttendance.map((record) => (
-            <tr key={record.id} className="bg-white hover:bg-gray-50">
-              <td className="border border-gray-300 px-4 py-2">{record.name}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                {record.check_in ? formatDateTime(record.check_in) : "---"}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {record.check_out ? formatDateTime(record.check_out) : "---"}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {record.work_hours != null && !isNaN(Number(record.work_hours))
-                  ? formatHoursAndMinutes(record.work_hours)
-                  : "---"}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">
-                {record.overtime_hours != null && !isNaN(Number(record.overtime_hours))
-                  ? formatHoursAndMinutes(record.overtime_hours)
-                  : "---"}
-              </td>
+                const nonWorkingHours = Math.max(0, standardHours - actualWorkHours); // Calculate non-working hours
 
-              <td className="border border-gray-300 px-4 py-2">
-                {!record.check_out && (
-                  <button
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
-                    onClick={() => handleOpenDrawer(record)}
-                  >
-                  اضافة وقت الانصراف
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                return (
+                  <tr key={record.id} className="bg-white hover:bg-gray-50">
+                    <td className="border border-gray-300 px-4 py-2">{record.name}</td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {record.check_in ? formatDateTime(record.check_in) : "---"}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {record.check_out ? formatDateTime(record.check_out) : "---"}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {record.work_hours != null && !isNaN(Number(record.work_hours))
+                        ? formatHoursAndMinutes(record.work_hours)
+                        : "---"}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {record.overtime_hours != null && !isNaN(Number(record.overtime_hours))
+                        ? formatHoursAndMinutes(record.overtime_hours)
+                        : "---"}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-center">
+                      {formatHoursAndMinutes(nonWorkingHours)} {/* Display Non-Working Hours */}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {!record.check_out && (
+                        <button
+                          className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+                          onClick={() => handleOpenDrawer(record)}
+                        >
+                          اضافة وقت الانصراف
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-</div>
       {/* Drawer for check-out form */}
       <AddDrawer title="Check-out Time" open={openDrawer} setOpen={setOpenDrawer}>
         {selectedRecord && (
