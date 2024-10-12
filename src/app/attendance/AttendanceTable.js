@@ -159,17 +159,17 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
                     <td className="border border-gray-300 px-4 py-2">
                       {record.check_out ? formatDateTime(record.check_out) : "---"}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td dir="ltr" className="border border-gray-300 px-4 py-2">
                       {record.work_hours != null && !isNaN(Number(record.work_hours))
                         ? formatHoursAndMinutes(record.work_hours)
                         : "---"}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td dir="ltr" className="border border-gray-300 px-4 py-2">
                       {record.overtime_hours != null && !isNaN(Number(record.overtime_hours))
                         ? formatHoursAndMinutes(record.overtime_hours)
                         : "---"}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2 text-center">
+                    <td dir="ltr" className="border border-gray-300 px-4 py-2 text-center">
                       {formatHoursAndMinutes(nonWorkingHours)} {/* Display Non-Working Hours */}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">

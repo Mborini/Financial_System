@@ -170,7 +170,7 @@ const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
     return (
       <tr key={costType.employee_name} className="bg-white hover:bg-gray-50">
         <td className="border border-gray-300 px-4 py-2 text-center">{costType.employee_name}</td>
-        <td className="border border-gray-300 px-4 py-2 text-center">
+        <td dir="ltr" className="border border-gray-300 px-4 py-2 text-center">
           {formatOvertimeHours(costType.total_overtime_hours)}
         </td>
         <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_vacations}{' '} يوم</td>

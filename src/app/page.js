@@ -8,6 +8,8 @@ import PolarAreaChartCard from "./components/AriaChartCard";
 import LineChartCard from "./components/LineChartCard";
 import BarChartCard from "./components/BarChartCard";
 import { startOfMonth, endOfMonth } from "date-fns";
+import PieChartCard from "./components/PieChartCard";
+import { startOfYear, endOfYear } from "date-fns"; // Import these functions at the top
 
 // Fetch Data from API (replace the URL with your actual API endpoints)
 const fetchData = async (url) => {
@@ -30,20 +32,31 @@ export default function Home() {
   const [staffFood, setStaffFood] = useState([]); // New state for staff food
   const [costStartDate, setCostStartDate] = useState(startOfMonth(new Date()));
   const [costEndDate, setCostEndDate] = useState(endOfMonth(new Date()));
-
-  const [salesDateRange, setSalesDateRange] = useState([
-    startOfMonth(new Date()),
-    endOfMonth(new Date()),
-  ]);
-
-  const [withdrawalDateRange, setWithdrawalDateRange] = useState([
-    startOfMonth(new Date()),
-    endOfMonth(new Date()),
-  ]);
   const [costDateRange, setCostDateRange] = useState([
-    startOfMonth(new Date()),
-    endOfMonth(new Date()),
+    startOfYear(new Date()),
+    endOfYear(new Date()),
   ]);
+  const [withdrawalDateRange, setWithdrawalDateRange] = useState([
+    startOfYear(new Date()),
+    endOfYear(new Date()),
+  ]);
+  const [salesDateRange, setSalesDateRange] = useState([
+    startOfYear(new Date()),
+    endOfYear(new Date()),
+  ]);
+  // const [salesDateRange, setSalesDateRange] = useState([
+  //   startOfMonth(new Date()),
+  //   endOfMonth(new Date()),
+  // ]);
+
+  // const [withdrawalDateRange, setWithdrawalDateRange] = useState([
+  //   startOfMonth(new Date()),
+  //   endOfMonth(new Date()),
+  // ]);
+  // const [costDateRange, setCostDateRange] = useState([
+  //   startOfMonth(new Date()),
+  //   endOfMonth(new Date()),
+  // ]);
   const [purchaseDateRange, setPurchaseDateRange] = useState([
     startOfMonth(new Date()),
     endOfMonth(new Date()),
@@ -520,7 +533,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <DoughnutChartCard title="Purchases" data={purchasesChartData} />
+          <PieChartCard title="Purchases" data={purchasesChartData} />
         </div>
 
         {/* Withdrawals Chart */}
@@ -558,7 +571,7 @@ export default function Home() {
               />
             </div>
           </div>
-          <DoughnutChartCard title="Sales" data={salesChartData} />
+          <PieChartCard title="Sales" data={salesChartData} />
         </div>
 
         {/* Costs Chart */}

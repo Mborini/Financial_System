@@ -1,18 +1,18 @@
-import { PolarArea } from 'react-chartjs-2';
-import { Chart as ChartJS, RadialLinearScale, ArcElement, Title, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 
-// Register necessary components for a Polar Area chart
-ChartJS.register(RadialLinearScale, ArcElement, Title, Tooltip, Legend);
+// Register necessary components for a Pie chart
+ChartJS.register(ArcElement, Title, Tooltip, Legend);
 
-export default function PolarAreaChartCard({ title, data }) {
+export default function PieChartCard({ title, data }) {
   // Define a color palette with 12 colors and set opacity
   const colorPalette = [
-    'rgba(75, 192, 192, 0.6)',  // Cyan with 60% opacity
-    'rgba(153, 102, 255, 0.6)', // Purple with 60% opacity
-    'rgba(255, 159, 64, 0.6)',  // Orange with 60% opacity
     'rgba(255, 99, 132, 0.6)', // Red with 60% opacity
     'rgba(54, 162, 235, 0.6)', // Blue with 60% opacity
     'rgba(255, 206, 86, 0.6)',  // Yellow with 60% opacity
+    'rgba(75, 192, 192, 0.6)',  // Cyan with 60% opacity
+    'rgba(153, 102, 255, 0.6)', // Purple with 60% opacity
+    'rgba(255, 159, 64, 0.6)',  // Orange with 60% opacity
     'rgba(255, 99, 132, 0.6)', // Repeat colors for more segments
     'rgba(54, 162, 235, 0.6)',
     'rgba(255, 206, 86, 0.6)',
@@ -47,7 +47,7 @@ export default function PolarAreaChartCard({ title, data }) {
 
   return (
     <div className="rounded-lg bg-white">
-      <PolarArea data={modifiedData} options={chartOptions} />
+      <Pie data={modifiedData} options={chartOptions} />
     </div>
   );
 }
