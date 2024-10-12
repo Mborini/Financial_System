@@ -432,19 +432,19 @@ export default function Home() {
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* Total Employees */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Employees</p>
+          <p className="text-base font-bold">الموظفين</p>
           <p className="text-xl">{employees.length}</p>
         </div>
 
         {/* Total Suppliers */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Suppliers</p>
+          <p className="text-base font-bold">الموردين</p>
           <p className="text-xl">{suppliers.length}</p>
         </div>
 
         {/* Total Purchases for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Purchases</p>
+          <p className="text-base font-bold">المشتريات</p>
           <p className="text-xl">
             JOD {totalPurchasesForCurrentMonth.toFixed(2)}
           </p>
@@ -452,33 +452,33 @@ export default function Home() {
 
         {/* Total Sales for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Sales</p>
+          <p className="text-base font-bold">مبيعات الشهر الحالي</p>
           <p className="text-xl">JOD {totalSalesForCurrentMonth.toFixed(2)}</p>
         </div>
 
         {/* Total Costs for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Costs</p>
+          <p className="text-base font-bold">تكاليف الشهر الحالي</p>
           <p className="text-xl">JOD {totalCostsForCurrentMonth.toFixed(2)}</p>
         </div>
 
         {/* Total Remaining Amount for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Debit</p>
+          <p className="text-base font-bold">ديون الشهر الحالي</p>
           <p className="text-xl">
             JOD {totalRemainingAmountForCurrentMonth.toFixed(2)}
           </p>
         </div>
         {/* Total Staff Food for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Staff Food</p>
+          <p className="text-base font-bold">وجبات الموظفين</p>
           <p className="text-xl">
             JOD {totalStaffFoodForCurrentMonth.toFixed(2)}
           </p>
         </div>
         {/* Total Withdrawals for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">Withdrawals</p>
+          <p className="text-base font-bold">مسحوبات الموظفين للشهر الحالي</p>
           <p className="text-xl">
             JOD {totalWithdrawalsForCurrentMonth.toFixed(2)}
           </p>
@@ -487,15 +487,15 @@ export default function Home() {
       <div className="grid grid-cols-1 mb-4 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {/* Costs and Income by Type Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Costs and Income by Type</h2>
+          <h2  className="text-xl text-center font-bold mb-4">نسبة التكاليف للشهر الحالي</h2>
           <LineChartCard
-            title="Costs and Income by Type"
+            title="Costs"
             data={costsByTypeChartData}
           />
         </div>
         {/* Purchases by Supplier Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Purchases by Supplier</h2>
+          <h2 className="text-xl text-center font-bold mb-4">نسبة المشتريات حسب الموردين</h2>
           <BarChartCard
             title="Purchases by Supplier"
             data={purchasesBySupplierChartData}
@@ -503,13 +503,12 @@ export default function Home() {
         </div>
       </div>
       {/* Charts Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {/* Purchases Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Purchases</h2>
+          <h2 className="text-xl text-center font-bold mb-4">نسبة المشتريات</h2>
           <div className="flex items-center justify-between mb-4">
             <div className="w-full">
-              <label className="block text-sm font-bold mb-2">Date Range</label>
               <DatePicker
                 selected={purchaseDateRange[0]}
                 onChange={(update) => setPurchaseDateRange(update)}
@@ -517,7 +516,7 @@ export default function Home() {
                 endDate={purchaseDateRange[1]}
                 selectsRange
                 dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
+                className="border p-0.5 text-sm rounded-md w-full"
               />
             </div>
           </div>
@@ -526,10 +525,9 @@ export default function Home() {
 
         {/* Withdrawals Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Withdrawals</h2>
+          <h2 className="text-xl text-center font-bold mb-4">مسحوبات الموظفين</h2>
           <div className="flex items-center justify-between mb-4">
             <div className="w-full">
-              <label className="block text-sm font-bold mb-2">Date Range</label>
               <DatePicker
                 selected={withdrawalDateRange[0]}
                 onChange={(update) => setWithdrawalDateRange(update)}
@@ -537,7 +535,7 @@ export default function Home() {
                 endDate={withdrawalDateRange[1]}
                 selectsRange
                 dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
+                className="border p-0.5 text-sm rounded-md w-full"
               />
             </div>
           </div>
@@ -546,10 +544,9 @@ export default function Home() {
 
         {/* Sales Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Sales</h2>
+          <h2 className="text-xl text-center font-bold mb-4">المــبـيــعــات</h2>
           <div className="flex items-center justify-between mb-4">
             <div className="w-full">
-              <label className="block text-sm font-bold mb-2">Date Range</label>
               <DatePicker
                 selected={salesDateRange[0]}
                 onChange={(update) => setSalesDateRange(update)}
@@ -557,7 +554,7 @@ export default function Home() {
                 endDate={salesDateRange[1]}
                 selectsRange
                 dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
+                className="border p-0.5 text-sm rounded-md w-full"
               />
             </div>
           </div>
@@ -566,10 +563,9 @@ export default function Home() {
 
         {/* Costs Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Costs</h2>
+          <h2 className="text-xl text-center font-bold mb-4">الـتـكالـيـف</h2>
           <div className="flex items-center justify-between mb-4">
             <div className="w-full">
-              <label className="block text-sm font-bold mb-2">Date Range</label>
               <DatePicker
                 selected={costDateRange[0]}
                 onChange={(update) => setCostDateRange(update)}
@@ -577,17 +573,16 @@ export default function Home() {
                 endDate={costDateRange[1]}
                 selectsRange
                 dateFormat="yyyy/MM/dd"
-                className="border p-2 rounded-md w-full"
+                className="border p-0.5 text-sm rounded-md w-full"
               />
             </div>
           </div>
           <PolarAreaChartCard title="Costs" data={costChartData} />
         </div>
         {/* Payment Status Distribution Chart */}
-        <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold lg:mb-24 mb-4">
-            Payment Status Distribution
-          </h2>
+        <div className="p-4 bg-white text-center shadow-lg rounded-lg">
+          <h2 className="text-xl font-bold  mb-4">
+           حالة الدفع للشهر الحالي         </h2>
           <DoughnutChartCard
             title="Payment Status Distribution"
             data={paymentStatusChartData}

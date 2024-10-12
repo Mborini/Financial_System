@@ -12,10 +12,11 @@ export async function GET(request) {
                 e.name AS employee_name, 
                 CAST(e.salary AS DECIMAL(10, 2)) AS total_salary, 
                 COALESCE(w.total_withdrawn, 0) AS total_withdrawn,
+                COALESCE(d.total_deduction, 0) AS total_deduction, -- Include total deductions
                 COALESCE(sf.total_staff_food, 0) AS total_staff_food,
                 COALESCE(a.total_overtime_hours, 0) AS total_overtime_hours,
                 COALESCE(v.total_vacations, 0) AS total_vacations, -- Total number of vacations
-                (CAST(e.salary AS DECIMAL(10, 2)) - COALESCE(w.total_withdrawn, 0) - COALESCE(sf.total_staff_food, 0)) AS remaining_salary
+                (CAST(e.salary AS DECIMAL(10, 2)) - COALESCE(w.total_withdrawn, 0) - COALESCE(d.total_deduction, 0) - COALESCE(sf.total_staff_food, 0)) AS remaining_salary
             FROM Employees e
             -- Aggregate total withdrawals for the employee
             LEFT JOIN (
@@ -24,6 +25,13 @@ export async function GET(request) {
                 WHERE TO_CHAR(salary_period, 'YYYY-MM') = $1
                 GROUP BY employee_id
             ) w ON e.id = w.employee_id
+            -- Aggregate total deductions for the employee
+            LEFT JOIN (
+                SELECT employee_id, SUM(amount) AS total_deduction
+                FROM Deductions
+                WHERE TO_CHAR(date, 'YYYY-MM') = $1
+                GROUP BY employee_id
+            ) d ON e.id = d.employee_id
             -- Aggregate total staff food expenses for the employee
             LEFT JOIN (
                 SELECT employee_id, SUM(amount) AS total_staff_food

@@ -119,7 +119,7 @@ function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
     window.location.reload(); // Optional: reload the page to ensure state is restored
   };
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto mb-8 px-4">
       <div className="mb-4  flex justify-between">
       
         <input
@@ -149,6 +149,7 @@ function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
             <th className="border border-gray-300 px-1 py-1">Overtime Pay</th>
             <th className="border border-gray-300 px-1 py-1">Total Withdrawn</th>
             <th className="border border-gray-300 px-1 py-1">Total Staff Food</th>
+            <th className="border border-gray-300 px-1 py-1">Total Deduction </th>
             <th className="border border-gray-300 px-1 py-1">Vacation Cost</th> {/* New column for vacation cost */}
             <th className="border border-gray-300 px-1 py-1">Remaining Salary</th> {/* New column for adjusted remaining salary */}
           </tr>
@@ -175,6 +176,8 @@ function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
                 </td>
                 <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">JOD -{costType.total_withdrawn}</td>
                 <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">JOD -{costType.total_staff_food}</td>
+                <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">JOD -{costType.total_deduction}</td>
+
                 <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">
                 JOD -{vacationCost}
                 </td> {/* Display calculated vacation cost */}
