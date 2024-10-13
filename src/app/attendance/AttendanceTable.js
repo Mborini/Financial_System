@@ -175,6 +175,7 @@ export default function AttendanceTable({
                 </th>{" "}
                 {/* Non-working hours */}
                 <th className="border border-gray-300 px-4 py-2"></th>
+                <th className="border border-gray-300 px-4 py-2"></th>
               </tr>
             </thead>
             <tbody>
