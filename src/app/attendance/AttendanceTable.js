@@ -232,14 +232,14 @@ export default function AttendanceTable({
                       )}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {record.check_out && (
+                     
                         <button
                           className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
                           onClick={() => handleDelete(record.id)}
                         >
                           حذف{" "}
                         </button>
-                      )}
+                    
                     </td>
                   </tr>
                 );
