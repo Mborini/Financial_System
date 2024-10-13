@@ -22,7 +22,10 @@ function getCurrentDate() {
   return today.toISOString().split("T")[0]; // Returns YYYY-MM-DD
 }
 
-export default function AttendanceTable({ attendanceUpdated, refetchAttendance }) {
+export default function AttendanceTable({
+  attendanceUpdated,
+  refetchAttendance,
+}) {
   const [attendance, setAttendance] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null); // Store record for check-out
   const [openDrawer, setOpenDrawer] = useState(false); // Control drawer visibility
@@ -59,6 +62,22 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
       setOpenDrawer(true); // Open the drawer
     } else {
       console.error("employee_id is missing in the selected record");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const response = await fetch("/api/attendance", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+
+    if (response.ok) {
+      refetchAttendance();
+    } else {
+      console.error("Error deleting record");
     }
   };
 
@@ -108,7 +127,10 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
       <div className="container mx-auto px-4">
         <div className="mb-4 flex justify-between">
           <div>
-            <label htmlFor="dateFilter" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="dateFilter"
+              className="block text-sm font-medium text-gray-700"
+            >
               Filter by Date
             </label>
             <input
@@ -131,15 +153,27 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
 
         {/* Attendance Table */}
         <div dir="rtl" className="overflow-x-auto">
-          <table id="printTable" className="min-w-full table-auto border-collapse border border-gray-200">
+          <table
+            id="printTable"
+            className="min-w-full table-auto border-collapse border border-gray-200"
+          >
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
                 <th className="border border-gray-300 px-4 py-2">وقت الحضور</th>
-                <th className="border border-gray-300 px-4 py-2">وقت الانصراف</th>
-                <th className="border border-gray-300 px-4 py-2">ساعات العمل</th>
-                <th className="border border-gray-300 px-4 py-2">ساعات العمل الاضافية</th>
-                <th className="border border-gray-300 px-4 py-2">الساعات غير العامل بها</th> {/* Non-working hours */}
+                <th className="border border-gray-300 px-4 py-2">
+                  وقت الانصراف
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  ساعات العمل
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  ساعات العمل الاضافية
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  الساعات غير العامل بها
+                </th>{" "}
+                {/* Non-working hours */}
                 <th className="border border-gray-300 px-4 py-2"></th>
               </tr>
             </thead>
@@ -148,29 +182,44 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
                 const standardHours = 10; // Standard working hours per shift
                 const actualWorkHours = record.work_hours || 0; // Actual work hours
 
-                const nonWorkingHours = Math.max(0, standardHours - actualWorkHours); // Calculate non-working hours
+                const nonWorkingHours = Math.max(
+                  0,
+                  standardHours - actualWorkHours
+                ); // Calculate non-working hours
 
                 return (
                   <tr key={record.id} className="bg-white hover:bg-gray-50">
-                    <td className="border border-gray-300 px-4 py-2">{record.name}</td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {record.check_in ? formatDateTime(record.check_in) : "---"}
+                      {record.name}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {record.check_out ? formatDateTime(record.check_out) : "---"}
+                      {record.check_in
+                        ? formatDateTime(record.check_in)
+                        : "---"}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {record.check_out
+                        ? formatDateTime(record.check_out)
+                        : "---"}
                     </td>
                     <td dir="ltr" className="border border-gray-300 px-4 py-2">
-                      {record.work_hours != null && !isNaN(Number(record.work_hours))
+                      {record.work_hours != null &&
+                      !isNaN(Number(record.work_hours))
                         ? formatHoursAndMinutes(record.work_hours)
                         : "---"}
                     </td>
                     <td dir="ltr" className="border border-gray-300 px-4 py-2">
-                      {record.overtime_hours != null && !isNaN(Number(record.overtime_hours))
+                      {record.overtime_hours != null &&
+                      !isNaN(Number(record.overtime_hours))
                         ? formatHoursAndMinutes(record.overtime_hours)
                         : "---"}
                     </td>
-                    <td dir="ltr" className="border border-gray-300 px-4 py-2 text-center">
-                      {formatHoursAndMinutes(nonWorkingHours)} {/* Display Non-Working Hours */}
+                    <td
+                      dir="ltr"
+                      className="border border-gray-300 px-4 py-2 text-center"
+                    >
+                      {formatHoursAndMinutes(nonWorkingHours)}{" "}
+                      {/* Display Non-Working Hours */}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       {!record.check_out && (
@@ -182,6 +231,16 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
                         </button>
                       )}
                     </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {record.check_out && (
+                        <button
+                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                          onClick={() => handleDelete(record.id)}
+                        >
+                          حذف{" "}
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -190,7 +249,11 @@ export default function AttendanceTable({ attendanceUpdated, refetchAttendance }
         </div>
       </div>
       {/* Drawer for check-out form */}
-      <AddDrawer title="Check-out Time" open={openDrawer} setOpen={setOpenDrawer}>
+      <AddDrawer
+        title="Check-out Time"
+        open={openDrawer}
+        setOpen={setOpenDrawer}
+      >
         {selectedRecord && (
           <CheckOutForm
             selectedRecord={selectedRecord}

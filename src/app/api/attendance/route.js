@@ -155,3 +155,24 @@ function calculateOvertime(workHours) {
   const standardHours = 10;
   return Math.max(0, workHours - standardHours); // Overtime is any time beyond 8 hours
 }
+
+//delete
+// DELETE /api/attendance/{id}
+export async function DELETE(request) {
+  
+  const { id } = await request.json();
+  const client = await connectToDatabase();
+
+  try {
+
+    await client.query("DELETE FROM Attendance WHERE id = $1", [id]);
+    return new Response(JSON.stringify({ message: "Record deleted successfully" }), { status: 200 });
+  }
+  catch (error) {
+    console.error("Error deleting attendance record:", error);
+    return new Response(JSON.stringify({ error: "Error deleting attendance record" }), { status: 500 });
+  }
+  finally {
+    client.release();
+  }
+}
