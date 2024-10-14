@@ -5,7 +5,7 @@ export async function GET() {
 
   try {
     // Fetch all records from the "costsTypes" table
-    const result = await client.query('SELECT * FROM Employees');
+    const result = await client.query('SELECT * FROM Employees WHERE status = TRUE');
 
     if (result.rows.length === 0) {
         return new Response(JSON.stringify({ message: 'No employees found' }), { status: 404 });
@@ -59,42 +59,56 @@ export async function GET() {
     
 
     export async function PUT(request) {
-        const { id, name, salary, contract_start_date, contract_end_date } = await request.json(); // Add contract dates in request body
+        const { id, name, salary, contract_start_date, contract_end_date, status } = await request.json(); // Include status in request body
         const client = await connectToDatabase();
     
         try {
             // Start a transaction
             await client.query('BEGIN');
     
-            // Update the employee's name, salary, contract start, and end date in the "Employees" table
-            await client.query(
-                `UPDATE Employees 
-                 SET name = $1, salary = $2, contract_start_date = $3, contract_end_date = $4 
-                 WHERE id = $5`,
-                [name, salary, contract_start_date, contract_end_date, id]
-            );
+            // Check if any fields to update are provided
+            if (name || salary || contract_start_date || contract_end_date) {
+                // Update employee details if provided
+                await client.query(
+                    `UPDATE Employees 
+                     SET name = COALESCE($1, name), 
+                         salary = COALESCE($2, salary), 
+                         contract_start_date = COALESCE($3, contract_start_date), 
+                         contract_end_date = COALESCE($4, contract_end_date) 
+                     WHERE id = $5`,
+                    [name, salary, contract_start_date, contract_end_date, id]
+                );
     
-            // Update the total salary and remaining salary in the "SalaryAccount" table
-            await client.query(
-                `UPDATE SalaryAccount 
-                 SET total_salary = $1, remaining_salary = (total_salary - total_withdrawn) 
-                 WHERE employee_id = $2`,
-                [salary, id]
-            );
+                // If salary is updated, adjust the SalaryAccount table
+                if (salary) {
+                    await client.query(
+                        `UPDATE SalaryAccount 
+                         SET total_salary = $1, remaining_salary = (total_salary - total_withdrawn) 
+                         WHERE employee_id = $2`,
+                        [salary, id]
+                    );
+                }
+            }
+    
+            // Update employee status if provided
+            if (typeof status !== 'undefined') {
+                await client.query(
+                    `UPDATE Employees 
+                     SET status = $1 
+                     WHERE id = $2`,
+                    [status, id]
+                );
+            }
     
             // Commit the transaction
             await client.query('COMMIT');
     
-            return new Response(JSON.stringify({ message: "Employee and salary account updated" }), {
-                status: 200,
-            });
+            return new Response(JSON.stringify({ message: "Employee updated successfully" }), { status: 200 });
         } catch (error) {
             // Rollback in case of any error
             await client.query('ROLLBACK');
-            console.error("Error updating employee and salary account:", error);
-            return new Response(JSON.stringify({ error: "Error updating employee and salary account" }), {
-                status: 500,
-            });
+            console.error("Error updating employee:", error);
+            return new Response(JSON.stringify({ error: "Error updating employee" }), { status: 500 });
         } finally {
             client.release();
         }
@@ -134,3 +148,4 @@ export async function GET() {
         }
     }
     
+  

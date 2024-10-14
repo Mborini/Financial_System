@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import EditEmployee from './EditEmployee';
 import EditDrawer from '../components/Drawers/edit';
+import ConfirmModal from '../components/Modals/confirmDelete';
 
 // Utility function to format dates to DD/MM/YYYY
 const formatDate = (dateString) => {
-  if (!dateString) return "";
+  if (!dateString) return '';
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
@@ -13,21 +14,24 @@ const formatDate = (dateString) => {
 };
 
 function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
-  const [costsTypes, setcostsTypes] = useState([]);
+  const [costsTypes, setCostsTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [costsTypesPerPage] = useState(10);
   const [selectedCost, setSelectedCost] = useState(null);
   const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
+  const [modalType, setModalType] = useState(''); // Track whether it's a delete or disable modal
 
   // Fetch data when component mounts or costsTypesUpdated changes
   useEffect(() => {
-    const fetchcostsTypes = async () => {
+    const fetchCostsTypes = async () => {
       try {
-        const response = await fetch('/api/employees');
+        const response = await fetch('/api/allEmployees');
         const data = await response.json();
-        setcostsTypes(data);
+        setCostsTypes(data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching cost data:', error);
@@ -36,7 +40,7 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
       }
     };
 
-    fetchcostsTypes();
+    fetchCostsTypes();
   }, [costsTypesUpdated]);
 
   // Handle opening the drawer and setting the selected cost
@@ -45,25 +49,67 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
     setOpen(true); // Open the drawer
   };
 
-  // Handle deletion of a cost
-  const handleDelete = async (id) => {
+  // Handle showing the modal for deletion or disabling
+  const showConfirmationModal = (employee, actionType) => {
+    setRecordToDelete(employee);
+    setModalType(actionType);
+    setIsModalOpen(true); // Open confirmation modal
+  };
+
+  // Confirm deletion of the employee
+  const handleConfirmDelete = async () => {
     try {
       const response = await fetch('/api/employees', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id: recordToDelete.id }),
       });
 
       if (response.ok) {
-        // Remove the deleted cost from the state
-        setcostsTypes(costsTypes.filter((cost) => cost.id !== id));
+        // Remove the deleted employee from the state
+        setCostsTypes(costsTypes.filter((cost) => cost.id !== recordToDelete.id));
+        refetchCostsTypes(); // Refetch employees to reflect the deletion
       } else {
-        console.error('Error deleting cost');
+        console.error('Error deleting employee');
       }
     } catch (error) {
-      console.error('Error deleting cost:', error);
+      console.error('Error deleting employee:', error);
+    } finally {
+      setIsModalOpen(false); // Close modal after action
+    }
+  };
+
+  // Confirm disabling the employee
+  const handleConfirmDisable = async () => {
+    try {
+      const response = await fetch('/api/employees', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: recordToDelete.id, status: false }), // Set status to false to deactivate
+      });
+
+      if (response.ok) {
+        refetchCostsTypes(); // Refetch the employees to reflect the change
+      } else {
+        console.error('Error disabling employee');
+      }
+    } catch (error) {
+      console.error('Error disabling employee:', error);
+    } finally {
+      setIsModalOpen(false); // Close modal after action
+    }
+  };
+
+  // Handle modal confirmation based on action type
+  const handleConfirm = () => {
+    if (modalType === 'delete') {
+      handleConfirmDelete();
+    } else if (modalType === 'disable') {
+      handleConfirmDisable();
     }
   };
 
@@ -78,7 +124,7 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
   // Calculate the current records for the current page
   const indexOfLastCost = currentPage * costsTypesPerPage;
   const indexOfFirstCost = indexOfLastCost - costsTypesPerPage;
-  const currentcostsTypes = costsTypes.slice(indexOfFirstCost, indexOfLastCost);
+  const currentCostsTypes = costsTypes.slice(indexOfFirstCost, indexOfLastCost);
 
   // Get total pages
   const totalPages = Math.ceil(costsTypes.length / costsTypesPerPage);
@@ -87,42 +133,77 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="container mx-auto px-4">
-      <table className="min-w-full table-auto border-collapse border border-gray-200">
+    <div dir='rtl' className="container mx-auto px-4">
+      <table dir='rtl' className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2"></th>
-            <th className="border border-gray-300 px-4 py-2">تاريخ نهاية العقد</th>
-            <th className="border border-gray-300 px-4 py-2">تاريخ بداية العقد</th>
-            <th className="border border-gray-300 px-4 py-2">الراتب</th>
             <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
+            <th className="border border-gray-300 px-4 py-2">الراتب</th>
+            <th className="border border-gray-300 px-4 py-2">تاريخ بداية العقد</th>
+            <th className="border border-gray-300 px-4 py-2">تاريخ نهاية العقد</th>
+            <th className="border border-gray-300 px-4 py-2"></th>
           </tr>
         </thead>
         <tbody>
-          {currentcostsTypes.map((costType) => (
+          {currentCostsTypes.map((costType) => (
             <tr key={costType.id} className="bg-white hover:bg-gray-50">
+              <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
+              <td className="border border-gray-300 px-4 py-2 text-center">{costType.salary}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">
+                {formatDate(costType.contract_start_date)}
+              </td>
+              <td className="border border-gray-300 px-4 py-2 text-center">
+                {formatDate(costType.contract_end_date)}
+              </td>
+              <td className="border border-gray-300 px-4 py-2 text-center">
+                {/* Conditionally render the button based on the employee status */}
+                {costType.status ? (
+                  <button
+                    className="bg-violet-600 hover:bg-violet-700 ml-2 text-white font-bold py-1 px-2 rounded"
+                    onClick={() => showConfirmationModal(costType, 'disable')}
+                  >
+                    انهاء خدمات
+                  </button>
+                ) : (
+                  <button
+                    className="bg-gray-500 text-white font-bold py-1 px-2 rounded ml-2 cursor-not-allowed"
+                    disabled
+                  >
+                    منهي الخدمة
+                  </button>
+                )}
                 <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1 px-2 rounded"
+                  className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
                   onClick={() => handleEditClick(costType)}
                 >
                   تعديل
                 </button>
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                  onClick={() => handleDelete(costType.id)}
+                  onClick={() => showConfirmationModal(costType, 'delete')}
                 >
                   حذف
                 </button>
+
               </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{formatDate(costType.contract_end_date)}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{formatDate(costType.contract_start_date)}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{costType.salary}</td>
-              <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirm}
+        title={modalType === 'delete' ? 'تأكيد الحذف' : 'تأكيد إنهاء الخدمة'}
+        message={
+  modalType === 'delete'
+    ? `هل أنت متأكد من حذف ${recordToDelete?.name}؟`
+    : `هل أنت متأكد من انهاء خدمات ${recordToDelete?.name}؟ لن يظهر الموظف في القوائم بعد الآن.`
+}
+
+      />
 
       {/* Pagination */}
       <div className="flex justify-center my-4">
@@ -137,7 +218,9 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
           <button
             key={i + 1}
             onClick={() => paginate(i + 1)}
-            className={`px-4 py-2 mx-1 rounded ${i + 1 === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'}`}
+            className={`px-4 py-2 mx-1 rounded ${
+              i + 1 === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
+            }`}
           >
             {i + 1}
           </button>
