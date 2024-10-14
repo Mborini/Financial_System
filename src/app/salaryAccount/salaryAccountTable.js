@@ -11,15 +11,15 @@ const getCurrentMonth = () => {
 const formatOvertimeHours = (decimalHours) => {
   const hours = Math.floor(decimalHours);
   const minutes = Math.round((decimalHours - hours) * 60);
-  return `${hours} hours ${minutes} minutes`;
+  return `${hours} ساعة ${minutes} دقيقة`;
 };
 
 // Function to calculate overtime pay
-const calculateOvertimePay = (totalOvertimeHours, totalSalary) => {
+const calculateOvertimePay = (totalOvertimeHours, proratedSalary) => {
   const dailyWorkingHours = 10;
   const workingDaysPerMonth = 30; // Assuming 30 working days per month
   const totalWorkingHoursPerMonth = dailyWorkingHours * workingDaysPerMonth; // 240 hours per month
-  const hourlyRate = totalSalary / totalWorkingHoursPerMonth;
+  const hourlyRate = proratedSalary / totalWorkingHoursPerMonth;
 
   // Overtime is paid at 1.25 times the regular hourly rate
   const overtimeRate = 1.25;
@@ -28,12 +28,11 @@ const calculateOvertimePay = (totalOvertimeHours, totalSalary) => {
   return parseFloat(overtimePay.toFixed(2)); // Return as a float with 2 decimal places
 };
 
-// Function to calculate the not allowed vacations
+// Function to calculate excess vacations
 const calculateNotAllowedVacations = (totalVacations) => {
   const maxAllowedVacations = 4;
   const excessVacations = totalVacations - maxAllowedVacations;
 
-  // If there are no excess vacations, return 0
   if (excessVacations <= 0) {
     return 0;
   }
@@ -42,26 +41,30 @@ const calculateNotAllowedVacations = (totalVacations) => {
 };
 
 // Function to calculate the cost of excess vacations
-const calculateVacationCost = (totalVacations, totalSalary) => {
+const calculateVacationCost = (totalVacations, proratedSalary) => {
   const maxAllowedVacations = 4;
   const workingDaysPerMonth = 30; // Assuming 30 working days in a month
-  const dailySalary = totalSalary / workingDaysPerMonth; // Calculate daily salary
+  const dailySalary = proratedSalary / workingDaysPerMonth; // Calculate daily salary
 
   const excessVacations = totalVacations - maxAllowedVacations;
 
-  // If there are no excess vacations, return 0
   if (excessVacations <= 0) {
     return 0;
   }
 
-  // Otherwise, return the cost of the excess vacations
   return parseFloat((excessVacations * dailySalary).toFixed(2)); // Return as float with 2 decimal places
 };
 
+// Function to calculate the cost of non-working hours
+const calculateNonWorkingHourCost = (totalNonWorkingHours, proratedSalary) => {
+  const hourlyRate = proratedSalary / (10 * 30); // Assuming 10 hours per day for 30 days
+  return parseFloat((totalNonWorkingHours * hourlyRate).toFixed(2)); // Cost of non-working hours
+};
+
 // Function to calculate remaining salary after subtracting vacation cost and adding overtime pay
-const calculateRemainingSalary = (remainingSalary, vacationCost, overtimePay) => {
-  let adjustedRemainingSalary = remainingSalary - vacationCost + overtimePay;
-  return adjustedRemainingSalary < 0 ? 0 : adjustedRemainingSalary.toFixed(2); // If negative, set to 0
+const calculateRemainingSalary = (proratedSalary, vacationCost, nonWorkingHourCost, overtimePay , totalDeduction , totalStaffFood , totalWithdrawn) => {
+  let adjustedRemainingSalary = proratedSalary - vacationCost - nonWorkingHourCost + overtimePay - totalDeduction - totalStaffFood - totalWithdrawn;
+  return adjustedRemainingSalary < 0 ? adjustedRemainingSalary.toFixed(2) : adjustedRemainingSalary.toFixed(2); // If negative, set to 0
 };
 
 function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
@@ -93,11 +96,6 @@ function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
 
     fetchCostsTypes();
   }, [costsTypesUpdated, filterPeriod]); // Refetch when period changes
-// Function to calculate the cost of non-working hours
-const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
-  const hourlyRate = totalSalary / (10 * 30); // Assuming 10 hours per day for 30 days
-  return parseFloat((totalNonWorkingHours * hourlyRate).toFixed(2)); // Cost of non-working hours
-};
 
   const handlePeriodChange = (e) => {
     setFilterPeriod(e.target.value); // Update the period based on user input
@@ -110,6 +108,9 @@ const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
   if (error) {
     return <div className="text-center text-red-600">Error: {error}</div>;
   }
+  const formatCurrency = (value) => {
+    return parseFloat(value).toFixed(2); // Always returns 2 decimal places
+  };
   const handlePrint = () => {
     const printContents = document.getElementById('printTable').outerHTML;
     const originalContents = document.body.innerHTML;
@@ -123,10 +124,10 @@ const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
     document.body.innerHTML = originalContents;
     window.location.reload(); // Optional: reload the page to ensure state is restored
   };
+
   return (
     <div className="container mx-auto mb-8 px-4">
       <div className="mb-4  flex justify-between">
-      
         <input
           type="month"
           id="periodFilter"
@@ -134,7 +135,7 @@ const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
           onChange={handlePeriodChange}
           className="mt-1 block w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
-         <button
+        <button
           onClick={handlePrint}
           className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
@@ -142,58 +143,60 @@ const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
         </button>
       </div>
       <div id="printTable" className='overflow-x-auto'>
+        <table dir='rtl' className="min-w-full table-auto border-collapse border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-1 py-1">اسم الموضف</th>
+              <th className="border border-gray-300 px-1 py-1">الراتب الشهري (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">عدد ايام العمل</th>
+              <th className="border border-gray-300 px-1 py-1">مجموع ساعات العمل الاضافية</th>
+              <th className="border border-gray-300 px-1 py-1">مجموع ايام الاجازات</th>
+              <th className="border border-gray-300 px-1 py-1">ايام الاجازات الزائدة</th>
+              <th className="border border-gray-300 px-1 py-1">مكافأة العمل الاضافي (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">مجموع السحب (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">مجموع حساب وجبات الاكل (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">مجموع الخصومات (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">خصم الاجازات الزائدة (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">خصم الساعات غير العامل بها (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">الراتب المتبقي (JOD)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {costsTypes.map((costType) => {
+              const overtimePay = calculateOvertimePay(costType.total_overtime_hours, costType.total_salary);
+              const vacationCost = calculateVacationCost(costType.total_vacations, costType.total_salary);
+              const nonWorkingHourCost = calculateNonWorkingHourCost(costType.total_non_working_hours, costType.total_salary);
+              const adjustedRemainingSalary = calculateRemainingSalary(
+                parseFloat(costType.prorated_salary),
+                vacationCost,
+                nonWorkingHourCost,
+                overtimePay,
+                costType.total_deduction ,// Adding total deduction here
+                costType.total_staff_food,
+                costType.total_withdrawn
 
-      <table dir='rtl' className="min-w-full table-auto  border-collapse border border-gray-200">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-1 py-1">اسم الموضف</th>
-            <th className="border border-gray-300 px-1 py-1">عدد ايام العمل </th> {/* New column for adjusted remaining salary */}
-            <th className="border border-gray-300 px-1 py-1">مجموع ساعات العمل الاضافية</th>
-            <th className="border border-gray-300 px-1 py-1">مجموع ايام الاجازات</th>
-            <th className="border border-gray-300 px-1 py-1">ايام الاجازات الزائدة</th> {/* New column for excess vacations */}
-            <th className="border border-gray-300 px-1 py-1">الراتب الشهري</th>
-            <th className="border border-gray-300 px-1 py-1">مكافأة العمل الاضافي</th>
-            <th className="border border-gray-300 px-1 py-1">مجموع السحب</th>
-            <th className="border border-gray-300 px-1 py-1">مجموع حساب وجبات الاكل</th>
-            <th className="border border-gray-300 px-1 py-1">مجموع الخصومات</th>
-            <th className="border border-gray-300 px-1 py-1">خصم الاجازات الزائدة</th>
-            <th className="border border-gray-300 px-1 py-1">خصم الساعات غير العامل بها</th> {/* New column for non-working hours */}
-            <th className="border border-gray-300 px-1 py-1">الراتب المتبقي</th> {/* New column for adjusted remaining salary */}
-          </tr>
-        </thead>
-        <tbody>
-  {costsTypes.map((costType) => {
-    const overtimePay = calculateOvertimePay(costType.total_overtime_hours, costType.total_salary);
-    const vacationCost = calculateVacationCost(costType.total_vacations, costType.total_salary);
-    const nonWorkingHourCost = calculateNonWorkingHourCost(costType.total_non_working_hours, costType.total_salary);
-    const adjustedRemainingSalary = calculateRemainingSalary(parseFloat(costType.remaining_salary), vacationCost + nonWorkingHourCost, overtimePay);
+              );
 
-    return (
-      <tr key={costType.employee_name} className="bg-white hover:bg-gray-50">
-        <td className="border border-gray-300 px-4 py-2 text-center">{costType.employee_name}</td>
-        <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_working_days} يوم</td> {/* New column for total working days */}
-        <td dir="ltr" className="border border-gray-300 px-4 py-2 text-center">
-          {formatOvertimeHours(costType.total_overtime_hours)}
-        </td>
-        <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_vacations} يوم</td>
-        <td className="border border-gray-300 px-4 py-2 text-center">
-          {calculateNotAllowedVacations(costType.total_vacations)} يوم
-        </td>
-        <td className="border border-gray-700 bg-blue-300 px-4 py-2 text-center">JOD {costType.total_salary}</td>
-        <td className="border border-gray-700 bg-green-200 px-4 py-2 text-center">JOD +{overtimePay}</td>
-        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_withdrawn}</td>
-        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_staff_food}</td>
-        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_deduction}</td>
-        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{vacationCost}</td>
-        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{nonWorkingHourCost}</td>
-        <td className="border border-gray-700 bg-orange-200 px-4 py-2 text-center">JOD {adjustedRemainingSalary}</td>
-      </tr>
-    );
-  })}
-</tbody>
-
-
-      </table>
+              return (
+                <tr key={costType.employee_name} className="bg-white hover:bg-gray-50">
+                  <td className="border border-gray-300 px-4 py-2 text-center">{costType.employee_name}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">{formatCurrency(costType.prorated_salary)} JOD</td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_working_days} يوم</td>
+                  <td  className="border border-gray-300 px-4 py-2 text-center">{formatOvertimeHours(costType.total_overtime_hours)}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_vacations} يوم</td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">{calculateNotAllowedVacations(costType.total_vacations)} يوم</td>
+                  <td className="border border-gray-700 bg-green-200 px-4 py-2 text-center">JOD +{overtimePay}</td>
+                  <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_withdrawn}</td>
+                  <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_staff_food}</td>
+                  <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_deduction}</td>
+                  <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{vacationCost}</td>
+                  <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{nonWorkingHourCost}</td>
+                  <td className="border border-gray-700 bg-orange-200 px-4 py-2 text-center">JOD {adjustedRemainingSalary}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
