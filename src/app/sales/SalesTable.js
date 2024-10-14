@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { FaPrint, FaSpinner } from "react-icons/fa"; // Spinner for loading
-import { parseISO, isValid, format } from "date-fns"; // Added isValid for date validation
+import { FaPrint, FaSpinner } from "react-icons/fa";
+import { parseISO, isValid, format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
+import EditDrawer from "../components/Drawers/edit";
+import EditForm from "../sales/EditForm";
+import ConfirmModal from "../components/Modals/confirmDelete";
 
-function SalesTable({ costsUpdated, refetchCosts }) {
+function SalesTable({ salesUpdated, refetchSales }) {
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,64 +16,79 @@ function SalesTable({ costsUpdated, refetchCosts }) {
   const [salesPerPage] = useState(10);
   const [selectedSale, setSelectedSale] = useState(null);
   const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
 
-  // Date range state with the default to the current month
   const [dateRange, setDateRange] = useState([
     startOfMonth(new Date()),
     endOfMonth(new Date()),
   ]);
   const [startDate, endDate] = dateRange;
 
-  // Fetch data when component mounts or costsUpdated changes
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        setLoading(true); // Start loading
+        setLoading(true);
         const response = await fetch("/api/sales");
         const data = await response.json();
         setSales(data);
-        setLoading(false); // Stop loading
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching sales data:", error);
         setError("Failed to fetch data. Please try again.");
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     };
 
     fetchSales();
-  }, [costsUpdated]);
+  }, [salesUpdated]);
 
-  // Handle opening the drawer and setting the selected sale
   const handleEditClick = (sale) => {
-    setSelectedSale(sale); // Set the selected sale for editing
-    setOpen(true); // Open the drawer
+    if (sale && sale.id) {
+      setSelectedSale(sale);
+      setOpen(true);
+    } else {
+      setError("No sale selected for editing.");
+    }
   };
 
-  // Handle deletion of a sale
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this sale?")) {
-      try {
-        const response = await fetch("/api/sales", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id }),
-        });
+  const confirmDelete = (record) => {
+    setRecordToDelete(record);
+    setIsModalOpen(true); // Open the confirmation modal
+  };
 
-        if (response.ok) {
-          // Remove the deleted sale from the state
-          setSales(sales.filter((sale) => sale.id !== id));
-          if (sales.length - 1 < (currentPage - 1) * salesPerPage) {
-            // If the page becomes empty after deletion, go back to the previous page
-            setCurrentPage(currentPage - 1);
-          }
-        } else {
-          console.error("Error deleting sale");
+  const handleDeleteConfirmed = () => {
+    if (recordToDelete && recordToDelete.id) {
+      handleDelete(recordToDelete.id); // Delete the record after confirmation
+      setIsModalOpen(false); // Close the modal after deletion
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const originalSales = [...sales]; // Keep a copy of the original sales
+    setSales(sales.filter((sale) => sale.id !== id)); // Optimistically update UI
+
+    try {
+      const response = await fetch("/api/sales", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!response.ok) {
+        setSales(originalSales); // Revert state if delete fails
+        console.error("Error deleting sale");
+      } else {
+        // Adjust pagination if needed
+        if (sales.length - 1 < (currentPage - 1) * salesPerPage) {
+          setCurrentPage((prev) => Math.max(prev - 1, 1));
         }
-      } catch (error) {
-        console.error("Error deleting sale:", error);
       }
+    } catch (error) {
+      setSales(originalSales); // Revert state on error
+      console.error("Error deleting sale:", error);
     }
   };
 
@@ -79,14 +97,10 @@ function SalesTable({ costsUpdated, refetchCosts }) {
     const printContents = document.getElementById("printTable").outerHTML;
     const originalContents = document.body.innerHTML;
 
-    // Replace body content with just the table for printing
     document.body.innerHTML = printContents;
-
-    window.print(); // Trigger the print dialog
-
-    // Restore original contents after printing
+    window.print();
     document.body.innerHTML = originalContents;
-    window.location.reload(); // Optional: reload the page to ensure state is restored
+    window.location.reload();
   };
 
   if (loading) {
@@ -94,26 +108,20 @@ function SalesTable({ costsUpdated, refetchCosts }) {
       <div className="flex justify-center">
         <FaSpinner className="animate-spin text-blue-600" size={30} />
       </div>
-    ); // Show spinner while loading
+    );
   }
 
   if (error) {
-    return <div className="text-center text-red-600">Error: {error}</div>; // Show error message if there's any
+    return <div className="text-center text-red-600">Error: {error}</div>;
   }
 
-  // Filter sales by the selected date range
   const filteredSales = sales.filter((sale) => {
     if (!startDate || !endDate) return true;
-
-    // Parse the sale date and check if it's valid
     const saleDate = parseISO(sale.sale_date);
-    if (!isValid(saleDate)) return false; // Skip invalid dates
-
-    // Compare the parsed sale date with the selected date range
+    if (!isValid(saleDate)) return false;
     return saleDate >= startDate && saleDate <= endDate;
   });
 
-  // Calculate the total cash, visa, and total sales from the filtered sales
   const totalCash = filteredSales.reduce(
     (sum, sale) => sum + parseFloat(sale.cash_amount || 0),
     0
@@ -127,26 +135,20 @@ function SalesTable({ costsUpdated, refetchCosts }) {
     0
   );
 
-  // Calculate the current records for the current page
   const indexOfLastSale = currentPage * salesPerPage;
   const indexOfFirstSale = indexOfLastSale - salesPerPage;
   const currentSales = filteredSales.slice(indexOfFirstSale, indexOfLastSale);
-
-  // Get total pages
   const totalPages = Math.ceil(filteredSales.length / salesPerPage);
-
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div dir="rtl" id="printTable" className="container mx-auto px-4 ">
-      {/* Date Range Filter */}
+    <div dir="rtl" id="printTable" className="container mx-auto px-4">
       <div className="flex justify-between my-4">
         <DatePicker
           selectsRange
           startDate={startDate}
           endDate={endDate}
-          onChange={(update) => setDateRange(update)} // Correctly set date range
+          onChange={(update) => setDateRange(update)}
           isClearable
           placeholderText="Select a date range"
           className="border border-gray-300 p-2 rounded"
@@ -156,23 +158,19 @@ function SalesTable({ costsUpdated, refetchCosts }) {
             onClick={handlePrint}
             className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
-            <FaPrint className="inline-block " />
+            <FaPrint className="inline-block" />
           </button>
         </div>
       </div>
 
-      {/* Summary Table */}
       <div className="mb-4">
         <h2 className="font-bold mb-2">ملخص التصفية</h2>
         <div className="overflow-x-auto">
-          <table
-            
-            className="min-w-full table-auto border-collapse border border-gray-200"
-          >
+          <table className="min-w-full table-auto border-collapse border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2 text-center">
-                  مجموع الكاش 
+                  مجموع الكاش
                 </th>
                 <th className="border border-gray-300 px-4 py-2 text-center">
                   مجموع الفيزا
@@ -199,7 +197,6 @@ function SalesTable({ costsUpdated, refetchCosts }) {
         </div>
       </div>
 
-      {/* Sales Table */}
       <table className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
@@ -207,6 +204,7 @@ function SalesTable({ costsUpdated, refetchCosts }) {
             <th className="border border-gray-300 px-4 py-2">الفيزا</th>
             <th className="border border-gray-300 px-4 py-2">الكاش</th>
             <th className="border border-gray-300 px-4 py-2">التاريخ</th>
+            <th className="border border-gray-300 px-4 py-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -224,12 +222,33 @@ function SalesTable({ costsUpdated, refetchCosts }) {
               <td className="border border-gray-300 px-4 py-2 text-center">
                 {format(parseISO(sale.sale_date), "yyyy-MM-dd")}
               </td>
+              <td className="border border-gray-300 px-4 py-2 text-center">
+                <button
+                  onClick={() => handleEditClick(sale)}
+                  className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => confirmDelete(sale)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Pagination */}
+      <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleDeleteConfirmed}
+        title="تأكيد الحذف"
+        message={`هل أنت متأكد من حذف المبيعات البالغة ${recordToDelete?.total ?? "unknown"} بتاريخ ${recordToDelete?.sale_date ? format(parseISO(recordToDelete.sale_date), "yyyy-MM-dd") : "unknown date"}`}
+        />
+
       <div className="flex justify-center my-4">
         <button
           onClick={() => paginate(currentPage - 1)}
@@ -259,6 +278,13 @@ function SalesTable({ costsUpdated, refetchCosts }) {
           Next
         </button>
       </div>
+
+      {/* Edit Drawer */}
+      {selectedSale && (
+        <EditDrawer title="تعديل مبيعات يومية " open={open} setOpen={setOpen}>
+          <EditForm selectedSale={selectedSale} setOpen={setOpen} refetchSales={refetchSales} />
+        </EditDrawer>
+      )}
     </div>
   );
 }

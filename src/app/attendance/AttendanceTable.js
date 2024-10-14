@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import AddDrawer from "../components/Drawers/add";
 import CheckOutForm from "./CheckOutForm";
 import { FaPrint } from "react-icons/fa";
+import ConfirmModal from "../components/Modals/confirmDelete";
 
 // Utility function to format datetime
 function formatDateTime(dateTime) {
@@ -31,6 +32,8 @@ export default function AttendanceTable({
   const [openDrawer, setOpenDrawer] = useState(false); // Control drawer visibility
   const [selectedDate, setSelectedDate] = useState(getCurrentDate()); // Filter date (default: current day)
   const [filteredAttendance, setFilteredAttendance] = useState([]); // Store filtered attendance
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null);
 
   // Fetch attendance data when the component mounts or attendanceUpdated changes
   useEffect(() => {
@@ -65,13 +68,20 @@ export default function AttendanceTable({
     }
   };
 
-  const handleDelete = async (id) => {
+  const confirmDelete = (record) => {
+    setRecordToDelete(record);
+    setIsModalOpen(true); // Open the confirmation modal
+  };
+
+  const handleDeleteConfirmed = async () => {
+    if (!recordToDelete) return;
+
     const response = await fetch("/api/attendance", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id: recordToDelete.id }),
     });
 
     if (response.ok) {
@@ -79,6 +89,10 @@ export default function AttendanceTable({
     } else {
       console.error("Error deleting record");
     }
+
+    // Close modal and clear the selected record
+    setIsModalOpen(false);
+    setRecordToDelete(null);
   };
 
   const handleCheckOutSubmit = async (dateTime) => {
@@ -233,20 +247,25 @@ export default function AttendanceTable({
                       )}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                     
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                          onClick={() => handleDelete(record.id)}
-                        >
-                          حذف{" "}
-                        </button>
-                    
+                      <button
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                        onClick={() => confirmDelete(record)}
+                      >
+                        حذف
+                      </button>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          <ConfirmModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleDeleteConfirmed}
+            title="تأكيد الحذف"
+            message={`هل انت متاكد من حذف حضور   ${recordToDelete?.name}؟`}
+          />
         </div>
       </div>
       {/* Drawer for check-out form */}

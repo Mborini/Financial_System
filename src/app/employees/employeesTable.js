@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import EditEmployee from './EditEmployee';
 import EditDrawer from '../components/Drawers/edit';
-import { FaceFrownIcon } from '@heroicons/react/24/outline';
+
+// Utility function to format dates to DD/MM/YYYY
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 
 function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
   const [costsTypes, setcostsTypes] = useState([]);
@@ -82,8 +91,9 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
       <table className="min-w-full table-auto border-collapse border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-           
             <th className="border border-gray-300 px-4 py-2"></th>
+            <th className="border border-gray-300 px-4 py-2">تاريخ نهاية العقد</th>
+            <th className="border border-gray-300 px-4 py-2">تاريخ بداية العقد</th>
             <th className="border border-gray-300 px-4 py-2">الراتب</th>
             <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
           </tr>
@@ -105,9 +115,10 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
                   حذف
                 </button>
               </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">{costType.salary}</td>
+              <td className="border border-gray-300 px-4 py-2 text-center">{formatDate(costType.contract_end_date)}</td>
+              <td className="border border-gray-300 px-4 py-2 text-center">{formatDate(costType.contract_start_date)}</td>
+              <td className="border border-gray-300 px-4 py-2 text-center">{costType.salary}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
-             
             </tr>
           ))}
         </tbody>
@@ -141,7 +152,7 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
       </div>
 
       <EditDrawer title="تعديل معلومات الموظف" open={open} setOpen={setOpen}>
-      <EditEmployee selectedCost={selectedCost} refetchCosts={refetchCostsTypes} setOpen={setOpen} />
+        <EditEmployee selectedCost={selectedCost} refetchCosts={refetchCostsTypes} setOpen={setOpen} />
       </EditDrawer>
     </div>
   );

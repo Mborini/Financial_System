@@ -21,66 +21,64 @@ export async function GET() {
     client.release(); // Release the client back to the pool
     }
     }
-
     export async function POST(request) {
-        const { name, salary } = await request.json();
-        const client = await connectToDatabase(); // Get PostgreSQL client from connection pool
+        const { name, salary, contract_start_date, contract_end_date } = await request.json();
+        const client = await connectToDatabase();
     
         try {
-            // Start a transaction
             await client.query('BEGIN');
     
-            // Insert a new employee record into the "Employees" table
+            // Insert a new employee with contract start and end dates
             const employeeResult = await client.query(
-                "INSERT INTO Employees (name, salary) VALUES ($1, $2) RETURNING id",
-                [name, salary]
+                `INSERT INTO Employees (name, salary, contract_start_date, contract_end_date) 
+                 VALUES ($1, $2, $3, $4) RETURNING id`,
+                [name, salary, contract_start_date, contract_end_date]
             );
     
-            // Get the generated employee ID from the Employees table
             const employeeId = employeeResult.rows[0].id;
     
             // Insert the initial data into the SalaryAccount table
             await client.query(
-                "INSERT INTO SalaryAccount (employee_id, total_salary, total_withdrawn, remaining_salary) VALUES ($1, $2, 0, $2)",
-                [employeeId, salary] // total_withdrawn is 0 initially, remaining_salary = total_salary
+                `INSERT INTO SalaryAccount (employee_id, total_salary, total_withdrawn, remaining_salary) 
+                 VALUES ($1, $2, 0, $2)`,
+                [employeeId, salary]
             );
     
-            // Commit the transaction
             await client.query('COMMIT');
     
             return new Response(JSON.stringify({ message: "Employee added and salary account created" }), {
                 status: 201,
             });
         } catch (error) {
-            // Rollback in case of any error
             await client.query('ROLLBACK');
-            console.error("Error adding employee and salary account:", error);
-            return new Response(JSON.stringify({ error: "Error adding employee and salary account" }), {
-                status: 500,
-            });
+            return new Response(JSON.stringify({ error: "Error adding employee" }), { status: 500 });
         } finally {
-            client.release(); // Release the client back to the pool
+            client.release();
         }
     }
     
 
     export async function PUT(request) {
-        const { id, name, salary } = await request.json(); // 'id' is the employee ID
+        const { id, name, salary, contract_start_date, contract_end_date } = await request.json(); // Add contract dates in request body
         const client = await connectToDatabase();
     
         try {
             // Start a transaction
             await client.query('BEGIN');
     
-            // Update the employee's name and salary in the "Employees" table
+            // Update the employee's name, salary, contract start, and end date in the "Employees" table
             await client.query(
-                "UPDATE Employees SET name = $1, salary = $2 WHERE id = $3",
-                [name, salary, id]
+                `UPDATE Employees 
+                 SET name = $1, salary = $2, contract_start_date = $3, contract_end_date = $4 
+                 WHERE id = $5`,
+                [name, salary, contract_start_date, contract_end_date, id]
             );
     
             // Update the total salary and remaining salary in the "SalaryAccount" table
             await client.query(
-                "UPDATE SalaryAccount SET total_salary = $1, remaining_salary = (total_salary - total_withdrawn) WHERE employee_id = $2",
+                `UPDATE SalaryAccount 
+                 SET total_salary = $1, remaining_salary = (total_salary - total_withdrawn) 
+                 WHERE employee_id = $2`,
                 [salary, id]
             );
     
@@ -101,6 +99,8 @@ export async function GET() {
             client.release();
         }
     }
+    
+    
     
     export async function DELETE(request) {
         const { id } = await request.json(); // 'id' is the employee ID

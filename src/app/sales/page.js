@@ -10,6 +10,7 @@ export default function Withdrawals() {
   const [open, setOpen] = useState(false);
   const [salesUpdated, setSalesUpdated] = useState(false);
 
+  // This function will be passed to SalesTable to trigger re-fetching of sales data
   const refetchSales = useCallback(() => {
     setSalesUpdated((prev) => !prev); // Toggle to refetch sales
   }, []);

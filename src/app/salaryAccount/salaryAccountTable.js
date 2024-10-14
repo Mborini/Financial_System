@@ -147,6 +147,7 @@ const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
         <thead>
           <tr className="bg-gray-100">
             <th className="border border-gray-300 px-1 py-1">اسم الموضف</th>
+            <th className="border border-gray-300 px-1 py-1">عدد ايام العمل </th> {/* New column for adjusted remaining salary */}
             <th className="border border-gray-300 px-1 py-1">مجموع ساعات العمل الاضافية</th>
             <th className="border border-gray-300 px-1 py-1">مجموع ايام الاجازات</th>
             <th className="border border-gray-300 px-1 py-1">ايام الاجازات الزائدة</th> {/* New column for excess vacations */}
@@ -166,37 +167,31 @@ const calculateNonWorkingHourCost = (totalNonWorkingHours, totalSalary) => {
     const vacationCost = calculateVacationCost(costType.total_vacations, costType.total_salary);
     const nonWorkingHourCost = calculateNonWorkingHourCost(costType.total_non_working_hours, costType.total_salary);
     const adjustedRemainingSalary = calculateRemainingSalary(parseFloat(costType.remaining_salary), vacationCost + nonWorkingHourCost, overtimePay);
-    
+
     return (
       <tr key={costType.employee_name} className="bg-white hover:bg-gray-50">
         <td className="border border-gray-300 px-4 py-2 text-center">{costType.employee_name}</td>
+        <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_working_days} يوم</td> {/* New column for total working days */}
         <td dir="ltr" className="border border-gray-300 px-4 py-2 text-center">
           {formatOvertimeHours(costType.total_overtime_hours)}
         </td>
-        <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_vacations}{' '} يوم</td>
+        <td className="border border-gray-300 px-4 py-2 text-center">{costType.total_vacations} يوم</td>
         <td className="border border-gray-300 px-4 py-2 text-center">
-          {calculateNotAllowedVacations(costType.total_vacations)}{' '} يوم
+          {calculateNotAllowedVacations(costType.total_vacations)} يوم
         </td>
         <td className="border border-gray-700 bg-blue-300 px-4 py-2 text-center">JOD {costType.total_salary}</td>
-        <td className="border border-gray-700 bg-green-200 px-4 py-2 text-center">
-          JOD +{overtimePay}
-        </td>
-        <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">JOD -{costType.total_withdrawn}</td>
-        <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">JOD -{costType.total_staff_food}</td>
-        <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">JOD -{costType.total_deduction}</td>
-        <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">
-          JOD -{vacationCost}
-        </td>
-        <td className="border border-gray-700 px-4 bg-red-200 py-2 text-center">
-          JOD -{nonWorkingHourCost} {/* Display non-working hour deduction */}
-        </td>
-        <td className="border border-gray-700 px-4 py-2 bg-orange-200 text-center">
-          JOD {adjustedRemainingSalary} {/* Adjusted salary after deductions */}
-        </td>
+        <td className="border border-gray-700 bg-green-200 px-4 py-2 text-center">JOD +{overtimePay}</td>
+        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_withdrawn}</td>
+        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_staff_food}</td>
+        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{costType.total_deduction}</td>
+        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{vacationCost}</td>
+        <td className="border border-gray-700 bg-red-200 px-4 py-2 text-center">JOD -{nonWorkingHourCost}</td>
+        <td className="border border-gray-700 bg-orange-200 px-4 py-2 text-center">JOD {adjustedRemainingSalary}</td>
       </tr>
     );
   })}
 </tbody>
+
 
       </table>
       </div>

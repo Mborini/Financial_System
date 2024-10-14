@@ -61,3 +61,28 @@ export async function DELETE(request) {
     client.release();  // Release the client back to the pool
   }
 }
+export async function PUT(request) {
+  const { id, cash_amount, visa_amount, sale_date } = await request.json();
+
+  const client = await connectToDatabase();  // Get PostgreSQL client from connection pool
+
+  try {
+    // Update the sale record in the "sales" table
+    const query = `
+      UPDATE sales
+      SET cash_amount = $1, visa_amount = $2, sale_date = $3, total = $4
+      WHERE id = $5
+      RETURNING *;
+    `;
+    const total = parseFloat(cash_amount) + parseFloat(visa_amount);
+    const values = [cash_amount, visa_amount, sale_date, total, id];
+    const result = await client.query(query, values);
+
+    return new Response(JSON.stringify(result.rows[0]), { status: 200 });
+  } catch (error) {
+    console.error('Error updating sale:', error);
+    return new Response('Error updating sale', { status: 500 });
+  } finally {
+    client.release();  // Release the client back to the pool
+  }
+}

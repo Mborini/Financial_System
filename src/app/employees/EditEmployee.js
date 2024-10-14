@@ -1,77 +1,48 @@
 import { useState, useEffect } from "react";
 
 export default function EditEmployee({ selectedCost, refetchCosts, setOpen }) {
- 
   const [salary, setSalary] = useState("");
-
   const [name, setName] = useState("");
+  const [contractStartDate, setContractStartDate] = useState("");
+  const [contractEndDate, setContractEndDate] = useState("");
 
-  
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
-
-  // Populate the form fields when the selectedCost changes
   useEffect(() => {
     if (selectedCost) {
-   
       setSalary(selectedCost.salary);
-    
       setName(selectedCost.name);
-     
+      
+      // Use the dates as plain strings, ensuring no time zone shift
+      setContractStartDate(selectedCost.contract_start_date ? selectedCost.contract_start_date.split("T")[0] : "");
+      setContractEndDate(selectedCost.contract_end_date ? selectedCost.contract_end_date.split("T")[0] : "");
     }
   }, [selectedCost]);
 
-  // Fetch the cost types when the component mounts
-  useEffect(() => {
-    const fetchTypes = async () => {
-      try {
-        const response = await fetch("/api/employees");
-        const data = await response.json();
-        setTypes(data); 
-        setLoading(false); 
-      } catch (error) {
-        setError("Failed to load cost types.");
-        setLoading(false);
-      }
-    };
-
-    fetchTypes();
-  }, []); 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     const response = await fetch("/api/employees", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
-        
-        salary: salary, 
-        
-        name, 
-       
-        id: selectedCost.id 
+      body: JSON.stringify({
+        id: selectedCost.id,
+        salary,
+        name,
+        contract_start_date: contractStartDate, // Send as string in YYYY-MM-DD format
+        contract_end_date: contractEndDate,    // Send as string in YYYY-MM-DD format
       }),
     });
 
     if (response.ok) {
-      // Reset form after successful submission
-      
-      setSalary("");
-      
-      setName("");
-      
-
-      // Close the drawer and refetch the table
-      setOpen(false);  // Close the drawer
-      refetchCosts();  // Call refetch after successful submission
+      setOpen(false);
+      refetchCosts();
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Form fields */}
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 shadow-md rounded-md">
+      {/* Name Field */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
           اسم الموظف
@@ -83,10 +54,11 @@ export default function EditEmployee({ selectedCost, refetchCosts, setOpen }) {
           onChange={(e) => setName(e.target.value)}
           placeholder="ادخل اسم الموظف"
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
 
+      {/* Salary Field */}
       <div>
         <label htmlFor="salary" className="block text-sm font-medium text-gray-700">
           الراتب
@@ -96,18 +68,48 @@ export default function EditEmployee({ selectedCost, refetchCosts, setOpen }) {
           type="text"
           value={salary}
           onChange={(e) => setSalary(e.target.value)}
-          placeholder="ادخل راتب الموظف"
+          placeholder="ادخل الراتب"
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
 
+      {/* Contract Start Date Field */}
+      <div>
+        <label htmlFor="contractStartDate" className="block text-sm font-medium text-gray-700">
+          تاريخ بدء العقد
+        </label>
+        <input
+          id="contractStartDate"
+          type="date"
+          value={contractStartDate}
+          onChange={(e) => setContractStartDate(e.target.value)}
+          required
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      {/* Contract End Date Field */}
+      <div>
+        <label htmlFor="contractEndDate" className="block text-sm font-medium text-gray-700">
+          تاريخ نهاية العقد
+        </label>
+        <input
+          id="contractEndDate"
+          type="date"
+          value={contractEndDate}
+          onChange={(e) => setContractEndDate(e.target.value)}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      {/* Submit Button */}
       <div>
         <button
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-         حفظ و تعديل
+          حفظ و تعديل
         </button>
       </div>
     </form>
