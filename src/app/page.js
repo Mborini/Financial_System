@@ -12,7 +12,8 @@ import PieChartCard from "./components/PieChartCard";
 import { startOfYear, endOfYear } from "date-fns"; // Import these functions at the top
 import ConfirmModal from "./components/Modals/confirmDelete";
 import ConfirmAlertModal from "./components/Modals/confirmAlert";
-
+import { FaFileExcel } from "react-icons/fa";
+import * as XLSX from "xlsx";
 // Fetch Data from API (replace the URL with your actual API endpoints)
 const fetchData = async (url) => {
   try {
@@ -23,7 +24,12 @@ const fetchData = async (url) => {
     return [];
   }
 };
-
+const exportToExcel = (data, fileName) => {
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+  XLSX.writeFile(workbook, `${fileName}.xlsx`);
+};
 export default function Home() {
   const [withdrawals, setWithdrawals] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
@@ -74,7 +80,7 @@ export default function Home() {
   };
 
   const alertsConfirmed = () => {
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
   // Filter withdrawals, costs, and purchases based on individual date ranges
   const filterByDate = (data, startDate, endDate) => {
@@ -83,7 +89,13 @@ export default function Home() {
       return itemDate >= startDate && itemDate <= endDate;
     });
   };
-
+  const handleExport = (chartData, title) => {
+    const formattedData = chartData.labels.map((label, index) => ({
+      label,
+      value: chartData.datasets[0].data[index],
+    }));
+    exportToExcel(formattedData, title);
+  };
   const filteredCosts = filterByDate(costs, costDateRange[0], costDateRange[1]);
   const filteredWithdrawals = filterByDate(
     withdrawals,
@@ -440,34 +452,35 @@ export default function Home() {
       },
     ],
   };
-// Utility function to format dates to DD/MM/YYYY
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+  // Utility function to format dates to DD/MM/YYYY
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-    {alertsData.length > 0 && (
-      <ConfirmAlertModal
-        isOpen={isModalOpen}
-        onConfirm={alertsConfirmed}
-title="تنبيه"
-body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
-        //map on alertsData to display the message
-        message={alertsData.map((alert) => (
-          //list the name of the employees who didn't confirm their attendance
-          //firmat date 
-          <ul key={alert.id}>
-            <li>{alert.name},{" "} تاريخ الحضور: {formatDate(alert.check_in)
-            }</li>
-          </ul>
-        ))}
-      />
-    )}
+      {alertsData.length > 0 && (
+        <ConfirmAlertModal
+          isOpen={isModalOpen}
+          onConfirm={alertsConfirmed}
+          title="تنبيه"
+          body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
+          //map on alertsData to display the message
+          message={alertsData.map((alert) => (
+            //list the name of the employees who didn't confirm their attendance
+            //firmat date
+            <ul key={alert.id}>
+              <li>
+                {alert.name}, تاريخ الحضور: {formatDate(alert.check_in)}
+              </li>
+            </ul>
+          ))}
+        />
+      )}
       {/* Summary Section */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* Total Employees */}
@@ -527,16 +540,45 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
       <div className="grid grid-cols-1 mb-4 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {/* Costs and Income by Type Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
+         <div className="justify-between flex text-2xl font-semibold mb-4">
+         <h1></h1>
           <h2 className="text-xl text-center font-bold mb-4">
-            نسبة التكاليف للشهر الحالي
+            نسبة التكاليف للشهر الحالي{" "}
           </h2>
-          <LineChartCard title="Costs" data={costsByTypeChartData} />
+          <button
+            className="ml-2 p-2 bg-green-500 text-white rounded-md"
+            onClick={() =>
+              handleExport(costsByTypeChartData, "CostsByTypeData")
+            }
+          >
+            <FaFileExcel />
+          </button>
+         </div>
+
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-full">
+              {/* Your chart component */}
+              <LineChartCard title="Costs" data={costsByTypeChartData} />
+            </div>
+          </div>
         </div>
+
         {/* Purchases by Supplier Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
+         <div className="justify-between flex text-2xl font-semibold mb-4">
+         <h1></h1>
           <h2 className="text-xl text-center font-bold mb-4">
             نسبة المشتريات حسب الموردين
-          </h2>
+            </h2>
+          <button
+            className="ml-2 p-2 bg-green-500 text-white rounded-md"
+            onClick={() =>
+              handleExport(purchasesBySupplierChartData, "PurchasesBySupplierData")
+            }
+          >
+            <FaFileExcel />
+          </button>
+         </div>
           <BarChartCard
             title="Purchases by Supplier"
             data={purchasesBySupplierChartData}
@@ -549,7 +591,7 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
         <div className="p-4 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl text-center font-bold mb-4">نسبة المشتريات</h2>
           <div className="flex items-center justify-between mb-4">
-            <div className="w-full">
+            <div className="w-full flex justify-between">
               <DatePicker
                 selected={purchaseDateRange[0]}
                 onChange={(update) => setPurchaseDateRange(update)}
@@ -559,6 +601,14 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                 dateFormat="yyyy/MM/dd"
                 className="border p-0.5 text-sm rounded-md w-full"
               />
+              <button
+                className="ml-2 p-2 bg-green-500 text-white rounded-md"
+                onClick={() =>
+                  handleExport(purchasesChartData, "PurchasesData")
+                }
+              >
+                <FaFileExcel />
+              </button>
             </div>
           </div>
           <PieChartCard title="Purchases" data={purchasesChartData} />
@@ -570,7 +620,7 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
             مسحوبات الموظفين
           </h2>
           <div className="flex items-center justify-between mb-4">
-            <div className="w-full">
+            <div className="w-full flex justify-between">
               <DatePicker
                 selected={withdrawalDateRange[0]}
                 onChange={(update) => setWithdrawalDateRange(update)}
@@ -580,6 +630,14 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                 dateFormat="yyyy/MM/dd"
                 className="border p-0.5 text-sm rounded-md w-full"
               />
+              <button
+                className="ml-2 p-2 bg-green-500 text-white rounded-md"
+                onClick={() =>
+                  handleExport(withdrawalsChartData, "WithdrawalsData")
+                }
+              >
+                <FaFileExcel />
+              </button>
             </div>
           </div>
           <DoughnutChartCard title="Withdrawals" data={withdrawalsChartData} />
@@ -591,7 +649,7 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
             المــبـيــعــات
           </h2>
           <div className="flex items-center justify-between mb-4">
-            <div className="w-full">
+            <div className="w-full flex justify-between">
               <DatePicker
                 selected={salesDateRange[0]}
                 onChange={(update) => setSalesDateRange(update)}
@@ -601,6 +659,12 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                 dateFormat="yyyy/MM/dd"
                 className="border p-0.5 text-sm rounded-md w-full"
               />
+              <button
+                className="ml-2 p-2 bg-green-500 text-white rounded-md"
+                onClick={() => handleExport(salesChartData, "SalesData")}
+              >
+                <FaFileExcel />
+              </button>
             </div>
           </div>
           <PieChartCard title="Sales" data={salesChartData} />
@@ -610,7 +674,7 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
         <div className="p-4 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl text-center font-bold mb-4">الـتـكالـيـف</h2>
           <div className="flex items-center justify-between mb-4">
-            <div className="w-full">
+            <div className="w-full flex justify-between">
               <DatePicker
                 selected={costDateRange[0]}
                 onChange={(update) => setCostDateRange(update)}
@@ -620,6 +684,12 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                 dateFormat="yyyy/MM/dd"
                 className="border p-0.5 text-sm rounded-md w-full"
               />
+              <button
+                className="ml-2 p-2 bg-green-500 text-white rounded-md"
+                onClick={() => handleExport(costChartData, "CostsData")}
+              >
+                <FaFileExcel />
+              </button>
             </div>
           </div>
           <PolarAreaChartCard title="Costs" data={costChartData} />
