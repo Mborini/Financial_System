@@ -3,6 +3,7 @@ import AddDrawer from "../components/Drawers/add";
 import CheckOutForm from "./CheckOutForm";
 import { FaPrint } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
+import ConfirmAlertModal from "../components/Modals/confirmAlert";
 
 // Utility function to format datetime
 function formatDateTime(dateTime) {
@@ -33,10 +34,13 @@ export default function AttendanceTable({
   const [selectedDate, setSelectedDate] = useState(getCurrentDate()); // Filter date (default: current day)
   const [filteredAttendance, setFilteredAttendance] = useState([]); // Store filtered attendance
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(true);
   const [recordToDelete, setRecordToDelete] = useState(null);
+  const [alertsData, setAlertsData] = useState([]); // New state for alerts
 
   // Fetch attendance data when the component mounts or attendanceUpdated changes
   useEffect(() => {
+    fetchAlerts();
     const fetchAttendance = async () => {
       const response = await fetch("/api/attendance");
       const data = await response.json();
@@ -44,6 +48,7 @@ export default function AttendanceTable({
     };
     fetchAttendance();
   }, [attendanceUpdated]);
+
 
   // Filter attendance based on the selected date
   useEffect(() => {
@@ -58,7 +63,14 @@ export default function AttendanceTable({
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
-
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
   const handleOpenDrawer = (record) => {
     if (record.employee_id) {
       setSelectedRecord(record); // Store the record with employee_id
@@ -120,7 +132,16 @@ export default function AttendanceTable({
       console.error("Error during check-out");
     }
   };
+  const fetchAlerts = async () => {
+    const response = await fetch("/api/alerts");
+    const data = await response.json();
+    setAlertsData(data);
+  };
 
+
+  const alertsConfirmed = () => {
+    setIsAlertModalOpen(false);
+  };
   const handlePrint = (e) => {
     e.preventDefault();
     const printContents = document.getElementById("printTable").outerHTML;
@@ -138,7 +159,25 @@ export default function AttendanceTable({
 
   return (
     <div>
+
       <div className="container mx-auto px-4">
+      {alertsData.length > 0 && (
+      <ConfirmAlertModal
+        isOpen={isAlertModalOpen}
+        onConfirm={alertsConfirmed}
+title="تنبيه"
+body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
+        //map on alertsData to display the message
+        message={alertsData.map((alert) => (
+          //list the name of the employees who didn't confirm their attendance
+          //firmat date 
+          <ul key={alert.id}>
+            <li>{alert.name} تاريخ الحضور: {formatDate(alert.check_in)
+            }</li>
+          </ul>
+        ))}
+      />
+    )}
         <div className="mb-4 flex justify-between">
           <div>
             <label

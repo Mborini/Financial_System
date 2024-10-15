@@ -10,6 +10,8 @@ import BarChartCard from "./components/BarChartCard";
 import { startOfMonth, endOfMonth } from "date-fns";
 import PieChartCard from "./components/PieChartCard";
 import { startOfYear, endOfYear } from "date-fns"; // Import these functions at the top
+import ConfirmModal from "./components/Modals/confirmDelete";
+import ConfirmAlertModal from "./components/Modals/confirmAlert";
 
 // Fetch Data from API (replace the URL with your actual API endpoints)
 const fetchData = async (url) => {
@@ -32,6 +34,8 @@ export default function Home() {
   const [staffFood, setStaffFood] = useState([]); // New state for staff food
   const [costStartDate, setCostStartDate] = useState(startOfMonth(new Date()));
   const [costEndDate, setCostEndDate] = useState(endOfMonth(new Date()));
+  const [open, setOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [costDateRange, setCostDateRange] = useState([
     startOfYear(new Date()),
     endOfYear(new Date()),
@@ -44,25 +48,16 @@ export default function Home() {
     startOfYear(new Date()),
     endOfYear(new Date()),
   ]);
-  // const [salesDateRange, setSalesDateRange] = useState([
-  //   startOfMonth(new Date()),
-  //   endOfMonth(new Date()),
-  // ]);
 
-  // const [withdrawalDateRange, setWithdrawalDateRange] = useState([
-  //   startOfMonth(new Date()),
-  //   endOfMonth(new Date()),
-  // ]);
-  // const [costDateRange, setCostDateRange] = useState([
-  //   startOfMonth(new Date()),
-  //   endOfMonth(new Date()),
-  // ]);
   const [purchaseDateRange, setPurchaseDateRange] = useState([
     startOfMonth(new Date()),
     endOfMonth(new Date()),
   ]);
+
+  const [alertsData, setAlertsData] = useState([]); // New state for alerts
   // Fetch withdrawals, suppliers, costs, purchases, and sales when the component mounts
   useEffect(() => {
+    fetchAlerts();
     fetchData("/api/withdrawals").then(setWithdrawals);
     fetchData("/api/suppliers").then(setSuppliers);
     fetchData("/api/employees").then(setEmployees);
@@ -72,6 +67,15 @@ export default function Home() {
     fetchData("/api/stafffood").then(setStaffFood); // Fetch staff food data
   }, []);
 
+  const fetchAlerts = async () => {
+    const response = await fetch("/api/alerts");
+    const data = await response.json();
+    setAlertsData(data);
+  };
+
+  const alertsConfirmed = () => {
+    setIsModalOpen(false); 
+  };
   // Filter withdrawals, costs, and purchases based on individual date ranges
   const filterByDate = (data, startDate, endDate) => {
     return data.filter((item) => {
@@ -171,8 +175,6 @@ export default function Home() {
     },
     0
   );
-
-  console.log("purchasesForCurrentMonth:", purchasesForCurrentMonth);
 
   // Calculate total remaining amount for the current month
   const totalRemainingAmountForCurrentMonth = purchasesForCurrentMonth.reduce(
@@ -438,9 +440,34 @@ export default function Home() {
       },
     ],
   };
-
+// Utility function to format dates to DD/MM/YYYY
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+    {alertsData.length > 0 && (
+      <ConfirmAlertModal
+        isOpen={isModalOpen}
+        onConfirm={alertsConfirmed}
+title="تنبيه"
+body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
+        //map on alertsData to display the message
+        message={alertsData.map((alert) => (
+          //list the name of the employees who didn't confirm their attendance
+          //firmat date 
+          <ul key={alert.id}>
+            <li>{alert.name} تاريخ الحضور: {formatDate(alert.check_in)
+            }</li>
+          </ul>
+        ))}
+      />
+    )}
       {/* Summary Section */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* Total Employees */}
@@ -500,15 +527,16 @@ export default function Home() {
       <div className="grid grid-cols-1 mb-4 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {/* Costs and Income by Type Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2  className="text-xl text-center font-bold mb-4">نسبة التكاليف للشهر الحالي</h2>
-          <LineChartCard
-            title="Costs"
-            data={costsByTypeChartData}
-          />
+          <h2 className="text-xl text-center font-bold mb-4">
+            نسبة التكاليف للشهر الحالي
+          </h2>
+          <LineChartCard title="Costs" data={costsByTypeChartData} />
         </div>
         {/* Purchases by Supplier Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl text-center font-bold mb-4">نسبة المشتريات حسب الموردين</h2>
+          <h2 className="text-xl text-center font-bold mb-4">
+            نسبة المشتريات حسب الموردين
+          </h2>
           <BarChartCard
             title="Purchases by Supplier"
             data={purchasesBySupplierChartData}
@@ -538,7 +566,9 @@ export default function Home() {
 
         {/* Withdrawals Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl text-center font-bold mb-4">مسحوبات الموظفين</h2>
+          <h2 className="text-xl text-center font-bold mb-4">
+            مسحوبات الموظفين
+          </h2>
           <div className="flex items-center justify-between mb-4">
             <div className="w-full">
               <DatePicker
@@ -557,7 +587,9 @@ export default function Home() {
 
         {/* Sales Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          <h2 className="text-xl text-center font-bold mb-4">المــبـيــعــات</h2>
+          <h2 className="text-xl text-center font-bold mb-4">
+            المــبـيــعــات
+          </h2>
           <div className="flex items-center justify-between mb-4">
             <div className="w-full">
               <DatePicker
@@ -594,16 +626,12 @@ export default function Home() {
         </div>
         {/* Payment Status Distribution Chart */}
         <div className="p-4 bg-white text-center shadow-lg rounded-lg">
-          <h2 className="text-xl font-bold  mb-4">
-           حالة الدفع للشهر الحالي         </h2>
+          <h2 className="text-xl font-bold  mb-4">حالة الدفع للشهر الحالي </h2>
           <DoughnutChartCard
             title="Payment Status Distribution"
             data={paymentStatusChartData}
           />
         </div>
-
-        
-        
       </div>
     </div>
   );
