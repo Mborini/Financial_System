@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import EditDrawer from '../components/Drawers/edit';
 import { FaceFrownIcon } from '@heroicons/react/24/outline';
 import EditCostTypesForm from './EditCostsTypesForm';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import ConfirmModal from '../components/Modals/confirmDelete';
 
 function CostsTypesTable({ costsTypesUpdated, refetchCostsTypes }) {
   const [costsTypes, setcostsTypes] = useState([]);
@@ -11,7 +13,8 @@ function CostsTypesTable({ costsTypesUpdated, refetchCostsTypes }) {
   const [costsTypesPerPage] = useState(10);
   const [selectedCost, setSelectedCost] = useState(null);
   const [open, setOpen] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
   // Fetch data when component mounts or costsTypesUpdated changes
   useEffect(() => {
     const fetchcostsTypes = async () => {
@@ -35,7 +38,17 @@ function CostsTypesTable({ costsTypesUpdated, refetchCostsTypes }) {
     setSelectedCost(cost); // Set the selected cost for editing
     setOpen(true); // Open the drawer
   };
+  const confirmDelete = (record) => {
+    setRecordToDelete(record);
+    setIsModalOpen(true);
+  };
 
+  const handleDeleteConfirmed = () => {
+    if (recordToDelete && recordToDelete.id) {
+      handleDelete(recordToDelete.id);
+      setIsModalOpen(false);
+    }
+  };
   // Handle deletion of a cost
   const handleDelete = async (id) => {
     try {
@@ -99,25 +112,35 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.description}</td>
              
-              <td className="border border-gray-300 px-4 py-2 text-center">
+              <td className="border border-gray-300 px-4  py-2 text-center">
+              <div className="flex gap-2 justify-center">
                 <button
-                  className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
-                  onClick={() => handleEditClick(costType)}
+                        className=" text-orange-500 font-bold py-1 px1- rounded "
+                        onClick={() => handleEditClick(costType)}
                 >
-                  تعديل
+                        <FaEdit className="inline-block"/>{" "}
+
                 </button>
                 <button
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                  onClick={() => handleDelete(costType.id)}
+                  onClick={() => confirmDelete(costType)}
+                  className=" text-red-500 font-bold py-1 px1- rounded "
+
                 >
-                  حذف
+                  <FaTrash className="inline-block" />
                 </button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
+      <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDeleteConfirmed}
+          title="تأكيد الحذف"
+          message={`هل أنت متأكد من حذف نوع كلفة بإسم : ${recordToDelete?.name} ؟`}
+        />
       {/* Pagination */}
       <div className="flex justify-center my-4">
         <button
