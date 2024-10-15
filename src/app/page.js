@@ -462,7 +462,7 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
           //list the name of the employees who didn't confirm their attendance
           //firmat date 
           <ul key={alert.id}>
-            <li>{alert.name} تاريخ الحضور: {formatDate(alert.check_in)
+            <li>{alert.name},{" "} تاريخ الحضور: {formatDate(alert.check_in)
             }</li>
           </ul>
         ))}
