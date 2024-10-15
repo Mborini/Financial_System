@@ -5,7 +5,7 @@ export async function GET() {
 
   try {
     // Fetch all sales records from the "sales" table
-    const result = await client.query('SELECT * FROM sales');
+    const result = await client.query('SELECT * FROM sales order by sale_date desc');//from 
     return new Response(JSON.stringify(result.rows), { status: 200 });
   } catch (error) {
     console.error('Error fetching sales:', error);

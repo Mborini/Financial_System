@@ -6,7 +6,7 @@ export async function GET() {
 
   try {
     // Fetch all records from the "Purchases" table
-    const result = await client.query("SELECT * FROM Purchases");
+    const result = await client.query("SELECT * FROM Purchases order by date desc");
 
     if (result.rows.length === 0) {
       return new Response(JSON.stringify({ message: "No purchases found" }), {

@@ -13,6 +13,7 @@ export async function GET() {
        SELECT sf.*, e.name AS employee_name 
       FROM staff_food sf
       LEFT JOIN Employees e ON sf.employee_id = e.id
+      order by sf.date desc
       `);
   
       if (result.rows.length === 0) {
