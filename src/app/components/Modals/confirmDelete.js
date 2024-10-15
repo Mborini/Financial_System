@@ -14,7 +14,7 @@ export default function ConfirmModal({ isOpen, onClose, onConfirm, title, messag
   if (!isVisible) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center ${isOpen ? "fade-in" : "fade-out"}`}>
+    <div dir="rtl" className={`fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center ${isOpen ? "fade-in" : "fade-out"}`}>
       <div className={`bg-white p-4 rounded-lg shadow-lg w-96 transform transition-transform duration-300 ${isOpen ? "scale-100" : "scale-90"}`}>
         <h2 className="text-xl font-semibold">{title}</h2>
         <p className="my-4">{message}</p>

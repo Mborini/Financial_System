@@ -17,7 +17,7 @@ export default function VacationManagement() {
     <div>
       <div className="flex justify-between mb-4 mx-12">
         <h1></h1>
-        <h2 className="text-2xl font-semibold text-center my-4">Vacation Management</h2>
+        <h2 className="text-2xl font-semibold text-center my-4">ادارة الاجازات و العطل</h2>
         <button onClick={() => setOpen(true)}>
           <FaPlus size={25} color="blue" />
         </button>

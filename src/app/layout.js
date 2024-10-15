@@ -193,7 +193,7 @@ const toggleEmployeesDropdown = () => {
               </li>
               <li>
                 <a href="/overTime" className="hover:text-yellow-300">
-                  ساعات العمل الإضافي {/* Over Time */}
+                   تقرير العمل الإضافي {/* Over Time */}
                 </a>
               </li>
               <li>
@@ -369,8 +369,8 @@ const toggleEmployeesDropdown = () => {
                       href="/overTime"
                       onClick={handleLinkClick}
                     >
-                      <FaClock className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                     ساعات العمل الإضافي {/* Over Time */}
+                      <FaClock  className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                    تقرير  العمل الإضافي {/* Over Time */}
                     </a>
                   </li>
 

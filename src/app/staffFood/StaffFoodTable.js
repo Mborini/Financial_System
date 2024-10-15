@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { FaEdit, FaPrint, FaTrashAlt } from "react-icons/fa";
+import ConfirmModal from "../components/Modals/confirmDelete";
 
 export default function StaffFoodTable({ foodUpdated, refetchFood }) {
   const [staffFood, setStaffFood] = useState([]); // Initialize as an empty array
@@ -16,6 +17,8 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
   const [open, setOpen] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(""); // Employee name filter
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
   const [dateRange, setDateRange] = useState([
     startOfMonth(new Date()),
     endOfMonth(new Date()),
@@ -66,7 +69,17 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
     setSelectedFood(food); // Set the selected entry for editing
     setOpen(true); // Open the drawer for editing
   };
+  const confirmDelete = (record) => {
+    setRecordToDelete(record);
+    setIsModalOpen(true);
+  };
 
+  const handleDeleteConfirmed = () => {
+    if (recordToDelete && recordToDelete.id) {
+      handleDelete(recordToDelete.id);
+      setIsModalOpen(false);
+    }
+  };
   // Delete entry handler
   const handleDelete = async (id) => {
     try {
@@ -137,46 +150,45 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
     <div className="container mx-auto px-4">
       {/* Date Range and Employee Name Filter */}
       <div className="flex flex-col md:flex-row justify-between items-start my-4">
-  <div className="flex flex-col md:flex-row items-center my-4 w-full">
-    <div className="flex justify-start items-center w-full">
-      {/* Date Range Filter and Employee Name Filter */}
-      <div className="flex flex-col sm:flex-row items-start w-full space-y-2 sm:space-y-0 sm:space-x-4">
-        <DatePicker
-          selected={startDate}
-          onChange={(update) => setDateRange(update)}
-          startDate={startDate}
-          endDate={endDate}
-          selectsRange
-          isClearable
-          className="border border-gray-300 p-2 rounded w-full sm:w-auto"
-          dateFormat="yyyy/MM/dd"
-        />
-        <select
-          value={selectedEmployee}
-          onChange={(e) => setSelectedEmployee(e.target.value)}
-          className="border border-gray-300 p-2 rounded w-full sm:w-auto"
-        >
-          <option value="">All Employees</option>
-          {employees.map((employee) => (
-            <option key={employee.id} value={employee.name}>
-              {employee.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex flex-col md:flex-row items-center my-4 w-full">
+          <div className="flex justify-start items-center w-full">
+            {/* Date Range Filter and Employee Name Filter */}
+            <div className="flex flex-col sm:flex-row items-start w-full space-y-2 sm:space-y-0 sm:space-x-4">
+              <DatePicker
+                selected={startDate}
+                onChange={(update) => setDateRange(update)}
+                startDate={startDate}
+                endDate={endDate}
+                selectsRange
+                isClearable
+                className="border border-gray-300 p-2 rounded w-full sm:w-auto"
+                dateFormat="yyyy/MM/dd"
+              />
+              <select
+                value={selectedEmployee}
+                onChange={(e) => setSelectedEmployee(e.target.value)}
+                className="border border-gray-300 p-2 rounded w-full sm:w-auto"
+              >
+                <option value="">All Employees</option>
+                {employees.map((employee) => (
+                  <option key={employee.id} value={employee.name}>
+                    {employee.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-25 flex items-start md:w-auto">
+          <button
+            onClick={handlePrint}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
+          >
+            <FaPrint className="inline-block" />
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <div className="w-25 flex items-start md:w-auto">
-    <button
-      onClick={handlePrint}
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
-    >
-      <FaPrint className="inline-block" />
-    </button>
-  </div>
-</div>
-
 
       {/* Summary Table */}
       <div className="mb-4">
@@ -186,7 +198,7 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2 text-center">
-                  Total Amount
+                  مجموع القيم{" "}
                 </th>
               </tr>
             </thead>
@@ -200,7 +212,7 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
           </table>
         </div>
       </div>
-      <div id="printTable" className="overflow-x-auto">
+      <div dir="rtl" id="printTable" className="overflow-x-auto">
         {/* Staff Food Entries Table */}
         <table
           id="printTable"
@@ -208,15 +220,11 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
         >
           <thead>
             <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-2">
-                Employee Name
-              </th>
-              <th className="border border-gray-300 px-4 py-2">Date</th>
-              <th className="border border-gray-300 px-4 py-2">Note</th>
-              <th className="border border-gray-300 px-4 py-2">Amount</th>
-              <th className="border border-gray-300 px-4 py-2 no-print">
-                Actions
-              </th>
+              <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
+              <th className="border border-gray-300 px-4 py-2">التاريخ</th>
+              <th className="border border-gray-300 px-4 py-2">ملاحظات</th>
+              <th className="border border-gray-300 px-4 py-2">القيمة</th>
+              <th className="border border-gray-300 px-4 py-2 no-print"></th>
             </tr>
           </thead>
           <tbody>
@@ -235,23 +243,32 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
                   {food.amount}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center no-print">
-                  <button
-                    className="text-orange-500 font-bold py-1 px-2 rounded"
-                    onClick={() => handleEditClick(food)}
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="text-red-700 font-bold py-1 px-2 rounded ml-2"
-                    onClick={() => handleDelete(food.id)}
-                  >
-                    <FaTrashAlt />
-                  </button>
+                  <div className="flex justify-center">
+                    <button
+                      className="text-orange-500 font-bold py-1 px-2 rounded"
+                      onClick={() => handleEditClick(food)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="text-red-700 font-bold py-1 px-2 rounded ml-2"
+                      onClick={() => confirmDelete(food)}
+                    >
+                      <FaTrashAlt />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDeleteConfirmed}
+          title="تأكيد الحذف"
+          message={`هل أنت متأكد من حذف وجبة الطعام ل${recordToDelete?.employee_name}؟`}
+        />
       </div>
       {/* Pagination */}
       {!isPrinting && (

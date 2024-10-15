@@ -7,7 +7,7 @@ export default function EditWithdrawals({
 }) {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
-  const [employee, setEmployee] = useState("");
+  const [employee, setEmployee] = useState(""); // Store employee_id here
   const [salaryPeriod, setSalaryPeriod] = useState(""); // salary_period field
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,11 +17,19 @@ export default function EditWithdrawals({
   useEffect(() => {
     if (selectedCost) {
       setAmount(selectedCost.amount);
-      setDate(selectedCost.date);
-      setEmployee(selectedCost.employee_name);
-      setSalaryPeriod(selectedCost.salary_period); // Populate salary period
-    }
+      setDate(selectedCost.date.split("T")[0]); // Format date for the date picker
+      setEmployee(selectedCost.employee_id); // Use employee_id, not employee_name
+  
+      // Ensure salaryPeriod is in the format YYYY-MM
+      if (selectedCost.salary_period) {
+        const formattedSalaryPeriod = selectedCost.salary_period.length === 7 ? selectedCost.salary_period : selectedCost.salary_period.split("T")[0].slice(0, 7);
+        setSalaryPeriod(formattedSalaryPeriod);
+      } else {
+        setSalaryPeriod(""); // If salary_period is not defined, set it to an empty string
+      }
+    }    
   }, [selectedCost]);
+  
 
   // Fetch the employees when the component mounts
   useEffect(() => {
@@ -51,7 +59,7 @@ export default function EditWithdrawals({
         amount,
         old_amount: selectedCost.amount,
         date,
-        employee_id: employee, // employee_id sent here
+        employee_id: employee, // Send employee_id here
         salary_period: salaryPeriod, // salary_period sent here
         id: selectedCost.id,
       }),
@@ -79,7 +87,7 @@ export default function EditWithdrawals({
         </label>
         <select
           id="employee"
-          value={employee}
+          value={employee} // This should be employee_id
           onChange={(e) => setEmployee(e.target.value)}
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

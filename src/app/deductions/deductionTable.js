@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
+import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
+import ConfirmModal from "../components/Modals/confirmDelete";
 
 export default function DeductionTable({
   deductionsUpdated,
@@ -10,22 +12,28 @@ export default function DeductionTable({
   setOpen,
 }) {
   const [deductions, setDeductions] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [deductionsPerPage] = useState(10);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
+  // Initialize dateRange with the start and end of the current month
   const [dateRange, setDateRange] = useState([
     startOfMonth(new Date()),
     endOfMonth(new Date()),
   ]);
   const [startDate, endDate] = dateRange;
 
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [isPrinting, setIsPrinting] = useState(false);
+
   useEffect(() => {
     const fetchDeductions = async () => {
       try {
         const response = await fetch("/api/deductions");
         const data = await response.json();
-        console.log("Fetched Deductions Data:", data);
         setDeductions(Array.isArray(data) ? data : []);
         setLoading(false);
       } catch (error) {
@@ -34,16 +42,31 @@ export default function DeductionTable({
       }
     };
 
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch("/api/employees");
+        const data = await response.json();
+        setEmployees(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+
     fetchDeductions();
+    fetchEmployees();
   }, [deductionsUpdated]);
+  const confirmDelete = (record) => {
+    setRecordToDelete(record);
+    setIsModalOpen(true);
+  };
 
+  const handleDeleteConfirmed = () => {
+    if (recordToDelete && recordToDelete.id) {
+      handleDelete(recordToDelete.id);
+      setIsModalOpen(false);
+    }
+  };
   const handleDelete = async (deduction) => {
-    console.log("Attempting to delete deduction with:", {
-      id: deduction.id,
-      employee_id: deduction.employee_id,
-      amount: deduction.amount,
-    });
-
     try {
       const response = await fetch(`/api/deductions`, {
         method: "DELETE",
@@ -66,19 +89,24 @@ export default function DeductionTable({
     }
   };
 
-  // Filter deductions based on date range
+  // Filter deductions based on date range and employee name
   const filteredDeductions = deductions.filter((deduction) => {
     const deductionDate = new Date(deduction.date);
-    return deductionDate >= startDate && deductionDate <= endDate;
+    const dateMatches =
+      !startDate ||
+      !endDate ||
+      (deductionDate >= startDate && deductionDate <= endDate);
+    const employeeMatches =
+      selectedEmployee === "" || deduction.employee_name === selectedEmployee;
+    return dateMatches && employeeMatches;
   });
 
   // Pagination logic
   const indexOfLastDeduction = currentPage * deductionsPerPage;
   const indexOfFirstDeduction = indexOfLastDeduction - deductionsPerPage;
-  const currentDeductions = filteredDeductions.slice(
-    indexOfFirstDeduction,
-    indexOfLastDeduction
-  );
+  const currentDeductions = isPrinting
+    ? filteredDeductions
+    : filteredDeductions.slice(indexOfFirstDeduction, indexOfLastDeduction);
 
   const totalPages = Math.ceil(filteredDeductions.length / deductionsPerPage);
 
@@ -94,28 +122,67 @@ export default function DeductionTable({
     }
   };
 
-  if (loading) return <div className="text-center text-blue-600">Loading...</div>;
-  if (error) return <div className="text-center text-red-600">Error: {error}</div>;
+  const handlePrint = (e) => {
+    e.preventDefault();
+    setIsPrinting(true);
+    setTimeout(() => {
+      window.print();
+      setIsPrinting(false);
+    }, 500);
+  };
+
+  if (loading)
+    return <div className="text-center text-blue-600">Loading...</div>;
+  if (error)
+    return <div className="text-center text-red-600">Error: {error}</div>;
   if (deductions.length === 0) return <div>No deductions found.</div>;
 
   return (
     <div className="container mx-auto px-4">
-      <div className="flex justify-center my-4">
-        <DatePicker
-          selected={startDate}
-          onChange={(update) => {
-            if (Array.isArray(update)) {
+       <div className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
+       <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
+       <div className="mb-4 md:mb-0 w-full md:w-auto">
+
+          <DatePicker
+            selected={startDate}
+            onChange={(update) => {
               setDateRange(update);
-            }
-          }}
-          startDate={startDate}
-          endDate={endDate}
-          selectsRange
-          isClearable
-          placeholderText="Select a date range"
-          className="border border-gray-300 p-2 rounded"
-        />
+            }}
+            startDate={startDate}
+            endDate={endDate}
+            selectsRange
+            isClearable
+            placeholderText="Select a date range"
+            className="border border-gray-300 p-2 rounded"
+          />
+        </div>
+        <div className=" md:mb-0 w-full md:w-auto">
+
+          <select
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+            className="border border-gray-300  p-2 rounded"
+          >
+            <option value="">All Employees</option>
+            {employees.map((employee) => (
+              <option key={employee.id} value={employee.name}>
+                {employee.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        </div>
+        <div className="flex justify-start md:justify-start  md:mt-0">
+
+        <button
+          onClick={handlePrint}
+          className="bg-blue-500  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+          <FaPrint className="inline-block mr-2" />
+        </button>
       </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table
           dir="rtl"
@@ -146,61 +213,70 @@ export default function DeductionTable({
                   {new Date(deduction.date).toLocaleDateString()}
                 </td>
                 <td className="border border-gray-300 py-2 text-center">
-                  <button
-                    className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
-                    onClick={() => {
+                <div className="flex justify-center">
+                      <button
+                        className=" text-orange-500 font-bold py-1 px1- rounded "
+                        onClick={() => {
                       setSelectedDeduction(deduction);
                       setOpen(true);
-                    }}
-                  >
-                    تعديل
-                  </button>
-                  <button
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                    onClick={() => handleDelete(deduction)}
-                  >
-                    حذف
-                  </button>
+                    }}                      >
+                        <FaEdit />{" "}
+                      </button>
+                      <button
+                        className=" text-red-500 font-bold py-1 px-1 rounded "
+                        onClick={() => confirmDelete(deduction)}
+                        >
+                        <FaTrash />
+                      </button>
+                    </div>
+
+                 
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDeleteConfirmed}
+          title="تأكيد الحذف"
+          message={`هل أنت متأكد من ازالة الخصم من راتب ${recordToDelete?.employee_name} و بمقدار ${recordToDelete?.amount} ؟`}
+        />
       </div>
-      
+
       {/* Pagination Controls */}
-      <div className="flex justify-center my-4">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50`}
-        >
-          Prev
-        </button>
-
-        {/* Page Number Buttons */}
-        {Array.from({ length: totalPages }, (_, i) => (
+      {!isPrinting && (
+        <div className="flex justify-center my-4">
           <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            className={`px-4 py-2 mx-1 rounded ${
-              i + 1 === currentPage
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 hover:bg-gray-400"
-            }`}
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
           >
-            {i + 1}
+            Prev
           </button>
-        ))}
-
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50`}
-        >
-          Next
-        </button>
-      </div>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-4 py-2 mx-1 rounded ${
+                i + 1 === currentPage
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 hover:bg-gray-400"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -10,7 +10,7 @@ function formatHoursAndMinutes(totalHours) {
 
   const hours = Math.floor(totalHours); // Get the integer part for hours
   const minutes = Math.round((totalHours % 1) * 60); // Get the remainder and convert to minutes
-  return `${hours} hours, ${minutes} minutes`;
+  return `${hours} ساعة, ${minutes} دقيقة`;
 }
 
 // Helper function to get year and month as 'YYYY-MM'
@@ -124,25 +124,24 @@ export default function OvertimePage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-semibold mb-4">Monthly Overtime Records</h2>
+   <div className="text-center text-2xl font-semibold mb-4"> 
+   <h1></h1>
+      <h2 className="text-2xl font-semibold mb-4">تقرير الساعات الإضافية </h2>
+      <h1></h1>
+      </div>
 
       <div className="flex justify-between">
       <div className="flex space-x-4 mb-6">
         {/* Employee Filter */}
         <div>
-          <label
-            htmlFor="employeeFilter"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Employee
-          </label>
+      
           <select
             id="employeeFilter"
             value={selectedEmployee}
             onChange={handleEmployeeChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           >
-            <option value="">All Employees</option>
+            <option value="">اختر</option>
             {employees.map((employee) => (
               <option key={employee.id} value={employee.name}>
                 {employee.name}
@@ -153,12 +152,7 @@ export default function OvertimePage() {
 
         {/* Month Filter */}
         <div>
-          <label
-            htmlFor="monthFilter"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Month
-          </label>
+          
           <input
             type="month"
             id="monthFilter"
@@ -184,15 +178,17 @@ export default function OvertimePage() {
         <p>No overtime records found.</p>
       ) : (
         <div id="printTable">
+        <div dir="rtl" className="overflow-x-auto">
+
           <table className="min-w-full table-auto border-collapse border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2">
-                  Employee Name
+                  اسم الموظف
                 </th>
-                <th className="border border-gray-300 px-4 py-2">Month</th>
+                <th className="border border-gray-300 px-4 py-2">للشهر</th>
                 <th className="border border-gray-300 px-4 py-2">
-                  Total Overtime Hours
+                  عدد الساعات الإضافية  
                 </th>
               </tr>
             </thead>
@@ -206,10 +202,10 @@ export default function OvertimePage() {
                     <td className="border border-gray-300 px-4 py-2">
                       {employee}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border border-gray-300 px-4 py-2 ">
                       {month}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td  className="border border-gray-300 px-4 py-2  ">
                       {formatHoursAndMinutes(totalOvertime)}
                     </td>
                   </tr>
@@ -217,6 +213,8 @@ export default function OvertimePage() {
               })}
             </tbody>
           </table>
+
+        </div>
         </div>
       )}
     </div>
