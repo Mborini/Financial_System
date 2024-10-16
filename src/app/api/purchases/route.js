@@ -26,7 +26,7 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const { amount, paidAmount, paymentStatus, date, name, supplier } = await request.json();
+  const { amount, paidAmount, paymentStatus, date, name, supplier, checkNumber } = await request.json(); // Add checkNumber
 
   // Validate required fields
   if (!amount || !date || !name || !supplier || paidAmount === undefined || !paymentStatus) {
@@ -42,8 +42,8 @@ export async function POST(request) {
   try {
     // Insert a new purchase record into the "Purchases" table
     await client.query(
-      "INSERT INTO Purchases (amount, paid_amount, remaining_amount, payment_status, date, name, supplier) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [amount, paidAmount, remainingAmount, paymentStatus, date, name, supplier]
+      "INSERT INTO Purchases (amount, paid_amount, remaining_amount, payment_status, date, name, supplier, check_number) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [amount, paidAmount, remainingAmount, paymentStatus, date, name, supplier, checkNumber || null] // Use `null` if no check number
     );
     return new Response(JSON.stringify({ message: "Purchase added" }), {
       status: 201,
@@ -57,8 +57,9 @@ export async function POST(request) {
     client.release(); // Release the client back to the pool
   }
 }
+
 export async function PUT(request) {
-  const { id, amount, paidAmount, paymentStatus, date, name, supplier } = await request.json();
+  const { id, amount, paidAmount, paymentStatus, date, name, supplier, checkNumber } = await request.json(); // Add checkNumber
 
   if (!id || !amount || !paidAmount || !paymentStatus || !date || !name || !supplier) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -73,8 +74,8 @@ export async function PUT(request) {
   try {
     // Update the purchase record in the "Purchases" table
     const result = await client.query(
-      "UPDATE Purchases SET amount = $1, paid_amount = $2, remaining_amount = $3, payment_status = $4, date = $5, name = $6, supplier = $7 WHERE id = $8",
-      [amount, paidAmount, remainingAmount, paymentStatus, date, name, supplier, id]
+      "UPDATE Purchases SET amount = $1, paid_amount = $2, remaining_amount = $3, payment_status = $4, date = $5, name = $6, supplier = $7, check_number = $8 WHERE id = $9",
+      [amount, paidAmount, remainingAmount, paymentStatus, date, name, supplier, checkNumber || null, id]
     );
 
     if (result.rowCount === 0) {
@@ -96,8 +97,6 @@ export async function PUT(request) {
   }
 }
 
-
-  
 // DELETE Purchase
 export async function DELETE(request) {
   const { id } = await request.json();

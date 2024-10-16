@@ -11,6 +11,8 @@ export default function PurchasesForm({ refetchCosts, setOpen }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [validationError, setValidationError] = useState(""); // Validation error for amounts
+  const [checkField, setCheckField] = useState(false);
+  const [checkNumber, setCheckNumber] = useState(""); // Add state for check number
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -29,13 +31,19 @@ export default function PurchasesForm({ refetchCosts, setOpen }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validation: Paid Amount should not be greater than Amount
-    if (parseFloat(paidAmount) > parseFloat(amount)) {
-      setValidationError("Paid amount cannot be greater than the total amount.");
+    if (checkField && !checkNumber) {
+      setValidationError("Check number is required for check payments.");
       return;
     }
-
+    // Validation: Paid Amount should not be greater than Amount
+    if (parseFloat(paidAmount) > parseFloat(amount)) {
+      setValidationError(
+        "Paid amount cannot be greater than the total amount."
+      );
+      return;
+    }
+    
+    
     // Clear validation error if valid
     setValidationError("");
 
@@ -54,14 +62,15 @@ export default function PurchasesForm({ refetchCosts, setOpen }) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
-        amount, 
-        paidAmount, 
-        remainingAmount,  // Send remaining amount
-        paymentStatus, 
-        date, 
-        name, 
-        supplier 
+      body: JSON.stringify({
+        amount,
+        paidAmount,
+        remainingAmount, // Send remaining amount
+        paymentStatus,
+        date,
+        name,
+        supplier,
+        checkNumber,
       }),
     });
 
@@ -73,6 +82,10 @@ export default function PurchasesForm({ refetchCosts, setOpen }) {
       setSupplier("");
       setOpen(false); // Close the drawer
       refetchCosts(); // Refetch the table data
+      // Reset check field and check number 
+      setCheckField(false);
+      setCheckNumber("");
+
     }
   };
 
@@ -106,7 +119,6 @@ export default function PurchasesForm({ refetchCosts, setOpen }) {
           تاريخ الشراء
         </label>
         <input
-        
           id="date"
           type="date"
           value={date}
@@ -188,14 +200,47 @@ export default function PurchasesForm({ refetchCosts, setOpen }) {
           )}
         </select>
       </div>
-
+      <div className="flex items-center gap-2 justify-start">
+        <input
+          type="checkbox"
+          id="checkField"
+          name="checkField"
+          checked={checkField}
+          onChange={() => setCheckField(!checkField)} // Properly toggle the checkbox value
+        />
+        <label
+          htmlFor="checkField"
+          className="block text-sm font-medium text-gray-700"
+        >
+          هل الدفع بشيك؟
+        </label>
+      </div>
+      {checkField && (
+        <div>
+          <label
+            htmlFor="checkNumber"
+            className="block text-sm font-medium text-gray-700"
+          >
+            رقم الشيك
+          </label>
+          <input
+            id="checkNumber"
+            type="text"
+            value={checkNumber}
+            onChange={(e) => setCheckNumber(e.target.value)}
+            placeholder="ادخل رقم الشيك"
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      )}
       {/* Submit button */}
       <div>
         <button
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-         اضافة فاتورة 
+          اضافة فاتورة
         </button>
       </div>
     </form>

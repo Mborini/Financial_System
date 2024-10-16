@@ -5,6 +5,8 @@ import EditPurchasesForm from "./EditPurchasesForm";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
+import ConfirmModal from "../components/Modals/confirmDelete";
+import { parseISO, isValid, format } from "date-fns";
 
 function PurchasesTable({ costsUpdated, refetchCosts }) {
   const [purchases, setPurchases] = useState([]);
@@ -14,7 +16,8 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
   const [purchasesPerPage] = useState(10);
   const [selectedPurchase, setSelectedPurchase] = useState(null); // Store the selected purchase for editing
   const [open, setOpen] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
   // Date range state with the default to the current month
   const [dateRange, setDateRange] = useState([
     startOfMonth(new Date()), // Start of the current month
@@ -65,7 +68,17 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
     setSelectedPurchase(purchase); // Set the selected purchase for editing
     setOpen(true); // Open the drawer
   };
+  const confirmDelete = (record) => {
+    setRecordToDelete(record);
+    setIsModalOpen(true); // Open the confirmation modal
+  };
 
+  const handleDeleteConfirmed = () => {
+    if (recordToDelete && recordToDelete.id) {
+      handleDelete(recordToDelete.id); // Delete the record after confirmation
+      setIsModalOpen(false); // Close the modal after deletion
+    }
+  };
   // Handle deletion of a purchase
   const handleDelete = async (id) => {
     try {
@@ -324,94 +337,139 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
       </div>
 
       {/* Table Section */}
-     {/* Table Section */}
-<div className="container mx-auto px-4">
-  {/* Responsive Table Section */}
-  <div className="overflow-x-auto "> {/* Set max height and enable vertical scrolling */}
-    <table
-      dir="rtl"
-      id="printTable"
-      className="min-w-full table-auto border-collapse border border-gray-200"
-    >
-      <thead>
-        <tr className="bg-gray-100">
-          <th className="border border-gray-300 px-4 py-2">اسم الصنف</th>
-          <th className="border border-gray-300 px-4 py-2"> القيمة الفاتورة</th>
-          <th className="border border-gray-300 px-4 py-2"> القيمة المدفوعة</th>
-          <th className="border border-gray-300 px-4 py-2"> القيمة المتبقية</th>
-          <th className="border border-gray-300 px-4 py-2">حالة الدفع</th>
-          <th className="border border-gray-300 px-4 py-2">المورد</th>
-          <th className="border border-gray-300 px-4 py-2">التاريخ</th>
-          <th className="border border-gray-300 px-4 py-2 no-print"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {currentPurchases.map((purchase) => (
-          <tr key={purchase.id} className="bg-white hover:bg-gray-50">
-            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.name}</td>
-            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.amount}</td>
-            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.paid_amount}</td>
-            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.remaining_amount}</td>
-            <td className="border border-gray-300 px-4 py-2 text-center">
-              {purchase.payment_status === "Partial"
-                ? "جزئي"
-                : purchase.payment_status === "Paid"
-                ? "مدفوع"
-                : "دين"}
-            </td>
-            <td className="border border-gray-300 px-4 py-2 text-center">{purchase.supplier}</td>
-            <td className="border border-gray-300 px-4 py-2 text-center">{new Date(purchase.date).toLocaleDateString()}</td>
-            <td className="border border-gray-300 px-4 py-2 text-center no-print">
-              <button
-                className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
-                onClick={() => handleEditClick(purchase)}
-              >
-                تعديل
-              </button>
-              <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                onClick={() => handleDelete(purchase.id)}
-              >
-                حذف
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+      {/* Table Section */}
+      <div className="container mx-auto px-4">
+        {/* Responsive Table Section */}
+        <div className="overflow-x-auto ">
+          {" "}
+          {/* Set max height and enable vertical scrolling */}
+          <table
+            dir="rtl"
+            id="printTable"
+            className="min-w-full table-auto border-collapse border border-gray-200"
+          >
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 px-4 py-2">اسم الصنف</th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {" "}
+                  القيمة الفاتورة
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {" "}
+                  القيمة المدفوعة
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
+                  {" "}
+                  القيمة المتبقية
+                </th>
+                <th className="border border-gray-300 px-4 py-2">حالة الدفع</th>
+                <th className="border border-gray-300 px-4 py-2">المورد</th>
+                <th className="border border-gray-300 px-4 py-2">رقم الشيك</th>
+                <th className="border border-gray-300 px-4 py-2">التاريخ</th>
+                <th className="border border-gray-300 px-4 py-2 no-print"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentPurchases.map((purchase) => (
+                <tr key={purchase.id} className="bg-white hover:bg-gray-50">
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {purchase.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {purchase.amount}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {purchase.paid_amount}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {purchase.remaining_amount}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {purchase.payment_status === "Partial"
+                      ? "جزئي"
+                      : purchase.payment_status === "Paid"
+                      ? "مدفوع"
+                      : "دين"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {purchase.supplier}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {purchase.check_number || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {new Date(purchase.date).toLocaleDateString()}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center no-print">
+                    <button
+                      className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
+                      onClick={() => handleEditClick(purchase)}
+                    >
+                      تعديل
+                    </button>
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                      onClick={() => confirmDelete(purchase)}
+                    >
+                      حذف
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <ConfirmModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleDeleteConfirmed}
+            title="تأكيد الحذف"
+            message={
+              <>
+                هل أنت متأكد من حذف فاتورة مشتريات {recordToDelete?.name} بتاريخ{" "}
+                {recordToDelete?.amount ?? "unknown"}؟ <br />
+                بقيمة{" "}
+                {recordToDelete?.date
+                  ? format(parseISO(recordToDelete.date), "yyyy-MM-dd")
+                  : "unknown date"}
+                ؟
+              </>
+            }
+          />
+        </div>
 
-  {!isPrinting && (
-    <div className="flex justify-center my-4">
-      <button
-        onClick={() => paginate(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-      >
-        Previous
-      </button>
-      {Array.from({ length: totalPages }, (_, i) => (
-        <button
-          key={i + 1}
-          onClick={() => paginate(i + 1)}
-          className={`px-4 py-2 mx-1 rounded ${
-            i + 1 === currentPage ? "bg-blue-500 text-white" : "bg-gray-300 hover:bg-gray-400"
-          }`}
-        >
-          {i + 1}
-        </button>
-      ))}
-      <button
-        onClick={() => paginate(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-      >
-        Next
-      </button>
-    </div>
-  )}
-</div>
-
+        {!isPrinting && (
+          <div className="flex justify-center my-4">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={`px-4 py-2 mx-1 rounded ${
+                  i + 1 === currentPage
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-300 hover:bg-gray-400"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Edit Drawer */}
       <EditDrawer title="تعديل فاتورة مشتريات" open={open} setOpen={setOpen}>
