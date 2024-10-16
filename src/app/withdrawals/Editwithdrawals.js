@@ -13,23 +13,37 @@ export default function EditWithdrawals({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [checkField, setCheckField] = useState(false); // For check payment
+  const [checkNumber, setCheckNumber] = useState(""); // For check number
+
   // Populate the form fields when selectedCost changes
   useEffect(() => {
     if (selectedCost) {
       setAmount(selectedCost.amount);
       setDate(selectedCost.date.split("T")[0]); // Format date for the date picker
       setEmployee(selectedCost.employee_id); // Use employee_id, not employee_name
-  
+
       // Ensure salaryPeriod is in the format YYYY-MM
       if (selectedCost.salary_period) {
-        const formattedSalaryPeriod = selectedCost.salary_period.length === 7 ? selectedCost.salary_period : selectedCost.salary_period.split("T")[0].slice(0, 7);
+        const formattedSalaryPeriod =
+          selectedCost.salary_period.length === 7
+            ? selectedCost.salary_period
+            : selectedCost.salary_period.split("T")[0].slice(0, 7);
         setSalaryPeriod(formattedSalaryPeriod);
       } else {
         setSalaryPeriod(""); // If salary_period is not defined, set it to an empty string
       }
-    }    
+
+      // Populate check-related fields if available
+      if (selectedCost.check_number) {
+        setCheckField(true);
+        setCheckNumber(selectedCost.check_number);
+      } else {
+        setCheckField(false);
+        setCheckNumber("");
+      }
+    }
   }, [selectedCost]);
-  
 
   // Fetch the employees when the component mounts
   useEffect(() => {
@@ -50,6 +64,13 @@ export default function EditWithdrawals({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check number validation
+    if (checkField && !checkNumber) {
+      setError("Check number is required for check payments.");
+      return;
+    }
+
     const response = await fetch("/api/withdrawals", {
       method: "PUT",
       headers: {
@@ -62,6 +83,7 @@ export default function EditWithdrawals({
         employee_id: employee, // Send employee_id here
         salary_period: salaryPeriod, // salary_period sent here
         id: selectedCost.id,
+        check_number: checkField ? checkNumber : null, // Add check_number only if applicable
       }),
     });
 
@@ -69,7 +91,9 @@ export default function EditWithdrawals({
       setAmount("");
       setDate("");
       setEmployee("");
-      setSalaryPeriod(""); // Reset the salary period
+      setSalaryPeriod("");
+      setCheckField(false);
+      setCheckNumber("");
       setOpen(false); // Close the drawer
       refetchCosts(); // Call refetch after successful submission
     }
@@ -161,6 +185,40 @@ export default function EditWithdrawals({
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
+
+      {/* Check field and check number */}
+      <div className="flex items-center gap-2 justify-start">
+        <input
+          type="checkbox"
+          id="checkField"
+          name="checkField"
+          checked={checkField}
+          onChange={() => setCheckField(!checkField)} // Toggle check field
+        />
+        <label htmlFor="checkField" className="block text-sm font-medium text-gray-700">
+          هل الدفع بشيك؟
+        </label>
+      </div>
+
+      {checkField && (
+        <div>
+          <label
+            htmlFor="checkNumber"
+            className="block text-sm font-medium text-gray-700"
+          >
+            رقم الشيك
+          </label>
+          <input
+            id="checkNumber"
+            type="text"
+            value={checkNumber}
+            onChange={(e) => setCheckNumber(e.target.value)}
+            placeholder="Enter check number"
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      )}
 
       {/* Submit button */}
       <div>

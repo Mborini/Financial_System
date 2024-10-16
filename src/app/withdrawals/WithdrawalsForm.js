@@ -8,6 +8,9 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const [checkField, setCheckField] = useState(false); // For check payment
+  const [checkNumber, setCheckNumber] = useState(""); // For check number
 
   useEffect(() => {
     const fetchTypes = async () => {
@@ -27,6 +30,12 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check number validation
+    if (checkField && !checkNumber) {
+      setError("Check number is required for check payments.");
+      return;
+    }
+
     const response = await fetch("/api/withdrawals", {
       method: "POST",
       headers: {
@@ -35,8 +44,9 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
       body: JSON.stringify({
         amount,
         date,
-        employee_id: employee, // employee_id sent here
-        salary_period: salaryPeriod, // salary_period sent here
+        employee_id: employee, 
+        salary_period: salaryPeriod,
+        check_number: checkField ? checkNumber : null, // Add check_number only if applicable
       }),
     });
 
@@ -44,9 +54,11 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
       setAmount("");
       setDate("");
       setEmployee("");
-      setSalaryPeriod(""); // Reset the salary period
-      setOpen(false); // Close the drawer
-      refetchCosts(); // Refetch the table data
+      setSalaryPeriod(""); 
+      setCheckField(false); 
+      setCheckNumber(""); 
+      setOpen(false); 
+      refetchCosts(); 
     }
   };
 
@@ -100,7 +112,7 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
         <select
           id="employee"
           value={employee}
-          onChange={(e) => setEmployee(e.target.value)} // employee is now the employee_id
+          onChange={(e) => setEmployee(e.target.value)}
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
@@ -112,8 +124,6 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
           ) : (
             types.map((t) => (
               <option key={t.id} value={t.id}>
-                {" "}
-                {/* Use the employee ID here */}
                 {t.name}
               </option>
             ))
@@ -131,13 +141,47 @@ export default function WithdrawalsForm({ refetchCosts, setOpen }) {
         </label>
         <input
           id="salaryPeriod"
-          type="month" // Month picker to select salary period in the format YYYY-MM
+          type="month" 
           value={salaryPeriod}
           onChange={(e) => setSalaryPeriod(e.target.value)}
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
+
+      {/* Check field and check number */}
+      <div className="flex items-center gap-2 justify-start">
+        <input
+          type="checkbox"
+          id="checkField"
+          name="checkField"
+          checked={checkField}
+          onChange={() => setCheckField(!checkField)}
+        />
+        <label htmlFor="checkField" className="block text-sm font-medium text-gray-700">
+          هل الدفع بشيك؟
+        </label>
+      </div>
+
+      {checkField && (
+        <div>
+          <label
+            htmlFor="checkNumber"
+            className="block text-sm font-medium text-gray-700"
+          >
+            رقم الشيك
+          </label>
+          <input
+            id="checkNumber"
+            type="text"
+            value={checkNumber}
+            onChange={(e) => setCheckNumber(e.target.value)}
+            placeholder="Enter check number"
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      )}
 
       {/* Submit button */}
       <div>

@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
+import ConfirmModal from "../components/Modals/confirmDelete";
 
 function CostTable({ costsUpdated, refetchCosts }) {
   const [costs, setCosts] = useState([]);
@@ -15,7 +16,8 @@ function CostTable({ costsUpdated, refetchCosts }) {
   const [selectedCost, setSelectedCost] = useState(null);
   const [open, setOpen] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false); // For disabling pagination when printing
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null);
   // New state for filtering
   const [nameFilter, setNameFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -28,6 +30,8 @@ function CostTable({ costsUpdated, refetchCosts }) {
   ]);
   const [startDate, endDate] = dateRange;
 
+  const [checkFilter, setCheckFilter] = useState(""); // For filtering check payments
+  const [checkNumberSearch, setCheckNumberSearch] = useState(""); // Search by check number
   // Fetch data when component mounts or costsUpdated changes
   useEffect(() => {
     const fetchCosts = async () => {
@@ -63,6 +67,19 @@ function CostTable({ costsUpdated, refetchCosts }) {
     setOpen(true); // Open the drawer
   };
 
+  // Confirm the deletion with correct withdrawal data
+  const confirmDelete = (record) => {
+    setRecordToDelete(record); // Store the entire record to pass the correct data
+    setIsModalOpen(true);
+  };
+  
+  // Call handleDelete with the full withdrawal object, not just the id
+  const handleDeleteConfirmed = () => {
+    if (recordToDelete && recordToDelete.id) {
+      handleDelete(recordToDelete.id); // Pass the full record here
+      setIsModalOpen(false);
+    }
+  };
   // Handle deletion of a cost
   const handleDelete = async (id) => {
     try {
@@ -106,8 +123,22 @@ function CostTable({ costsUpdated, refetchCosts }) {
       !startDate || !endDate
         ? true
         : costDate >= startDate && costDate <= endDate;
-
-    return matchesName && matchesType && matchesDate;
+    const checkMatches =
+      checkFilter === ""
+        ? true
+        : checkFilter === "check"
+        ? cost.check_number
+        : !cost.check_number;
+    const checkNumberMatches = checkNumberSearch
+      ? cost.check_number?.toString().includes(checkNumberSearch)
+      : true;
+    return (
+      matchesName &&
+      matchesType &&
+      matchesDate &&
+      checkMatches &&
+      checkNumberMatches
+    );
   });
 
   // Calculate the total amount for the filtered costs
@@ -142,7 +173,7 @@ function CostTable({ costsUpdated, refetchCosts }) {
     <div dir="rtl" className="container mx-auto px-4">
       {/* Filters */}
       <div className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
-        <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
+        <div className="flex gap-2 flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
           {/* Name Filter */}
           <div className="mb-4 md:mb-0 w-full md:w-auto">
             <input
@@ -169,7 +200,27 @@ function CostTable({ costsUpdated, refetchCosts }) {
               ))}
             </select>
           </div>
-
+          {/* Right Section: Check Filter and Check Number Search */}
+          <div className="mb-4 md:mb-0 w-full md:w-auto">
+            <select
+              value={checkFilter}
+              onChange={(e) => setCheckFilter(e.target.value)}
+              className="border border-gray-300 p-2 rounded"
+            >
+              <option value="">كل طرق الدفع</option>
+              <option value="check">مدفوع بشيك</option>
+              <option value="cash">مدفوع نقدي</option>
+            </select>
+          </div>
+          <div className="mb-4 md:mb-0 w-full md:w-auto">
+            <input
+              type="text"
+              placeholder="بحث حسب رقم الشيك"
+              value={checkNumberSearch}
+              onChange={(e) => setCheckNumberSearch(e.target.value)}
+              className="border border-gray-300 p-2 rounded"
+            />
+          </div>
           {/* Date Range Filter */}
           <div className="mb-4 md:mb-0 w-full md:w-auto">
             <DatePicker
@@ -234,6 +285,7 @@ function CostTable({ costsUpdated, refetchCosts }) {
                 <th className="border border-gray-300 px-4 py-2">الكلفة</th>
                 <th className="border border-gray-300 px-4 py-2">وصف</th>
                 <th className="border border-gray-300 px-4 py-2">القيمة</th>
+                <th className="border border-gray-300 px-4 py-2">رقم الشيك </th>
                 <th className="border border-gray-300 px-4 py-2">نوع الكلفة</th>
                 <th className="border border-gray-300 px-4 py-2">التاريخ</th>
                 <th className="border border-gray-300 px-4 py-2 no-print"></th>
@@ -252,6 +304,9 @@ function CostTable({ costsUpdated, refetchCosts }) {
                     {cost.amount}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
+                    {cost.check_number || "-"}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
                     {cost.type}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
@@ -267,7 +322,7 @@ function CostTable({ costsUpdated, refetchCosts }) {
                       </button>
                       <button
                         className=" text-red-500 font-bold py-1 px-1 rounded "
-                        onClick={() => handleDelete(cost.id)}
+                        onClick={() => confirmDelete(cost)}
                       >
                         <FaTrash />
                       </button>
@@ -277,6 +332,13 @@ function CostTable({ costsUpdated, refetchCosts }) {
               ))}
             </tbody>
           </table>
+          <ConfirmModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleDeleteConfirmed}
+        title="تأكيد الحذف"
+        message={`هل تريد بالتأكيد حذف الكلفة؟`}
+      />
         </div>
       </div>
       {/* Pagination */}

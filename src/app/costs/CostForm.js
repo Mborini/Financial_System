@@ -11,6 +11,9 @@ export default function CostForm({ refetchCosts, setOpen }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [checkField, setCheckField] = useState(false); // For check payment
+  const [checkNumber, setCheckNumber] = useState(""); // For check number
+
   useEffect(() => {
     const fetchTypes = async () => {
       try {
@@ -27,13 +30,26 @@ export default function CostForm({ refetchCosts, setOpen }) {
   }, []);
 
   const handleSubmit = async (e) => {
+      // Check number validation
+      if (checkField && !checkNumber) {
+        setError("Check number is required for check payments.");
+        return;
+      }
+  
     e.preventDefault();
     const response = await fetch("/api/costs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ amount, description, date, name, type }),
+      body: JSON.stringify({
+        amount,
+        description,
+        date,
+        name,
+        type,
+        check_number: checkField ? checkNumber : null, // Add check_number only if applicable
+      }),
     });
 
     if (response.ok) {
@@ -92,7 +108,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
           htmlFor="amount"
           className="block text-sm font-medium text-gray-700"
         >
-        القيمة
+          القيمة
         </label>
         <input
           id="amount"
@@ -104,6 +120,43 @@ export default function CostForm({ refetchCosts, setOpen }) {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
+
+      {/* Check field and check number */}
+      <div className="flex items-center gap-2 justify-start">
+        <input
+          type="checkbox"
+          id="checkField"
+          name="checkField"
+          checked={checkField}
+          onChange={() => setCheckField(!checkField)}
+        />
+        <label
+          htmlFor="checkField"
+          className="block text-sm font-medium text-gray-700"
+        >
+          هل الدفع بشيك؟
+        </label>
+      </div>
+
+      {checkField && (
+        <div>
+          <label
+            htmlFor="checkNumber"
+            className="block text-sm font-medium text-gray-700"
+          >
+            رقم الشيك
+          </label>
+          <input
+            id="checkNumber"
+            type="text"
+            value={checkNumber}
+            onChange={(e) => setCheckNumber(e.target.value)}
+            placeholder="Enter check number"
+            required
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      )}
 
       {/* Description field */}
       <div>
@@ -160,7 +213,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          اضافة ككلفة تشغلية 
+          اضافة ككلفة تشغلية
         </button>
       </div>
     </form>

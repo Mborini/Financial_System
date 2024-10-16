@@ -17,7 +17,10 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
   const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
   const [open, setOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
+  const [recordToDelete, setRecordToDelete] = useState(null);
+
+  const [checkFilter, setCheckFilter] = useState(""); // For filtering check payments
+  const [checkNumberSearch, setCheckNumberSearch] = useState(""); // Search by check number
 
   // Date range state with the default to the current month
   const [dateRange, setDateRange] = useState([
@@ -67,49 +70,51 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
 
   // Handle opening the drawer and setting the selected withdrawal
   const handleEditClick = (withdrawal) => {
-    setSelectedWithdrawal(withdrawal); // Set the selected withdrawal for editing
-    setOpen(true); // Open the drawer
+    setSelectedWithdrawal(withdrawal);
+    setOpen(true);
   };
 
-  const confirmDelete = (record) => {
-    setRecordToDelete(record);
-    setIsModalOpen(true);
-  };
+  // Confirm the deletion with correct withdrawal data
+const confirmDelete = (record) => {
+  setRecordToDelete(record); // Store the entire record to pass the correct data
+  setIsModalOpen(true);
+};
 
-  const handleDeleteConfirmed = () => {
-    if (recordToDelete && recordToDelete.id) {
-      handleDelete(recordToDelete.id);
-      setIsModalOpen(false);
+// Call handleDelete with the full withdrawal object, not just the id
+const handleDeleteConfirmed = () => {
+  if (recordToDelete && recordToDelete.id) {
+    handleDelete(recordToDelete); // Pass the full record here
+    setIsModalOpen(false);
+  }
+};
+
+// Make sure the full withdrawal object is passed, not just withdrawal.id
+const handleDelete = async (withdrawal) => {
+  try {
+    const response = await fetch("/api/withdrawals", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: withdrawal.id, // Correctly passing the ID
+        employee_id: withdrawal.employee_id, // Correctly passing the employee_id
+        amount: withdrawal.amount, // Correctly passing the amount
+      }),
+    });
+
+    if (response.ok) {
+      console.log("Deleted successfully");
+      refetchCostsTypes(); // Refetch the data after successful deletion
+    } else {
+      console.error("Error deleting withdrawal");
     }
-  };
+  } catch (error) {
+    console.error("Error deleting withdrawal:", error);
+  }
+};
 
-  // Handle deletion of a withdrawal
-  const handleDelete = async (withdrawal) => {
-    try {
-      const response = await fetch("/api/withdrawals", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: withdrawal.id,
-          employee_id: withdrawal.employee_id,
-          amount: withdrawal.amount,
-        }),
-      });
-
-      if (response.ok) {
-        console.log("Deleted successfully");
-        refetchCostsTypes(); // Refetch the table after deletion
-      } else {
-        console.error("Error deleting withdrawal");
-      }
-    } catch (error) {
-      console.error("Error deleting withdrawal:", error);
-    }
-  };
-
-  // Filter withdrawals by the selected date range and employee name
+  // Filter withdrawals by the selected date range, employee name, check filter, and check number
   const filteredWithdrawals = withdrawals.filter((withdrawal) => {
     const withdrawalDate = new Date(withdrawal.date);
     const dateMatches =
@@ -118,14 +123,24 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
       (withdrawalDate >= startDate && withdrawalDate <= endDate);
     const employeeMatches =
       selectedEmployee === "" || withdrawal.employee_name === selectedEmployee;
-    return dateMatches && employeeMatches;
+    const checkMatches =
+      checkFilter === ""
+        ? true
+        : checkFilter === "check"
+        ? withdrawal.check_number // Only show records with a check number for check payments
+        : !withdrawal.check_number; // Show records without a check number for cash payments
+    const checkNumberMatches = checkNumberSearch
+      ? withdrawal.check_number?.toString().includes(checkNumberSearch)
+      : true;
+
+    return dateMatches && employeeMatches && checkMatches && checkNumberMatches;
   });
 
   // Calculate the current records for the current page
   const indexOfLastWithdrawal = currentPage * withdrawalsPerPage;
   const indexOfFirstWithdrawal = indexOfLastWithdrawal - withdrawalsPerPage;
   const currentWithdrawals = isPrinting
-    ? filteredWithdrawals // Print all filtered data
+    ? filteredWithdrawals
     : filteredWithdrawals.slice(indexOfFirstWithdrawal, indexOfLastWithdrawal);
 
   // Get total pages
@@ -137,14 +152,12 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
   // Handle print
   const handlePrint = (e) => {
     e.preventDefault();
-    setIsPrinting(true); // Disable pagination for printing
+    setIsPrinting(true);
     setTimeout(() => {
       window.print();
-      setIsPrinting(false); // Restore pagination after printing
+      setIsPrinting(false);
     }, 500);
   };
-
-
 
   if (loading) {
     return <div className="text-center text-blue-600">Loading...</div>;
@@ -161,8 +174,7 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
   return (
     <div className="container mx-auto px-4">
       {/* Date Range and Employee Name Filter */}
-      <div className="lg:flex justify-between items-center my-4">
-        {/* Left Section: Date Picker and Employee Filter */}
+      <div  className="lg:flex justify-between items-center my-4">
         <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 items-start lg:items-center w-full">
           <DatePicker
             selected={startDate}
@@ -179,70 +191,93 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
             onChange={(e) => setSelectedEmployee(e.target.value)}
             className="border border-gray-300 p-2 rounded w-50 lg:w-auto"
           >
-            <option value="">All Employees</option>
+            <option value="">اختر الموظف</option>
             {employees.map((employee) => (
               <option key={employee.id} value={employee.name}>
                 {employee.name}
               </option>
             ))}
           </select>
-        </div>
 
-        {/* Right Section: Print Button */}
+          {/* Right Section: Check Filter and Check Number Search */}
+          <div className="lg:flex space-y-4 lg:space-y-0 lg:space-x-4">
+            <select
+              value={checkFilter}
+              onChange={(e) => setCheckFilter(e.target.value)}
+              className="border border-gray-300 p-2 rounded"
+            >
+              <option value="">كل طرق الدفع</option>
+              <option value="check">مدفوع بشيك</option>
+              <option value="cash">مدفوع نقدي</option>
+            </select>
+            <input
+              type="text"
+              placeholder="بحث حسب رقم الشيك"
+              value={checkNumberSearch}
+              onChange={(e) => setCheckNumberSearch(e.target.value)}
+              className="border border-gray-300 p-2 rounded"
+            />
+          </div>
+        </div>
         <button
           onClick={handlePrint}
           className="mt-4 flex lg:mt-0 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          <FaPrint className="inline-block mr-2 felx text-center" />
+          <FaPrint className="inline-block mr-2" />
         </button>
       </div>
-<div className="overflow-x-auto">
-      <table  
-        dir="rtl"
-        className="min-w-full table-auto border-collapse border border-gray-200"
-      >
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
-            <th className="border border-gray-300 px-4 py-2">القيمة</th>
-            <th className="border border-gray-300 px-4 py-2">التاريخ</th>
-            <th className="border border-gray-300 px-4 py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentWithdrawals.map((withdrawal) => (
-            <tr key={withdrawal.id} className="bg-white hover:bg-gray-50">
-              <td className="border  border-gray-300 px-4 py-2 text-center">
-                {withdrawal.employee_name}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {withdrawal.amount}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                {new Date(withdrawal.date).toLocaleDateString()}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-center">
-                <div className="flex justify-center">
-                <button
-                  className="   text-orange-500 font-bold py-1 px-2 rounded"
-                  onClick={() => handleEditClick(withdrawal)}
-                >
-                  <FaEdit />{" "}
-                </button>
-                <button
-                  className="  text-red-500 font-bold py-1 px-2 rounded ml-2"
-                  onClick={() => confirmDelete(withdrawal)}
-                >
-                  <FaTrash />{" "}
-                </button>
-                </div>
-              </td>
+
+      <div className="overflow-x-auto">
+        <table
+          dir="rtl"
+          className="min-w-full table-auto border-collapse border border-gray-200"
+        >
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
+              <th className="border border-gray-300 px-4 py-2">القيمة</th>
+              <th className="border border-gray-300 px-4 py-2">التاريخ</th>
+              <th className="border border-gray-300 px-4 py-2">رقم الشيك</th>
+              <th className="border border-gray-300 px-4 py-2"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-</div>
-      {/* Pagination */}
+          </thead>
+          <tbody>
+            {currentWithdrawals.map((withdrawal) => (
+              <tr key={withdrawal.id} className="bg-white hover:bg-gray-50">
+                <td className="border  border-gray-300 px-4 py-2 text-center">
+                  {withdrawal.employee_name}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {withdrawal.amount}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {new Date(withdrawal.date).toLocaleDateString()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {withdrawal.check_number || "-"}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  <div className="flex justify-center">
+                    <button
+                      className="text-orange-500 font-bold py-1 px-2 rounded"
+                      onClick={() => handleEditClick(withdrawal)}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="text-red-500 font-bold py-1 px-2 rounded ml-2"
+                      onClick={() => confirmDelete(withdrawal)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       {!isPrinting && (
         <div className="flex justify-center my-4">
           <button

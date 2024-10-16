@@ -18,6 +18,8 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
   const [open, setOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
+  const [selectedPaymentType, setSelectedPaymentType] = useState("");
+
   // Date range state with the default to the current month
   const [dateRange, setDateRange] = useState([
     startOfMonth(new Date()), // Start of the current month
@@ -28,6 +30,7 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
   const [suppliers, setSuppliers] = useState([]);
   const [paymentStatuses] = useState(["Paid", "Partial", "Debt"]); // Payment statuses
   const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [selectedCheckNumber, setSelectedCheckNumber] = useState("");
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("");
   const [searchName, setSearchName] = useState(""); // Search input for name
   const [isPrinting, setIsPrinting] = useState(false); // Add this line
@@ -113,12 +116,26 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
     return <div className="text-center text-red-600">Error: {error}</div>; // Show error message if there's any
   }
   const filteredPurchases = purchases.filter((purchase) => {
+    const matchesCheckNumber = selectedCheckNumber
+      ? purchase.check_number?.toString().includes(selectedCheckNumber)
+      : true;
+
     const matchesSupplier = selectedSupplier
       ? purchase.supplier === selectedSupplier
       : true;
+
     const matchesPaymentStatus = selectedPaymentStatus
       ? purchase.payment_status === selectedPaymentStatus
       : true;
+
+    const matchesPaymentType = selectedPaymentType
+      ? selectedPaymentType === "check"
+        ? purchase.check_number // Only show records with a check number when "مدفوع بشيك" is selected
+        : selectedPaymentType === "cash"
+        ? !purchase.check_number // Only show records without a check number when "مدفوع نقدي" is selected
+        : true
+      : true;
+
     const matchesSearchName = purchase.name
       .toLowerCase()
       .includes(searchName.toLowerCase());
@@ -130,12 +147,15 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
           new Date(purchase.date) <= endDate;
 
     return (
+      matchesCheckNumber &&
       matchesSupplier &&
       matchesPaymentStatus &&
+      matchesPaymentType &&
       matchesSearchName &&
       matchesDateRange
     );
   });
+
   const totalAmount = filteredPurchases
     .reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0)
     .toLocaleString("en-US", {
@@ -239,6 +259,30 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
               </select>
             </div>
 
+            <div className="mb-4 md:mb-0 w-full md:w-auto">
+              <select
+                id="payment-type-filter"
+                value={selectedPaymentType}
+                onChange={(e) => setSelectedPaymentType(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              >
+                <option value="">كل طرق الدفع </option> {/* Default option */}
+                <option value="check">مدفوع بشيك</option>
+                <option value="cash">مدفوع نقدي</option>
+              </select>
+            </div>
+
+            {/* Filter by Check Number */}
+            <div className="mb-4 md:mb-0 w-full md:w-auto">
+              <input
+                id="check-number-filter"
+                type="text"
+                value={selectedCheckNumber}
+                onChange={(e) => setSelectedCheckNumber(e.target.value)}
+                placeholder="بحث حسب رقم الشيك"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
             {/* Search by Name */}
             <div className="mb-4 md:mb-0 w-full md:w-auto">
               <input
