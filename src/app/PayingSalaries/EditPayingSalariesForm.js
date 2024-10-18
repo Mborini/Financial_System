@@ -122,7 +122,7 @@ if (amountToPay <= selectedSalary.finall_remaining) {
           <label className="font-bold">المبلغ:</label>
           <input
             type="text"
-            value={""}
+            value={parseFloat(selectedSalary.finall_remaining).toFixed(2)}
             onChange={(e) => setAmountToPay(e.target.value)}
             className="border border-gray-300 rounded-md p-2 w-full"
             required
