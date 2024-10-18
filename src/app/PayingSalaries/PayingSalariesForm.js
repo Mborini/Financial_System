@@ -14,7 +14,7 @@ export default function PayingSalariesForm({
 
   const getCurrentDate = () => {
     const now = new Date();
-    return now.toISOString().split('T')[0]; // e.g., "2024-10-18"
+    return now.toISOString().split("T")[0]; // e.g., "2024-10-18"
   };
 
   const [employees, setEmployees] = useState([]);
@@ -28,7 +28,6 @@ export default function PayingSalariesForm({
   const [amountToPay, setAmountToPay] = useState("");
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
-
 
   // Fetch employee data when the component mounts
   useEffect(() => {
@@ -52,7 +51,9 @@ export default function PayingSalariesForm({
   const calculateSalary = async () => {
     if (selectedEmployee && selectedDate) {
       try {
-        const response = await fetch(`/api/salaryAccount?period=${selectedDate}`);
+        const response = await fetch(
+          `/api/salaryAccount?period=${selectedDate}`
+        );
         const data = await response.json();
 
         if (Array.isArray(data)) {
@@ -140,13 +141,13 @@ export default function PayingSalariesForm({
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (amountToPay <= adjustedRemainingSalary) {
       try {
-        const response = await fetch('/api/PayingSalaries', {
-          method: 'POST',
+        const response = await fetch("/api/PayingSalaries", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             amount: amountToPay,
@@ -154,29 +155,26 @@ export default function PayingSalariesForm({
             note: note,
             adjustedRemainingSalary: adjustedRemainingSalary,
             employeeId: selectedEmployeeId,
-            finallRemining: adjustedRemainingSalary - amountToPay
+            finallRemining: adjustedRemainingSalary - amountToPay,
           }),
         });
-  
+
         if (!response.ok) {
           const errorData = await response.json();
         } else {
           refetchFood(); // Call the refetch function
           setOpen(false); // Close the form
-          setMessage(" ")
+          setMessage(" ");
         }
       } catch (error) {
         console.error("Error processing payment:", error);
       }
     } else {
-
-        setMessage("المبلغ المدفوع أكبر من الراتب المتبقي");
-        return ;
+      setMessage("المبلغ المدفوع أكبر من الراتب المتبقي");
+      return;
     }
   };
-  
-  
-  
+
   const calculateRemainingSalary = (
     proratedSalary,
     vacationCost,
@@ -214,11 +212,15 @@ export default function PayingSalariesForm({
   return (
     <div className="container mx-auto mb-8 px-4">
       <form className="mb-4">
-        <div className="flex justify-between mb-4">
+            <label className="font-bold ">اختر الموظف والشهر:</label>
+        <div className="flex justify-between mt-2 mb-4 border-b-4 pb-4">
           <select
             value={selectedEmployee}
             onChange={(e) => {
-              const employeeId = e.target.options[e.target.selectedIndex].getAttribute("data-id");
+              const employeeId =
+                e.target.options[e.target.selectedIndex].getAttribute(
+                  "data-id"
+                );
               setSelectedEmployee(e.target.value);
               setSelectedEmployeeId(employeeId); // Update selected employee ID
             }}
@@ -227,7 +229,13 @@ export default function PayingSalariesForm({
           >
             <option value="">اخر الموظف</option>
             {employees.map((employee) => (
-              <option key={employee.id} value={employee.name} data-id={employee.id}> {/* Added data-id attribute */}
+              <option
+                key={employee.id}
+                value={employee.name}
+                data-id={employee.id}
+              >
+                {" "}
+                {/* Added data-id attribute */}
                 {employee.name}
               </option>
             ))}
@@ -256,7 +264,6 @@ export default function PayingSalariesForm({
                 type="number"
                 value={selectedEmployeeId}
                 disabled
-
                 className="border border-gray-300 rounded-md p-2 w-full hidden"
               />
             </div>
@@ -290,8 +297,6 @@ export default function PayingSalariesForm({
             </div>
             {message && <div className="text-red-500 text-sm">{message}</div>}
 
-
-
             <div className="mb-4">
               <label className="font-bold">ملاحظات:</label>
               <textarea
@@ -302,9 +307,9 @@ export default function PayingSalariesForm({
             </div>
             <button
               type="submit"
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-blue-500 hover:bg-blue-700 w-full text-white font-bold py-2 px-4 rounded"
             >
-              Pay Salary
+              تسجيل دفعة راتب
             </button>
           </form>
         </>

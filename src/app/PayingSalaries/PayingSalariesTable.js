@@ -103,22 +103,36 @@ export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }
   };
 
   // Filter staff salary entries by selected employee name and date range
-  const filteredSalaries = Array.isArray(staffSalaries)
-    ? staffSalaries.filter((salary) => {
-        const salaryDate = new Date(salary.date);
-        const dateMatches = salaryDate >= startDate && salaryDate <= endDate;
-        const employeeMatches = selectedEmployee
-          ? salary.employee_name === selectedEmployee
-          : true;
-        return dateMatches && employeeMatches;
-      })
-    : [];
+// Filter staff salary entries by selected employee name and date range
+const filteredSalaries = Array.isArray(staffSalaries)
+  ? staffSalaries.filter((salary) => {
+      const salaryDate = new Date(salary.date);
+      const dateMatches = (!startDate || !endDate) || (salaryDate >= startDate && salaryDate <= endDate);
+      const employeeMatches = selectedEmployee
+        ? salary.employee_name === selectedEmployee
+        : true;
+      return dateMatches && employeeMatches;
+    })
+  : [];
+
+// Calculate the total amount for the filtered entries
+
 
   // Calculate the total amount for the filtered entries
-  const totalAmount = filteredSalaries.reduce(
-    (sum, salary) => sum + parseFloat(salary.amount || 0),
-    0
-  );
+  const totalAmount = filteredSalaries.reduce((sum, salary) => {
+    const amount = parseFloat(salary.paid_amount || 0);
+    if (isNaN(amount)) {
+      console.warn("Invalid amount:", salary.paid_amount);
+    }
+    return sum + amount;
+  }, 0);
+   const totalFinalRemaining = filteredSalaries.reduce((sum, salary) => {
+    const amount = parseFloat(salary.finall_remaining || 0);
+    if (isNaN(amount)) {
+      console.warn("Invalid amount:", salary.finall_remaining);
+    }
+    return sum + amount;
+  }, 0);
 
   // Pagination logic
   const indexOfLastSalary = currentPage * salariesPerPage;
@@ -201,14 +215,19 @@ export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2 text-center">
-                  مجموع القيم{" "}
+                  مجموع المبلغ المدفوع	{" "}
                 </th>
+                <th className="border border-gray-300 px-4 py-2 text-center">
+مجموع مبالغ الرواتب مستحقة الدفع                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {totalAmount.toFixed(2)}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {totalFinalRemaining.toFixed(2)}
                 </td>
               </tr>
             </tbody>
@@ -225,7 +244,7 @@ export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }
             <tr className="bg-gray-100">
               <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
               <th className="border border-gray-300 px-4 py-2">التاريخ</th>
-              <th className="border border-gray-300 px-4 py-2">الراتب المستحق</th>
+              <th className="border border-gray-300 px-4 py-2">صافي الراتب </th>
               <th className="border border-gray-300 px-4 py-2">المبلغ المدفوع </th>
               <th className="border border-gray-300 px-4 py-2">الراتب المتبقي</th>
               <th className="border border-gray-300 px-4 py-2">ملاحظات</th>
@@ -251,12 +270,14 @@ export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }
                   {salary.finall_remaining}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  {salary.note}
+                  {salary.note || "لا يوجد ملاحظات"} 
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center no-print">
                   <div className="flex justify-center">
+                  
                     <button
-                      className="text-orange-500 font-bold py-1 px-2 rounded"
+className={`text-orange-400 font-bold py-1 px-2 rounded ${salary.finall_remaining === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+disabled={salary.finall_remaining === 0}
                       onClick={() => handleEditClick(salary)}
                     >
                       <FaEdit />
@@ -315,7 +336,7 @@ export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }
       )}
 
       {/* Edit Drawer */}
-      <EditDrawer title="Edit Staff Salary Entry" open={open} setOpen={setOpen}>
+      <EditDrawer title="اضافة دفعة راتب" open={open} setOpen={setOpen}>
   <EditPayingSalariesForm
     selectedSalary={selectedSalary}
     refetchSalaries={refetchSalaries}

@@ -34,36 +34,36 @@ export default function EditPayingSalariesForm({
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
-if (amountToPay <= selectedSalary.finall_remaining) {
-    try {
-      const response = await fetch("/api/PayingSalaries", {
-        method: "PUT", // Use PUT method for update
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: amountToPay,
-          date: PaidDate,
-          employeeId: selectedEmployeeId,
-          finallRemining: selectedSalary.finall_remaining - amountToPay, // Update final remaining
-        }),
-      });
+    if (amountToPay <= selectedSalary.finall_remaining) {
+      try {
+        const response = await fetch("/api/PayingSalaries", {
+          method: "PUT", // Use PUT method for update
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: amountToPay,
+            date: PaidDate,
+            employeeId: selectedEmployeeId,
+            finallRemining: selectedSalary.finall_remaining - amountToPay, // Update final remaining
+          }),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error updating salary:", errorData);
-        setMessage("Error updating salary.");
-      } else {
-        refetchSalaries(); // Call the refetch function
-        setOpen(false); // Close the form
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error updating salary:", errorData);
+          setMessage("Error updating salary.");
+        } else {
+          refetchSalaries(); // Call the refetch function
+          setOpen(false); // Close the form
+        }
+      } catch (error) {
+        console.error("Error processing update:", error);
+        setMessage("Error processing update.");
       }
-    } catch (error) {
-      console.error("Error processing update:", error);
-      setMessage("Error processing update.");
-    }}
-    else {
+    } else {
       setMessage("المبلغ المدفوع أكبر من الراتب المتبقي");
-      return
+      return;
     }
   };
 
@@ -92,7 +92,7 @@ if (amountToPay <= selectedSalary.finall_remaining) {
           />
         </div>
         <div className="mb-4">
-          <label className="font-bold">راتب الموظف:</label>
+          <label className="font-bold">صافي الراتب :</label>
           <input
             type="text"
             value={`${parseFloat(adjustedRemainingSalary).toFixed(2)} JOD`}
@@ -104,7 +104,9 @@ if (amountToPay <= selectedSalary.finall_remaining) {
           <label className="font-bold">الراتب المتبقي:</label>
           <input
             type="text"
-            value={`${parseFloat(selectedSalary.finall_remaining).toFixed(2)} JOD`}
+            value={`${parseFloat(selectedSalary.finall_remaining).toFixed(
+              2
+            )} JOD`}
             disabled
             className="border border-gray-300 rounded-md p-2 w-full"
           />
@@ -131,9 +133,9 @@ if (amountToPay <= selectedSalary.finall_remaining) {
         {message && <div className="text-red-500 text-sm">{message}</div>}
         <button
           type="submit"
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-orange-400 w-full hover:bg-orange-600 text-white font-bold py-2 px-4 rounded"
         >
-          تحديث الراتب
+          سجيل دفعة راتب{" "}
         </button>
       </form>
     </div>
