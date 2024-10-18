@@ -121,7 +121,7 @@ if (amountToPay <= selectedSalary.finall_remaining) {
         <div className="mb-4">
           <label className="font-bold">المبلغ:</label>
           <input
-            type="number"
+            type="text"
             value={""}
             onChange={(e) => setAmountToPay(e.target.value)}
             className="border border-gray-300 rounded-md p-2 w-full"
