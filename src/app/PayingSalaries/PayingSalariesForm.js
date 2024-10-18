@@ -141,7 +141,7 @@ export default function PayingSalariesForm({
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
   
-    if (amountToPay < adjustedRemainingSalary) {
+    if (amountToPay <= adjustedRemainingSalary) {
       try {
         const response = await fetch('/api/PayingSalaries', {
           method: 'POST',
