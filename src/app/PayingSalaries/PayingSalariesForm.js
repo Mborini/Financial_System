@@ -256,11 +256,12 @@ export default function PayingSalariesForm({
                 type="number"
                 value={selectedEmployeeId}
                 disabled
-                className="border border-gray-300 rounded-md p-2 w-full"
+
+                className="border border-gray-300 rounded-md p-2 w-full hidden"
               />
             </div>
             <div className="mb-4">
-              <label className="font-bold">راتب الموظف:</label>
+              <label className="font-bold">صافي راتب الموظف:</label>
               <input
                 type="text"
                 value={`${formatCurrency(adjustedRemainingSalary)} JOD`}
