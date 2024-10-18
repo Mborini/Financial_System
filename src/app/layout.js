@@ -168,7 +168,15 @@ export default function Layout({ children }) {
                   المبيعات اليومية{/* Sales */}
                 </a>
               </li>
-
+              <li>
+              <a
+                className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                href="/PayingSalaries"
+              >
+                <FaTruck className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                دفع الرواتب {/*  */}
+              </a>
+            </li>
               <li>
                 <a
                   className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
@@ -371,6 +379,15 @@ export default function Layout({ children }) {
               >
                 <FaTruck className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                 ادارة الموردين {/* Suppliers */}
+              </a>
+            </li>
+            <li>
+              <a
+                className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                href="/PayingSalaries"
+              >
+                <FaTruck className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                دفع الرواتب {/*  */}
               </a>
             </li>
 
