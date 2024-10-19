@@ -22,6 +22,7 @@ import NavDrawer from "./components/Drawers/NavDrawer";
 import "./globals.css";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import ConfirmAlertModal from "./components/Modals/confirmAlert";
 
 export default function Layout({ children }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function Layout({ children }) {
   const costDropdownRef = useRef(null);
   const [isEmployeesDropdownOpen, setIsEmployeesDropdownOpen] = useState(false);
   const employeesDropdownRef = useRef(null);
-
+  const [isModalOpen, setIsModalOpen] = useState(true);
   // Handle click outside to close the dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -86,7 +87,14 @@ export default function Layout({ children }) {
   return (
     <html lang="en">
       <body>
-        {/* Navigation Bar */}
+        {/* Navigation Bar */}<ConfirmAlertModal
+          isOpen={isModalOpen}
+          onConfirm={() => setIsModalOpen(false)}
+          title="تنبيه"
+          body="تم اضافة صفحة الايداعات البنكية بنجاح🙏 , حيث  يمكنك توثيق حركات الايداع فيها ,يمكنك الوصولالى الصفحة من خلال النقر عليها في شريط التنقل في الاعلى"
+          //map on alertsData to display the message
+          message={'ازا حبيت رنلي هون 👈  0788356041 عشان اشيلك اياها'}
+        />
         <nav
           dir="rtl"
           className="sticky top-0 z-50 bg-indigo-600 relative transition-opacity duration-300"
