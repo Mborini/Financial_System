@@ -186,6 +186,15 @@ export default function Layout({ children }) {
                   فواتير المشتريات {/* Purchases */}
                 </a>
               </li>
+              <li>
+                <a
+                  className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                  href="/Deposits"
+                >
+                  <FaShoppingCart className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                  الايداعات {/* Purchases */}
+                </a>
+              </li>
 
               <li>
                 <a
@@ -390,6 +399,15 @@ export default function Layout({ children }) {
                 دفع الرواتب {/*  */}
               </a>
             </li>
+            <li>
+                <a
+                  className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                  href="/Deposits"
+                >
+                  <FaShoppingCart className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                  الايداعات {/* Purchases */}
+                </a>
+              </li>
 
             {/* Employees dropdown */}
             <li className="relative " ref={dropdownRef}>
