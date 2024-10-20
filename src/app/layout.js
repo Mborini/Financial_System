@@ -88,14 +88,14 @@ export default function Layout({ children }) {
     <html lang="en">
       <body>
         {/* Navigation Bar */}
-        <ConfirmAlertModal
+        {/* <ConfirmAlertModal
           isOpen={isModalOpen}
           onConfirm={() => setIsModalOpen(false)}
           title=" السيد المهندس احمد مهيدات المحترم "
 body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,لقد تم اضافة صفحة المسحوبات النقدية سمكنك الدخول اليها عن طريق شريط التنقل"
           //map on alertsData to display the message
           message={"ستم عمل جلسة تدريبية غدا في تمام الساعة ال3 عصرا ,الساعة الان الساعة 5 فجرا بتوقيت اربد🫡"}
-            />
+            /> */}
         <nav
           dir="rtl"
           className="sticky top-0 z-50 bg-indigo-600 relative transition-opacity duration-300"
