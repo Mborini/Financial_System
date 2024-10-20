@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 export default function DeductionTable({
   deductionsUpdated,
@@ -100,7 +101,13 @@ export default function DeductionTable({
       selectedEmployee === "" || deduction.employee_name === selectedEmployee;
     return dateMatches && employeeMatches;
   });
-
+  const totalAmount = filteredDeductions
+    .reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0)
+    .toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    });
   // Pagination logic
   const indexOfLastDeduction = currentPage * deductionsPerPage;
   const indexOfFirstDeduction = indexOfLastDeduction - deductionsPerPage;
@@ -109,7 +116,16 @@ export default function DeductionTable({
     : filteredDeductions.slice(indexOfFirstDeduction, indexOfLastDeduction);
 
   const totalPages = Math.ceil(filteredDeductions.length / deductionsPerPage);
+  const customizeDataForExport = (data) => {
+    return data.map((deduction) => ({
+      EmployeeName: deduction.employee_name,
+      DeductionAmount: deduction.amount,
+      DeductionType: deduction.deduction_type,
+      Date: new Date(deduction.date).toLocaleDateString(), // Format date as needed
+    }));
+  };
 
+  const customizedDeductions = customizeDataForExport(currentDeductions);
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -139,51 +155,74 @@ export default function DeductionTable({
 
   return (
     <div className="container mx-auto px-4">
-       <div className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
-       <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
-       <div className="mb-4 md:mb-0 w-full md:w-auto">
-
-          <DatePicker
-            selected={startDate}
-            onChange={(update) => {
-              setDateRange(update);
-            }}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            isClearable
-            placeholderText="Select a date range"
-            className="border border-gray-300 p-2 rounded"
-          />
+      <div className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
+        <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
+          <div className="mb-4 md:mb-0 w-full md:w-auto">
+            <DatePicker
+              selected={startDate}
+              onChange={(update) => {
+                setDateRange(update);
+              }}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              isClearable
+              placeholderText="Select a date range"
+              className="border border-gray-300 p-2 rounded"
+            />
+          </div>
+          <div className=" md:mb-0 w-full md:w-auto">
+            <select
+              value={selectedEmployee}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
+              className="border border-gray-300  p-2 rounded"
+            >
+              <option value="">All Employees</option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.name}>
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className=" md:mb-0 w-full md:w-auto">
-
-          <select
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-            className="border border-gray-300  p-2 rounded"
+        <div className="flex justify-start md:justify-start gap-2 md:mt-0">
+        <ExportToExcel data={customizedDeductions} fileName="خصومات الرواتب" />
+          <button
+            onClick={handlePrint}
+            className="bg-blue-500  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
-            <option value="">All Employees</option>
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.name}>
-                {employee.name}
-              </option>
-            ))}
-          </select>
+            <FaPrint className="inline-block mr-2" />
+          </button>
         </div>
-        </div>
-        <div className="flex justify-start md:justify-start  md:mt-0">
-
-        <button
-          onClick={handlePrint}
-          className="bg-blue-500  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-          <FaPrint className="inline-block mr-2" />
-        </button>
-      </div>
       </div>
 
       <div className="overflow-x-auto">
+        <label
+          htmlFor="
+        "
+        >
+          ملخص التصفية
+        </label>
+        <table
+          dir="rtl"
+          className="min-w-full table-auto border-collapse border mb-4 mt-1 border-gray-200"
+        >
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2">
+                مجموع الخصومات{" "}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="bg-white hover:bg-gray-50">
+              <td className="border  border-gray-300 px-4 py-2 text-center">
+                {totalAmount}
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <table
           dir="rtl"
           className="min-w-full table-auto border-collapse border border-gray-200"
@@ -213,24 +252,23 @@ export default function DeductionTable({
                   {new Date(deduction.date).toLocaleDateString()}
                 </td>
                 <td className="border border-gray-300 py-2 text-center">
-                <div className="flex justify-center">
-                      <button
-                        className=" text-orange-500 font-bold py-1 px1- rounded "
-                        onClick={() => {
-                      setSelectedDeduction(deduction);
-                      setOpen(true);
-                    }}                      >
-                        <FaEdit />{" "}
-                      </button>
-                      <button
-                        className=" text-red-500 font-bold py-1 px-1 rounded "
-                        onClick={() => confirmDelete(deduction)}
-                        >
-                        <FaTrash />
-                      </button>
-                    </div>
-
-                 
+                  <div className="flex justify-center">
+                    <button
+                      className=" text-orange-500 font-bold py-1 px1- rounded "
+                      onClick={() => {
+                        setSelectedDeduction(deduction);
+                        setOpen(true);
+                      }}
+                    >
+                      <FaEdit />{" "}
+                    </button>
+                    <button
+                      className=" text-red-500 font-bold py-1 px-1 rounded "
+                      onClick={() => confirmDelete(deduction)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

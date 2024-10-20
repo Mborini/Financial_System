@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { FaEdit, FaPrint, FaTrashAlt } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 export default function StaffFoodTable({ foodUpdated, refetchFood }) {
   const [staffFood, setStaffFood] = useState([]); // Initialize as an empty array
@@ -116,7 +117,18 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
     (sum, food) => sum + parseFloat(food.amount || 0),
     0
   );
+  const customizeDataForExport = (data) => {
+    return data.map((item) => {
+      return {
+        "اسم الموظف": item.employee_name,
+        التاريخ: new Date(item.date).toLocaleDateString(),
+        ملاحظات: item.note,
+        القيمة: item.amount,
+      };
+    });
+  };
 
+  const customizedData = customizeDataForExport(filteredFood);
   // Pagination logic
   const indexOfLastFood = currentPage * foodPerPage;
   const indexOfFirstFood = indexOfLastFood - foodPerPage;
@@ -180,7 +192,12 @@ export default function StaffFoodTable({ foodUpdated, refetchFood }) {
           </div>
         </div>
 
-        <div className="w-25 flex items-start md:w-auto">
+        <div className="flex justify-end md:justify-start mt-4 gap-2 md:mt-0">
+          {" "}
+          <ExportToExcel
+            data={customizedData}
+            fileName={"تقرير الطعام للموظفين"}
+          />
           <button
             onClick={handlePrint}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import EditDrawer from "../components/Drawers/edit";
-import Editwithdrawals from "./Editwithdrawals";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
 import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
+import EditWithdrawals from "./Editwithdrawals";
 
 function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
   const [withdrawals, setWithdrawals] = useState([]);
@@ -75,44 +75,44 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
   };
 
   // Confirm the deletion with correct withdrawal data
-const confirmDelete = (record) => {
-  setRecordToDelete(record); // Store the entire record to pass the correct data
-  setIsModalOpen(true);
-};
+  const confirmDelete = (record) => {
+    setRecordToDelete(record); // Store the entire record to pass the correct data
+    setIsModalOpen(true);
+  };
 
-// Call handleDelete with the full withdrawal object, not just the id
-const handleDeleteConfirmed = () => {
-  if (recordToDelete && recordToDelete.id) {
-    handleDelete(recordToDelete); // Pass the full record here
-    setIsModalOpen(false);
-  }
-};
-
-// Make sure the full withdrawal object is passed, not just withdrawal.id
-const handleDelete = async (withdrawal) => {
-  try {
-    const response = await fetch("/api/withdrawals", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: withdrawal.id, // Correctly passing the ID
-        employee_id: withdrawal.employee_id, // Correctly passing the employee_id
-        amount: withdrawal.amount, // Correctly passing the amount
-      }),
-    });
-
-    if (response.ok) {
-      console.log("Deleted successfully");
-      refetchCostsTypes(); // Refetch the data after successful deletion
-    } else {
-      console.error("Error deleting withdrawal");
+  // Call handleDelete with the full withdrawal object, not just the id
+  const handleDeleteConfirmed = () => {
+    if (recordToDelete && recordToDelete.id) {
+      handleDelete(recordToDelete); // Pass the full record here
+      setIsModalOpen(false);
     }
-  } catch (error) {
-    console.error("Error deleting withdrawal:", error);
-  }
-};
+  };
+
+  // Make sure the full withdrawal object is passed, not just withdrawal.id
+  const handleDelete = async (withdrawal) => {
+    try {
+      const response = await fetch("/api/withdrawals", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: withdrawal.id, // Correctly passing the ID
+          employee_id: withdrawal.employee_id, // Correctly passing the employee_id
+          amount: withdrawal.amount, // Correctly passing the amount
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Deleted successfully");
+        refetchCostsTypes(); // Refetch the data after successful deletion
+      } else {
+        console.error("Error deleting withdrawal");
+      }
+    } catch (error) {
+      console.error("Error deleting withdrawal:", error);
+    }
+  };
 
   // Filter withdrawals by the selected date range, employee name, check filter, and check number
   const filteredWithdrawals = withdrawals.filter((withdrawal) => {
@@ -135,7 +135,13 @@ const handleDelete = async (withdrawal) => {
 
     return dateMatches && employeeMatches && checkMatches && checkNumberMatches;
   });
-
+  const totalAmount = filteredWithdrawals
+    .reduce((acc, curr) => acc + parseFloat(curr.amount || 0), 0)
+    .toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    });
   // Calculate the current records for the current page
   const indexOfLastWithdrawal = currentPage * withdrawalsPerPage;
   const indexOfFirstWithdrawal = indexOfLastWithdrawal - withdrawalsPerPage;
@@ -174,7 +180,7 @@ const handleDelete = async (withdrawal) => {
   return (
     <div className="container mx-auto px-4">
       {/* Date Range and Employee Name Filter */}
-      <div  className="lg:flex justify-between items-center my-4">
+      <div className="lg:flex justify-between items-center my-4">
         <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 items-start lg:items-center w-full">
           <DatePicker
             selected={startDate}
@@ -227,7 +233,30 @@ const handleDelete = async (withdrawal) => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div dir="rtl" className="overflow-x-auto">
+        <label htmlFor="
+        ">
+        ملخص التصفية
+        </label>
+        <table
+          dir="rtl"
+          className="min-w-full table-auto border-collapse border mb-4 mt-1 border-gray-200"
+        >
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-4 py-2">
+                مجموع السحوبات{" "}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="bg-white hover:bg-gray-50">
+              <td className="border  border-gray-300 px-4 py-2 text-center">
+                {totalAmount}
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <table
           dir="rtl"
           className="min-w-full table-auto border-collapse border border-gray-200"
@@ -320,7 +349,7 @@ const handleDelete = async (withdrawal) => {
 
       {/* Edit Drawer */}
       <EditDrawer title="تعديل سحوبات من الراتب" open={open} setOpen={setOpen}>
-        <Editwithdrawals
+        <EditWithdrawals
           selectedCost={selectedWithdrawal}
           refetchCosts={refetchCostsTypes}
           setOpen={setOpen}

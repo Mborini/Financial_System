@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 function CostTable({ costsUpdated, refetchCosts }) {
   const [costs, setCosts] = useState([]);
@@ -72,7 +73,7 @@ function CostTable({ costsUpdated, refetchCosts }) {
     setRecordToDelete(record); // Store the entire record to pass the correct data
     setIsModalOpen(true);
   };
-  
+
   // Call handleDelete with the full withdrawal object, not just the id
   const handleDeleteConfirmed = () => {
     if (recordToDelete && recordToDelete.id) {
@@ -156,7 +157,20 @@ function CostTable({ costsUpdated, refetchCosts }) {
 
   // Get total pages
   const totalPages = Math.ceil(filteredCosts.length / costsPerPage);
+  const customizeDataForExport = (data) => {
+    return data.map(
+      ({  name, description, amount, check_number, type, date }) => ({
+        الكلفة: name,
+        الوصف: description,
+        القيمة: amount,
+        "رقم الشيك": check_number || "-",
+        "نوع الكلفة": type,
+        التاريخ: format(new Date(date), "yyyy-MM-dd"),
+      })
+    );
+  };
 
+  const customizedData = customizeDataForExport(currentCosts);
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -172,8 +186,8 @@ function CostTable({ costsUpdated, refetchCosts }) {
   return (
     <div dir="rtl" className="container mx-auto px-4">
       {/* Filters */}
-      <div className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
-        <div className="flex gap-2 flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
+      <div dir="ltr" className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
+        <div  className="flex gap-2 flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
           {/* Name Filter */}
           <div className="mb-4 md:mb-0 w-full md:w-auto">
             <input
@@ -237,7 +251,9 @@ function CostTable({ costsUpdated, refetchCosts }) {
         </div>
 
         {/* Print Button */}
-        <div className="flex justify-end md:justify-start mt-4 md:mt-0">
+        <div className="flex justify-end md:justify-start mt-4 gap-2 md:mt-0">
+          <ExportToExcel data={customizedData} fileName="التكاليف التشغيلية" />
+
           <button
             onClick={handlePrint}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -333,12 +349,12 @@ function CostTable({ costsUpdated, refetchCosts }) {
             </tbody>
           </table>
           <ConfirmModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleDeleteConfirmed}
-        title="تأكيد الحذف"
-        message={`هل تريد بالتأكيد حذف الكلفة؟`}
-      />
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onConfirm={handleDeleteConfirmed}
+            title="تأكيد الحذف"
+            message={`هل تريد بالتأكيد حذف الكلفة؟`}
+          />
         </div>
       </div>
       {/* Pagination */}

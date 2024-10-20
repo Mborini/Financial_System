@@ -8,8 +8,12 @@ import { FaEdit, FaPrint, FaTrashAlt } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
 import PayingSalariesForm from "./PayingSalariesForm";
 import EditPayingSalariesForm from "./EditPayingSalariesForm";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
-export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }) {
+export default function PayingSalariesTable({
+  salariesUpdated,
+  refetchSalaries,
+}) {
   const [staffSalaries, setStaffSalaries] = useState([]); // Initialize as an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,7 +74,7 @@ export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }
     setSelectedSalary(salary);
     setOpen(true);
   };
-  
+
   const confirmDelete = (record) => {
     setRecordToDelete(record);
     setIsModalOpen(true);
@@ -103,20 +107,22 @@ export default function PayingSalariesTable({ salariesUpdated, refetchSalaries }
   };
 
   // Filter staff salary entries by selected employee name and date range
-// Filter staff salary entries by selected employee name and date range
-const filteredSalaries = Array.isArray(staffSalaries)
-  ? staffSalaries.filter((salary) => {
-      const salaryDate = new Date(salary.date);
-      const dateMatches = (!startDate || !endDate) || (salaryDate >= startDate && salaryDate <= endDate);
-      const employeeMatches = selectedEmployee
-        ? salary.employee_name === selectedEmployee
-        : true;
-      return dateMatches && employeeMatches;
-    })
-  : [];
+  // Filter staff salary entries by selected employee name and date range
+  const filteredSalaries = Array.isArray(staffSalaries)
+    ? staffSalaries.filter((salary) => {
+        const salaryDate = new Date(salary.date);
+        const dateMatches =
+          !startDate ||
+          !endDate ||
+          (salaryDate >= startDate && salaryDate <= endDate);
+        const employeeMatches = selectedEmployee
+          ? salary.employee_name === selectedEmployee
+          : true;
+        return dateMatches && employeeMatches;
+      })
+    : [];
 
-// Calculate the total amount for the filtered entries
-
+  // Calculate the total amount for the filtered entries
 
   // Calculate the total amount for the filtered entries
   const totalAmount = filteredSalaries.reduce((sum, salary) => {
@@ -126,7 +132,7 @@ const filteredSalaries = Array.isArray(staffSalaries)
     }
     return sum + amount;
   }, 0);
-   const totalFinalRemaining = filteredSalaries.reduce((sum, salary) => {
+  const totalFinalRemaining = filteredSalaries.reduce((sum, salary) => {
     const amount = parseFloat(salary.finall_remaining || 0);
     if (isNaN(amount)) {
       console.warn("Invalid amount:", salary.finall_remaining);
@@ -142,7 +148,20 @@ const filteredSalaries = Array.isArray(staffSalaries)
     : filteredSalaries.slice(indexOfFirstSalary, indexOfLastSalary);
 
   const totalPages = Math.ceil(filteredSalaries.length / salariesPerPage);
+  const customizeDataForExport = (data) => {
+    return data.map((item) => {
+      return {
+        "اسم الموظف": item.employee_name,
+        التاريخ: new Date(item.date).toLocaleDateString(),
+        "صافي الراتب": item.adjusted_remaining_salary,
+        "المبلغ المدفوع": item.paid_amount,
+        "الراتب المتبقي": item.finall_remaining,
+        ملاحظات: item.note || "لا يوجد ملاحظات",
+      };
+    });
+  };
 
+  const customizedData = customizeDataForExport(currentSalaries);
   // Page change handler
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -198,6 +217,8 @@ const filteredSalaries = Array.isArray(staffSalaries)
         </div>
 
         <div className="w-25 flex items-start md:w-auto">
+          <ExportToExcel data={customizedData} fileName={"تقرير الرواتب"} />
+
           <button
             onClick={handlePrint}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"
@@ -215,10 +236,11 @@ const filteredSalaries = Array.isArray(staffSalaries)
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2 text-center">
-                  مجموع المبلغ المدفوع	{" "}
+                  مجموع المبلغ المدفوع{" "}
                 </th>
                 <th className="border border-gray-300 px-4 py-2 text-center">
-مجموع مبالغ الرواتب مستحقة الدفع                </th>
+                  مجموع مبالغ الرواتب مستحقة الدفع{" "}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -245,8 +267,12 @@ const filteredSalaries = Array.isArray(staffSalaries)
               <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
               <th className="border border-gray-300 px-4 py-2">التاريخ</th>
               <th className="border border-gray-300 px-4 py-2">صافي الراتب </th>
-              <th className="border border-gray-300 px-4 py-2">المبلغ المدفوع </th>
-              <th className="border border-gray-300 px-4 py-2">الراتب المتبقي</th>
+              <th className="border border-gray-300 px-4 py-2">
+                المبلغ المدفوع{" "}
+              </th>
+              <th className="border border-gray-300 px-4 py-2">
+                الراتب المتبقي
+              </th>
               <th className="border border-gray-300 px-4 py-2">ملاحظات</th>
               <th className="border border-gray-300 px-4 py-2 no-print"></th>
             </tr>
@@ -270,14 +296,17 @@ const filteredSalaries = Array.isArray(staffSalaries)
                   {salary.finall_remaining}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  {salary.note || "لا يوجد ملاحظات"} 
+                  {salary.note || "لا يوجد ملاحظات"}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center no-print">
                   <div className="flex justify-center">
-                  
                     <button
-className={`text-orange-400 font-bold py-1 px-2 rounded ${salary.finall_remaining === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-disabled={salary.finall_remaining === 0}
+                      className={`text-orange-400 font-bold py-1 px-2 rounded ${
+                        salary.finall_remaining === 0
+                          ? "cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                      disabled={salary.finall_remaining === 0}
                       onClick={() => handleEditClick(salary)}
                     >
                       <FaEdit />
@@ -337,13 +366,12 @@ disabled={salary.finall_remaining === 0}
 
       {/* Edit Drawer */}
       <EditDrawer title="اضافة دفعة راتب" open={open} setOpen={setOpen}>
-  <EditPayingSalariesForm
-    selectedSalary={selectedSalary}
-    refetchSalaries={refetchSalaries}
-    setOpen={setOpen}
-  />
-</EditDrawer>
-
+        <EditPayingSalariesForm
+          selectedSalary={selectedSalary}
+          refetchSalaries={refetchSalaries}
+          setOpen={setOpen}
+        />
+      </EditDrawer>
     </div>
   );
 }

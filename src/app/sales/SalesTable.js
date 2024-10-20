@@ -7,6 +7,7 @@ import { startOfMonth, endOfMonth } from "date-fns";
 import EditDrawer from "../components/Drawers/edit";
 import EditForm from "../sales/EditForm";
 import ConfirmModal from "../components/Modals/confirmDelete";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 function SalesTable({ salesUpdated, refetchSales }) {
   const [sales, setSales] = useState([]);
@@ -91,7 +92,18 @@ function SalesTable({ salesUpdated, refetchSales }) {
       console.error("Error deleting sale:", error);
     }
   };
+  const customizeDataForExport = (data) => {
+    return data.map((item) => {
+      return {
+        "المجموع الكلي": item.total,
+        الفيزا: item.visa_amount,
+        الكاش: item.cash_amount,
+        التاريخ: item.sale_date,
+      };
+    });
+  };
 
+  const customizedData = customizeDataForExport(sales);
   const handlePrint = (e) => {
     e.preventDefault();
     const printContents = document.getElementById("printTable").outerHTML;
@@ -143,7 +155,7 @@ function SalesTable({ salesUpdated, refetchSales }) {
 
   return (
     <div dir="rtl" id="printTable" className="container mx-auto px-4">
-      <div className="flex justify-between my-4">
+      <div dir="ltr" className="flex justify-between my-4">
         <DatePicker
           selectsRange
           startDate={startDate}
@@ -153,11 +165,13 @@ function SalesTable({ salesUpdated, refetchSales }) {
           placeholderText="Select a date range"
           className="border border-gray-300 p-2 rounded"
         />
-        <div>
+        <div className="flex justify-end md:justify-start mt-2 gap-2 md:mt-0">
+          <ExportToExcel data={customizedData} fileName={"المبيعات"} />
+
           <button
             onClick={handlePrint}
-            className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
             <FaPrint className="inline-block" />
           </button>
         </div>
@@ -246,8 +260,14 @@ function SalesTable({ salesUpdated, refetchSales }) {
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleDeleteConfirmed}
         title="تأكيد الحذف"
-        message={`هل أنت متأكد من حذف المبيعات البالغة ${recordToDelete?.total ?? "unknown"} بتاريخ ${recordToDelete?.sale_date ? format(parseISO(recordToDelete.sale_date), "yyyy-MM-dd") : "unknown date"}`}
-        />
+        message={`هل أنت متأكد من حذف المبيعات البالغة ${
+          recordToDelete?.total ?? "unknown"
+        } بتاريخ ${
+          recordToDelete?.sale_date
+            ? format(parseISO(recordToDelete.sale_date), "yyyy-MM-dd")
+            : "unknown date"
+        }`}
+      />
 
       <div className="flex justify-center my-4">
         <button
@@ -282,7 +302,11 @@ function SalesTable({ salesUpdated, refetchSales }) {
       {/* Edit Drawer */}
       {selectedSale && (
         <EditDrawer title="تعديل مبيعات يومية " open={open} setOpen={setOpen}>
-          <EditForm selectedSale={selectedSale} setOpen={setOpen} refetchSales={refetchSales} />
+          <EditForm
+            selectedSale={selectedSale}
+            setOpen={setOpen}
+            refetchSales={refetchSales}
+          />
         </EditDrawer>
       )}
     </div>

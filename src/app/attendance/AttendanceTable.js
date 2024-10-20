@@ -4,6 +4,7 @@ import CheckOutForm from "./CheckOutForm";
 import { FaPrint } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
 import ConfirmAlertModal from "../components/Modals/confirmAlert";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 // Utility function to format datetime
 function formatDateTime(dateTime) {
@@ -142,6 +143,35 @@ export default function AttendanceTable({
   const alertsConfirmed = () => {
     setIsAlertModalOpen(false);
   };
+
+  const customizeDataForExport = (data) => {
+    return data.map((Att) => ({
+      "اسم الموظف": Att.name,
+      "وقت الحضور": Att.check_in
+        ? formatDateTime(Att.check_in)
+        : "---",
+      "وقت الانصراف": Att.check_out
+        ? formatDateTime(Att.check_out)
+        : "---",
+      "ساعات العمل": Att.work_hours != null &&
+      !isNaN(Number(Att.work_hours))  
+        ? formatHoursAndMinutes(Att.work_hours)
+        : "---",
+      "ساعات العمل الاضافية": Att.overtime_hours != null &&
+      !isNaN(Number(Att.overtime_hours))
+        ? formatHoursAndMinutes(Att.overtime_hours)
+        : "---",
+      "الساعات غير العامل بها": Att.work_hours != null &&
+      !isNaN(Number(Att.work_hours))
+        ? formatHoursAndMinutes(10 - Att.work_hours)
+        : "---",
+
+
+
+    }));
+  };
+
+  const customizedData = customizeDataForExport(filteredAttendance);
   const handlePrint = (e) => {
     e.preventDefault();
     const printContents = document.getElementById("printTable").outerHTML;
@@ -194,7 +224,9 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
               className="mt-1 block w-25 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
           </div>
-          <div>
+          <div className="flex items-center gap-2">
+          <ExportToExcel data={customizedData} fileName="الدوام" />
+
             <button
               onClick={handlePrint}
               className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

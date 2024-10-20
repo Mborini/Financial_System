@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaPrint, FaSpinner } from "react-icons/fa"; // Spinner for loading
+import { FaEdit, FaPrint, FaSpinner, FaTrash } from "react-icons/fa"; // Spinner for loading
 import EditDrawer from "../components/Drawers/edit";
 import EditPurchasesForm from "./EditPurchasesForm";
 import DatePicker from "react-datepicker";
@@ -7,6 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { startOfMonth, endOfMonth } from "date-fns";
 import ConfirmModal from "../components/Modals/confirmDelete";
 import { parseISO, isValid, format } from "date-fns";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 function PurchasesTable({ costsUpdated, refetchCosts }) {
   const [purchases, setPurchases] = useState([]);
@@ -207,7 +208,22 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
   };
   // Get total pages
   const totalPages = Math.ceil(filteredPurchases.length / purchasesPerPage);
+  const customizeDataForExport = (data) => {
+    return data.map((purchase) => {
+      return {
+        "اسم الصنف": purchase.name,
+        "القيمة الفاتورة": purchase.amount,
+        "القيمة المدفوعة": purchase.paid_amount,
+        "القيمة المتبقية": purchase.remaining_amount,
+        "حالة الدفع": statusTranslations[purchase.payment_status] || "",
+        المورد: purchase.supplier,
+        "رقم الشيك": purchase.check_number || "",
+        التاريخ: new Date(purchase.date).toLocaleDateString(),
+      };
+    });
+  };
 
+  const customizedData = customizeDataForExport(currentPurchases);
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const handlePrint = (e) => {
@@ -223,7 +239,10 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
     <div dir="rtl" className="container mx-auto px-4">
       <div className="container mx-auto px-4">
         {/* Filters Section */}
-        <div className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
+        <div
+          dir="ltr"
+          className="mb-4 flex flex-col md:flex-row justify-between md:items-center"
+        >
           <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full md:w-auto">
             {/* Filter by Supplier */}
             <div className="mb-4 md:mb-0 ml-4 w-full md:w-auto">
@@ -312,6 +331,8 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
 
           {/* Align the Print Button Responsively */}
           <div className="flex justify-end md:justify-start mt-4 md:mt-0">
+            <ExportToExcel data={customizedData} fileName={"  مشتريات"} />
+
             <button
               onClick={handlePrint}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -447,16 +468,16 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center no-print">
                     <button
-                      className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
+                      className="ml-2 text-orange-500 font-bold py-1 px-2 rounded"
                       onClick={() => handleEditClick(purchase)}
                     >
-                      تعديل
+                      <FaEdit />
                     </button>
                     <button
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                      className=" text-red-500 font-bold py-1 px-2 rounded ml-2"
                       onClick={() => confirmDelete(purchase)}
                     >
-                      حذف
+                      <FaTrash />
                     </button>
                   </td>
                 </tr>

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FaPrint } from "react-icons/fa";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 // Utility function to format hours and minutes correctly
 function formatHoursAndMinutes(totalHours) {
@@ -82,7 +83,21 @@ export default function OvertimePage() {
 
     setMonthlyOvertime(overtimeByMonth); // Set the grouped overtime data
   };
+  const customizeDataForExport = (data) => {
+    const customizedData = [];
+    for (const [employee, months] of Object.entries(data)) {
+      for (const [month, totalOvertime] of Object.entries(months)) {
+        customizedData.push({
+          "اسم الموظف": employee,
+          "للشهر": month,
+          "عدد الساعات الإضافية": formatHoursAndMinutes(totalOvertime),
+        });
+      }
+    }
+    return customizedData
+  };
 
+  const customizedData = customizeDataForExport(monthlyOvertime);
   // Handle employee filter change
   const handleEmployeeChange = (e) => {
     setSelectedEmployee(e.target.value);
@@ -162,7 +177,9 @@ export default function OvertimePage() {
           />
         </div>
       </div>
-      <div>
+      <div className="flex  mb-6 gap-2">
+      <ExportToExcel data={customizedData} fileName="تقرير العمل الاضافي " />
+
         <button
           onClick={handlePrint}
           className="bg-blue-500 mt-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

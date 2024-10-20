@@ -6,6 +6,7 @@ import { FaEdit, FaPrint, FaTrash } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
 import CashWithdrawalsForm from "./CashWithdrawalsForm";
 import EditDrawer from "../components/Drawers/edit";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 const RECORDS_PER_PAGE = 10;
 
@@ -82,7 +83,19 @@ export default function CashWithdrawalsTable({ cashWithdrawalsUpdated, refetchCa
       setIsModalOpen(false);
     }
   };
+  const customizeDataForExport = (data) => {
+    return data.map((item) => {
+      return {
+        النوع: item.type,
+        المبلغ: item.amount,
+        "رقم الشيك": item.checkNumber || "-",
+        "تاريخ السحب": format(new Date(item.date), "yyyy/MM/dd"),
+        ملاحظات: item.notes,
+      };
+    });
+  };
 
+  const customizedData = customizeDataForExport(cashWithdrawals);
   const handleDelete = async (id) => {
     try {
       const response = await fetch("/api/cashWithdrawals", {
@@ -168,12 +181,14 @@ export default function CashWithdrawalsTable({ cashWithdrawalsUpdated, refetchCa
             className="border border-gray-300 p-2 rounded w-full md:w-auto"
           />
         </div>
-        <div>
+        <div className="flex items-center gap-2">
+        <ExportToExcel data={customizedData} fileName="مسحوبات نقدية" />
+
           <button
             onClick={handlePrint}
-            className="w-full md:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
+            className="w-full md:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded flex items-center justify-center"
           >
-            <FaPrint className="inline-block mr-2" />
+            <FaPrint className="inline-block mr-2 " />
           </button>
         </div>
       </div>

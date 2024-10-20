@@ -6,6 +6,7 @@ import { startOfMonth, endOfMonth } from "date-fns";
 import { FaEdit, FaPrint, FaTrashAlt } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
 import DepositForm from "./Depositform";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
   const [deposits, setDeposits] = useState([]);
@@ -110,6 +111,21 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
       })
     : [];
 
+    const customizeDataForExport = (data) => {
+      return data.map((item) => {
+        return {
+          "التاريخ": item.date,
+          "القيمة": item.amount,
+          "ملاحظات": item.note,
+          "مكان الايداع": item.place,
+          "ايداع باليد": item.is_hand_handing ? "نعم" : "لا",
+          "المستلم": item.name_handler ? item.name_handler : "الايداع بنكي",
+        };
+      });
+    };
+  
+    const customizedData = customizeDataForExport(filteredDeposits);
+
   const totalAmount = filteredDeposits.reduce(
     (sum, deposit) => sum + parseFloat(deposit.amount || 0),
     0
@@ -162,7 +178,9 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
           </div>
         </div>
 
-        <div className="w-25 flex items-start md:w-auto">
+        <div className="w-25 flex items-start gap-2 md:w-auto">
+        <ExportToExcel data={customizedData} fileName="الايداعات البنكية" />
+
           <button
             onClick={handlePrint}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full md:w-auto"

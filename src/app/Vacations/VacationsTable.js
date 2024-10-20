@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Import the CSS for the date picker
 import { FaPrint, FaTrash } from "react-icons/fa";
 import ConfirmModal from "../components/Modals/confirmDelete";
+import ExportToExcel from "../components/ExportToExcel/ExportToExcel";
 
 const RECORDS_PER_PAGE = 10;
 
@@ -122,7 +123,17 @@ export default function VacationsTable({ vacationsUpdated, refetchVacations }) {
   );
 
   const totalPages = Math.ceil(filteredVacations.length / RECORDS_PER_PAGE);
+  const customizeDataForExport = (data) => {
+    return data.map((item) => {
+      return {
+        الموظف: item.employee_name,
+        "تاريخ الاجازة": format(new Date(item.vacation_date), "yyyy/MM/dd"),
+        "تاريخ الإضافة": format(new Date(item.created_at), "yyyy/MM/dd"),
+      };
+    });
+  };
 
+  const customizedData = customizeDataForExport(filteredVacations);
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -133,45 +144,45 @@ export default function VacationsTable({ vacationsUpdated, refetchVacations }) {
   return (
     <div className="container mx-auto px-4">
       <div className="  flex justify-between items-center mb-4">
-        
-          {/* Filters */}
-          <div className="flex flex-col md:flex-row justify-start items-center mb-4 gap-3 space-y-2 md:space-y-0">
-            <select
-              value={selectedEmployee}
-              onChange={(e) => setSelectedEmployee(e.target.value)}
-              className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-md"
-            >
-              <option value="">All Employees</option>
-              {employees.map((employee) => (
-                <option key={employee.id} value={employee.name}>
-                  {employee.name}
-                </option>
-              ))}
-            </select>
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row justify-start items-center mb-4 gap-3 space-y-2 md:space-y-0">
+          <select
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+            className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-md"
+          >
+            <option value="">All Employees</option>
+            {employees.map((employee) => (
+              <option key={employee.id} value={employee.name}>
+                {employee.name}
+              </option>
+            ))}
+          </select>
 
-            <div className="w-full md:w-auto">
-              <DatePicker
-                selected={startDate}
-                onChange={handleDateChange}
-                startDate={startDate}
-                endDate={endDate}
-                selectsRange
-                isClearable
-                className="w-full md:w-auto border border-gray-300 p-2 rounded"
-                dateFormat="yyyy/MM/dd"
-                placeholderText="Select date range"
-              />
-            </div>
+          <div className="w-full md:w-auto">
+            <DatePicker
+              selected={startDate}
+              onChange={handleDateChange}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              isClearable
+              className="w-full md:w-auto border border-gray-300 p-2 rounded"
+              dateFormat="yyyy/MM/dd"
+              placeholderText="Select date range"
+            />
           </div>
-          <div>
-            <button
-              onClick={handlePrint}
-              className="w-full md:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
-            >
-              <FaPrint className="inline-block mr-2" />
-            </button>
-          </div>
-        
+        </div>
+        <div className="flex justify-end md:justify-start mt-4 gap-2 md:mt-0">
+          <ExportToExcel data={customizedData} fileName={"تقرير الاجازات"} />
+
+          <button
+            onClick={handlePrint}
+            className="w-full md:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
+          >
+            <FaPrint className="inline-block mr-2" />
+          </button>
+        </div>
       </div>
       {/* Vacations Table */}
       <div dir="rtl" className="overflow-x-auto">

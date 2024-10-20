@@ -17,6 +17,12 @@ import {
   FaChartBar,
   FaPlusCircle,
   FaMoneyCheckAlt,
+  FaMoneyBillWave,
+  FaAmazonPay,
+  FaBuilding,
+  FaDailymotion,
+  FaRegMehRollingEyes,
+  FaCoins,
 } from "react-icons/fa";
 import NavDrawer from "./components/Drawers/NavDrawer";
 import "./globals.css";
@@ -210,7 +216,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                   href="/Deposits"
                 >
                   <FaShoppingCart className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                  الايداعات {/* Purchases */}
+                  الايداعات البنكية{/* Purchases */}
                 </a>
               </li>
 
@@ -220,7 +226,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                   href="/suppliers"
                 >
                   <FaTruck className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                  ادارة الموردين {/* Suppliers */}
+                   الموردين {/* Suppliers */}
                 </a>
               </li>
 
@@ -242,7 +248,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                         onClick={handleLinkClick}
                       >
                         <FaUsers className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                        ادارة سجل الموظفين {/* Employees */}
+                        ادارة الموظفين {/* Employees */}
                       </a>
                     </li>
 
@@ -253,7 +259,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                         onClick={handleLinkClick}
                       >
                         <FaWallet className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                        ادارة الخصومات الرواتب{/* Deductions */}
+                        ادارة الخصومات على الرواتب{/* Deductions */}
                       </a>
                     </li>
 
@@ -264,7 +270,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                         onClick={handleLinkClick}
                       >
                         <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                        ادارة السحوبات الشهرية{/* Withdrawals */}
+                        ادارة السحوبات من الرواتب {/* Withdrawals */}
                       </a>
                     </li>
 
@@ -384,7 +390,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                 className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                 href="/sales"
               >
-                <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                <FaCoins className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                 المبيعات اليومية{/* Sales */}
               </a>
             </li>
@@ -408,22 +414,14 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                 ادارة الموردين {/* Suppliers */}
               </a>
             </li>
-            <li>
-              <a
-                className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                href="/PayingSalaries"
-              >
-                <FaTruck className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                دفع الرواتب {/*  */}
-              </a>
-            </li>
+            
             <li>
                 <a
                   className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                   href="/Deposits"
                 >
-                  <FaShoppingCart className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                  الايداعات {/* Purchases */}
+                  <FaBuilding className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                 الايداعات البنكية{/* Purchases */}
                 </a>
               </li>
               <li>
@@ -450,6 +448,26 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
 
               {isDropdownOpen && (
                 <ul className="absolute -left-9  mt-4 bg-blue-500 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
+                 
+                  <li>
+                    <a
+                      className="hover:text-yellow-300 gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      href="/attendance"
+                      onClick={handleLinkClick}
+                    >
+                      <FaClock className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                      سجل الدوام اليومي{/* Attendance */}
+                    </a>
+                  </li>
+                  <li>
+              <a
+                className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                href="/PayingSalaries"
+              >
+                <FaMoneyCheckAlt className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                دفع الرواتب {/*  */}
+              </a>
+            </li>
                   <li>
                     <a
                       className="hover:text-yellow-300 gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
@@ -460,7 +478,6 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                       ادارة سجل الموظفين {/* Employees */}
                     </a>
                   </li>
-
                   <li>
                     <a
                       className="hover:text-yellow-300 gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
@@ -468,7 +485,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                       onClick={handleLinkClick}
                     >
                       <FaWallet className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      ادارة الخصومات الرواتب{/* Deductions */}
+                      ادارة الخصومات على الرواتب{/* Deductions */}
                     </a>
                   </li>
 
@@ -479,7 +496,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                       onClick={handleLinkClick}
                     >
                       <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      ادارة السحوبات الشهرية{/* Withdrawals */}
+                      ادارة السحوبات الشهرية من الرواتب{/* Withdrawals */}
                     </a>
                   </li>
 
@@ -494,16 +511,6 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                     </a>
                   </li>
 
-                  <li>
-                    <a
-                      className="hover:text-yellow-300 gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                      href="/attendance"
-                      onClick={handleLinkClick}
-                    >
-                      <FaClock className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
-                      سجل الدوام اليومي{/* Attendance */}
-                    </a>
-                  </li>
 
                   <li>
                     <a
@@ -515,7 +522,7 @@ body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,
                       تقرير العمل الإضافي {/* Over Time */}
                     </a>
                   </li>
-
+                  
                   <li>
                     <a
                       className="hover:text-yellow-300 gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
