@@ -87,14 +87,15 @@ export default function Layout({ children }) {
   return (
     <html lang="en">
       <body>
-        {/* Navigation Bar */}<ConfirmAlertModal
+        {/* Navigation Bar */}
+        <ConfirmAlertModal
           isOpen={isModalOpen}
           onConfirm={() => setIsModalOpen(false)}
-          title="تنبيه"
-          body="تم اضافة صفحة الايداعات البنكية بنجاح🙏 , حيث  يمكنك توثيق حركات الايداع فيها ,يمكنك الوصولالى الصفحة من خلال النقر عليها في شريط التنقل في الاعلى"
+          title=" السيد المهندس احمد مهيدات المحترم "
+body="اهلا وسهلا بك في موقعنا بالاصدار الجديد ,لقد تم اضافة صفحة المسحوبات النقدية سمكنك الدخول اليها عن طريق شريط التنقل"
           //map on alertsData to display the message
-          message={'ازا حبيت رنلي هون 👈  0788356041 عشان اشيلك اياها'}
-        />
+          message={"ستم عمل جلسة تدريبية غدا في تمام الساعة ال3 عصرا ,الساعة الان الساعة 5 فجرا بتوقيت اربد🫡"}
+            />
         <nav
           dir="rtl"
           className="sticky top-0 z-50 bg-indigo-600 relative transition-opacity duration-300"
@@ -174,6 +175,15 @@ export default function Layout({ children }) {
                 >
                   <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
                   المبيعات اليومية{/* Sales */}
+                </a>
+              </li>
+              <li>
+                <a
+                  className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                  href="/cashWithdrawals"
+                >
+                  <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                  سحوبات النقدية{/* Cash Withdrawals */}
                 </a>
               </li>
               <li>
@@ -319,7 +329,7 @@ export default function Layout({ children }) {
           </NavDrawer>
 
           {/* Desktop Navigation */}
-          <ul className="hidden md:flex justify-around p-4 bg-blue-500 text-white font-bold items-center space-x-4">
+          <ul className="hidden md:flex justify-around p-4 text-sm bg-blue-500 text-white font-bold items-center space-x-4">
             <li>
               <a
                 className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
@@ -416,7 +426,15 @@ export default function Layout({ children }) {
                   الايداعات {/* Purchases */}
                 </a>
               </li>
-
+              <li>
+                <a
+                  className="hover:text-yellow-300 gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                  href="/cashWithdrawals"
+                >
+                  <FaMoneyBill className="flex-shrink-0 hover:text-yellow-300 cursor-pointer" />
+                  سحوبات النقدية{/* Cash Withdrawals */}
+                </a>
+              </li>
             {/* Employees dropdown */}
             <li className="relative " ref={dropdownRef}>
               <button
