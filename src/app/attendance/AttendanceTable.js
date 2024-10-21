@@ -258,6 +258,10 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                 <th className="border border-gray-300 px-4 py-2">
                   الساعات غير العامل بها
                 </th>{" "}
+                <th className="border border-gray-300 px-4 py-2">
+               الاجر مقابل ساعات العمل الاضافية 
+                </th>{" "}
+
                 {/* Non-working hours */}
                 <th className="border border-gray-300 px-4 py-2"></th>
                 <th className="border border-gray-300 px-4 py-2"></th>
@@ -307,6 +311,17 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                       {formatHoursAndMinutes(nonWorkingHours)}{" "}
                       {/* Display Non-Working Hours */}
                     </td>
+                    <td
+                      dir="ltr"
+                      className="border border-gray-300 px-4 py-2 text-center"  
+                    >
+                      {record.payment_amount != null &&
+                      !isNaN(Number(record.payment_amount))
+                        ? record.payment_amount
+                        : "JOD 0.00"}
+                     
+                    </td>
+
                     <td className="border border-gray-300 px-4 py-2">
                       {!record.check_out && (
                         <button

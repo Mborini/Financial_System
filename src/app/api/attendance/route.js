@@ -6,7 +6,7 @@ export async function GET() {
 
   try {
     const result = await client.query(`
-      SELECT a.id, a.employee_id, e.name, a.attendance_date, a.check_in, a.check_out, a.work_hours, a.overtime_hours
+      SELECT a.id, a.employee_id, e.name, a.attendance_date, a.check_in, a.check_out, a.work_hours, a.overtime_hours,e.salary, a.payment_amount
       FROM Attendance a
       JOIN Employees e ON a.employee_id = e.id
       ORDER BY a.attendance_date DESC
@@ -118,37 +118,66 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
     const workHours = calculateWorkHours(check_in, checkOut);
     const overtimeHours = calculateOvertime(workHours);
 
-// Calculate non-working hours (assuming standard is 8 hours)
-const standardHours = 10;
-const nonWorkingHours = Math.max(0, standardHours - workHours); // Calculate non-working hours
+    // Fetch employee salary
+    const salaryResult = await client.query(
+      `SELECT salary FROM Employees WHERE id = $1`,
+      [employee_id]
+    );
 
+    if (salaryResult.rows.length === 0) {
+      throw new Error("Employee not found.");
+    }
 
-    // Update the Attendance record
-   // Update the Attendance record
-await client.query(
-  `UPDATE Attendance 
-   SET check_out = $1, work_hours = $2, overtime_hours = $3, non_working_hours = $4 
-   WHERE id = $5`,
-  [checkOut, workHours.toFixed(2), overtimeHours.toFixed(2), nonWorkingHours.toFixed(2), id]
-);
+    const salary = salaryResult.rows[0].salary;
+    const paymentAmount = calculatePaymentAmount(salary, overtimeHours);
 
+    // Format the payment amount as currency
+    const formattedPaymentAmount = formatCurrency(paymentAmount); // Format to currency string
+
+    // Update the Attendance record with the payment amount
+    await client.query(
+      `UPDATE Attendance 
+       SET check_out = $1, work_hours = $2, overtime_hours = $3, payment_amount = $4 
+       WHERE id = $5`,
+      [
+        checkOut,
+        workHours.toFixed(2),
+        overtimeHours.toFixed(2),
+        formattedPaymentAmount,
+        id,
+      ]
+    );
   } catch (error) {
     console.error("Error during check-out:", error);
     throw error;
   }
 }
 
-// Utility: Calculate work hours
+// Utility: Format amount as currency
+function formatCurrency(amount) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+// Utility: Calculate payment amount
+function calculatePaymentAmount(salary, overtimeHours) {
+  const paymentForOvertime = (salary / 30 / 10) * overtimeHours * 1.25;
+  return paymentForOvertime;
+}
+
 // Utility: Calculate work hours
 function calculateWorkHours(check_in, check_out) {
   const checkInDate = new Date(check_in);
   const checkOutDate = new Date(check_out);
-  
+
   // Calculate difference in milliseconds and convert to hours
   const hoursDifference = (checkOutDate - checkInDate) / (1000 * 60 * 60); // Convert milliseconds to hours
   return hoursDifference; // Return as decimal hours
 }
-
 
 // Utility: Calculate overtime hours (assuming a standard 8-hour day)
 function calculateOvertime(workHours) {
@@ -159,20 +188,22 @@ function calculateOvertime(workHours) {
 //delete
 // DELETE /api/attendance/{id}
 export async function DELETE(request) {
-  
   const { id } = await request.json();
   const client = await connectToDatabase();
 
   try {
-
     await client.query("DELETE FROM Attendance WHERE id = $1", [id]);
-    return new Response(JSON.stringify({ message: "Record deleted successfully" }), { status: 200 });
-  }
-  catch (error) {
+    return new Response(
+      JSON.stringify({ message: "Record deleted successfully" }),
+      { status: 200 }
+    );
+  } catch (error) {
     console.error("Error deleting attendance record:", error);
-    return new Response(JSON.stringify({ error: "Error deleting attendance record" }), { status: 500 });
-  }
-  finally {
+    return new Response(
+      JSON.stringify({ error: "Error deleting attendance record" }),
+      { status: 500 }
+    );
+  } finally {
     client.release();
   }
 }

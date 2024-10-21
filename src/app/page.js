@@ -38,6 +38,9 @@ export default function Home() {
   const [purchases, setPurchases] = useState([]);
   const [sales, setSales] = useState([]);
   const [staffFood, setStaffFood] = useState([]); // New state for staff food
+  const [deposits, setDeposits] = useState([]); // New state for deposits
+  const [OverTimePaid, setOverTimePaid] = useState([]); // New state for over time paid
+  const [cashWithdrawals, setCashWithdrawals] = useState([]); // New state for cash withdrawals
   const [costStartDate, setCostStartDate] = useState(startOfMonth(new Date()));
   const [costEndDate, setCostEndDate] = useState(endOfMonth(new Date()));
   const [open, setOpen] = useState(false);
@@ -71,6 +74,9 @@ export default function Home() {
     fetchData("/api/purchases").then(setPurchases);
     fetchData("/api/sales").then(setSales);
     fetchData("/api/stafffood").then(setStaffFood); // Fetch staff food data
+    fetchData("/api/deposits").then(setDeposits); // Fetch deposits data
+    fetchData("/api/cashWithdrawals").then(setCashWithdrawals); // Fetch alerts data
+    fetchData("/api/attendance").then(setOverTimePaid); // Fetch alerts data
   }, []);
 
   const fetchAlerts = async () => {
@@ -142,6 +148,56 @@ export default function Home() {
   const totalStaffFoodForCurrentMonth = staffFoodForCurrentMonth.reduce(
     (total, entry) => {
       return total + parseFloat(entry.amount); // Ensure amount is a valid number
+    },
+    0
+  );
+
+  const DepositsForCurrentMonth = deposits.filter((deposit) => {
+    const depositDate = new Date(deposit.date);
+    return (
+      depositDate.getMonth() === currentMonth &&
+      depositDate.getFullYear() === currentYear
+    );
+  });
+
+  // Calculate total deposits for the current month
+  const totalDepositsForCurrentMonth = DepositsForCurrentMonth.reduce(
+    (total, deposit) => {
+      return total + parseFloat(deposit.amount); // Ensure amount is a valid number
+    },
+    0
+  );
+
+  const cashWithdrawalsForCurrentMonth = cashWithdrawals.filter(
+    (cashWithdrawals) => {
+      const cashWithdrawalsDate = new Date(cashWithdrawals.date);
+      return (
+        cashWithdrawalsDate.getMonth() === currentMonth &&
+        cashWithdrawalsDate.getFullYear() === currentYear
+      );
+    }
+  );
+
+  // Calculate total cash withdrawals for the current month
+  const totalcashWithdrawalsForCurrentMonth =
+    cashWithdrawalsForCurrentMonth.reduce((total, cashWithdrawals) => {
+      return total + parseFloat(cashWithdrawals.amount); // Ensure amount is a valid number
+    }, 0);
+
+  const OverTimePaidForCurrentMonth = OverTimePaid.filter((OverTimePaid) => {
+    const OverTimePaidDate = new Date(OverTimePaid.attendance_date);
+    return (
+      OverTimePaidDate.getMonth() === currentMonth &&
+      OverTimePaidDate.getFullYear() === currentYear
+    );
+  });
+
+  // Calculate total OverTimePaid for the current month
+  const totalOverTimePaidForCurrentMonth = OverTimePaidForCurrentMonth.reduce(
+    (total, overTime) => {
+      const paymentAmount = parseFloat(overTime.payment_amount);
+      // Check if paymentAmount is a valid number before adding it
+      return total + (isNaN(paymentAmount) ? 0 : paymentAmount);
     },
     0
   );
@@ -461,9 +517,20 @@ export default function Home() {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+
+  const [isRed, setIsRed] = useState(true);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setIsRed((prev) => !prev);
+    }, 500); // Change color every 500ms
+
+    // Cleanup the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-    
       {alertsData.length > 0 && (
         <ConfirmAlertModal
           isOpen={isModalOpen}
@@ -530,6 +597,12 @@ export default function Home() {
             JOD {totalStaffFoodForCurrentMonth.toFixed(2)}
           </p>
         </div>
+        <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
+          <p className="text-base font-bold">الايداعات للشهر الحالي </p>
+          <p className="text-xl">
+            JOD {totalDepositsForCurrentMonth.toFixed(2)}
+          </p>
+        </div>
         {/* Total Withdrawals for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
           <p className="text-base font-bold">مسحوبات الموظفين للشهر الحالي</p>
@@ -537,24 +610,42 @@ export default function Home() {
             JOD {totalWithdrawalsForCurrentMonth.toFixed(2)}
           </p>
         </div>
+        <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
+          <p className="text-base font-bold">مسحوبات النقدية للشهر الحالي</p>
+          <p className="text-xl">
+            JOD {totalcashWithdrawalsForCurrentMonth.toFixed(2)}
+          </p>
+        </div>
+        <div
+          className={`border p-4 shadow-lg text-center rounded-lg transition-colors duration-500 ${
+            isRed ? "bg-rose-300" : "bg-white"
+          }`}
+        >
+          <p className="text-base font-bold">
+            مجموع مبلغ ساعات العمل الاضافي للشهر الحالي
+          </p>
+          <p className="text-xl">
+            JOD {totalOverTimePaidForCurrentMonth.toFixed(2)}
+          </p>
+        </div>
       </div>
       <div className="grid grid-cols-1 mb-4 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {/* Costs and Income by Type Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-         <div className="justify-between flex text-2xl font-semibold mb-4">
-         <h1></h1>
-          <h2 className="text-xl text-center font-bold mb-4">
-            نسبة التكاليف للشهر الحالي{" "}
-          </h2>
-          <button
-            className="ml-2 p-2 bg-green-500 text-white rounded-md"
-            onClick={() =>
-              handleExport(costsByTypeChartData, "CostsByTypeData")
-            }
-          >
-            <FaFileExcel />
-          </button>
-         </div>
+          <div className="justify-between flex text-2xl font-semibold mb-4">
+            <h1></h1>
+            <h2 className="text-xl text-center font-bold mb-4">
+              نسبة التكاليف للشهر الحالي{" "}
+            </h2>
+            <button
+              className="ml-2 p-2 bg-green-500 text-white rounded-md"
+              onClick={() =>
+                handleExport(costsByTypeChartData, "CostsByTypeData")
+              }
+            >
+              <FaFileExcel />
+            </button>
+          </div>
 
           <div className="flex items-center justify-between mb-4">
             <div className="w-full">
@@ -566,20 +657,23 @@ export default function Home() {
 
         {/* Purchases by Supplier Chart */}
         <div className="p-4 bg-white shadow-lg rounded-lg">
-         <div className="justify-between flex text-2xl font-semibold mb-4">
-         <h1></h1>
-          <h2 className="text-xl text-center font-bold mb-4">
-            نسبة المشتريات حسب الموردين
+          <div className="justify-between flex text-2xl font-semibold mb-4">
+            <h1></h1>
+            <h2 className="text-xl text-center font-bold mb-4">
+              نسبة المشتريات حسب الموردين
             </h2>
-          <button
-            className="ml-2 p-2 bg-green-500 text-white rounded-md"
-            onClick={() =>
-              handleExport(purchasesBySupplierChartData, "PurchasesBySupplierData")
-            }
-          >
-            <FaFileExcel />
-          </button>
-         </div>
+            <button
+              className="ml-2 p-2 bg-green-500 text-white rounded-md"
+              onClick={() =>
+                handleExport(
+                  purchasesBySupplierChartData,
+                  "PurchasesBySupplierData"
+                )
+              }
+            >
+              <FaFileExcel />
+            </button>
+          </div>
           <BarChartCard
             title="Purchases by Supplier"
             data={purchasesBySupplierChartData}
