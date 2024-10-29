@@ -117,6 +117,7 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
     const { id, check_in } = result.rows[0];
     const workHours = calculateWorkHours(check_in, checkOut);
     const overtimeHours = calculateOvertime(workHours);
+    const nonWorkingHours = calculateNonWorkingHours(workHours); // Calculate non-working hours
 
     // Fetch employee salary
     const salaryResult = await client.query(
@@ -134,16 +135,17 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
     // Format the payment amount as currency
     const formattedPaymentAmount = formatCurrency(paymentAmount); // Format to currency string
 
-    // Update the Attendance record with the payment amount
+    // Update the Attendance record with the payment amount and non-working hours
     await client.query(
       `UPDATE Attendance 
-       SET check_out = $1, work_hours = $2, overtime_hours = $3, payment_amount = $4 
-       WHERE id = $5`,
+       SET check_out = $1, work_hours = $2, overtime_hours = $3, payment_amount = $4, non_working_hours = $5
+       WHERE id = $6`,
       [
         checkOut,
         workHours.toFixed(2),
         overtimeHours.toFixed(2),
         formattedPaymentAmount,
+        nonWorkingHours.toFixed(2), // Save non-working hours
         id,
       ]
     );
@@ -152,6 +154,13 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
     throw error;
   }
 }
+
+// Utility: Calculate non-working hours
+function calculateNonWorkingHours(workHours) {
+  const totalScheduledHours = 10; // Change this to the scheduled hours per day
+  return Math.max(0, totalScheduledHours - workHours); // Non-working hours are those not worked
+}
+
 
 // Utility: Format amount as currency
 function formatCurrency(amount) {
