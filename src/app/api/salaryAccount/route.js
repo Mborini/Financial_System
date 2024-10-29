@@ -78,7 +78,6 @@ LEFT JOIN (
 ) wd ON e.id = wd.employee_id
 WHERE 
     (e.contract_end_date IS NULL OR e.contract_end_date >= TO_DATE($1 || '-01', 'YYYY-MM-DD')) -- Only include employees whose contract hasn't ended
-    AND e.contract_start_date <= TO_DATE($1 || '-01', 'YYYY-MM-DD'); -- Only include employees whose contract started before or during the period
         `, [period]);
         
         if (result.rows.length === 0) {
