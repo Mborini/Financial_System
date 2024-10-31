@@ -531,7 +531,7 @@ export default function Home() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {alertsData.length > 0 && (
+      {/* {alertsData.length > 0 && (
         <ConfirmAlertModal
           isOpen={isModalOpen}
           onConfirm={alertsConfirmed}
@@ -548,7 +548,7 @@ export default function Home() {
             </ul>
           ))}
         />
-      )}
+      )} */}
       {/* Summary Section */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* Total Employees */}

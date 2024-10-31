@@ -50,7 +50,6 @@ export default function AttendanceTable({
     fetchAttendance();
   }, [attendanceUpdated]);
 
-
   // Filter attendance based on the selected date
   useEffect(() => {
     const filtered = attendance.filter((record) => {
@@ -65,10 +64,10 @@ export default function AttendanceTable({
     setSelectedDate(e.target.value);
   };
   const formatDate = (dateString) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -139,7 +138,6 @@ export default function AttendanceTable({
     setAlertsData(data);
   };
 
-
   const alertsConfirmed = () => {
     setIsAlertModalOpen(false);
   };
@@ -147,27 +145,20 @@ export default function AttendanceTable({
   const customizeDataForExport = (data) => {
     return data.map((Att) => ({
       "اسم الموظف": Att.name,
-      "وقت الحضور": Att.check_in
-        ? formatDateTime(Att.check_in)
-        : "---",
-      "وقت الانصراف": Att.check_out
-        ? formatDateTime(Att.check_out)
-        : "---",
-      "ساعات العمل": Att.work_hours != null &&
-      !isNaN(Number(Att.work_hours))  
-        ? formatHoursAndMinutes(Att.work_hours)
-        : "---",
-      "ساعات العمل الاضافية": Att.overtime_hours != null &&
-      !isNaN(Number(Att.overtime_hours))
-        ? formatHoursAndMinutes(Att.overtime_hours)
-        : "---",
-      "الساعات غير العامل بها": Att.work_hours != null &&
-      !isNaN(Number(Att.work_hours))
-        ? formatHoursAndMinutes(10 - Att.work_hours)
-        : "---",
-
-
-
+      "وقت الحضور": Att.check_in ? formatDateTime(Att.check_in) : "---",
+      "وقت الانصراف": Att.check_out ? formatDateTime(Att.check_out) : "---",
+      "ساعات العمل":
+        Att.work_hours != null && !isNaN(Number(Att.work_hours))
+          ? formatHoursAndMinutes(Att.work_hours)
+          : "---",
+      "ساعات العمل الاضافية":
+        Att.overtime_hours != null && !isNaN(Number(Att.overtime_hours))
+          ? formatHoursAndMinutes(Att.overtime_hours)
+          : "---",
+      "الساعات غير العامل بها":
+        Att.work_hours != null && !isNaN(Number(Att.work_hours))
+          ? formatHoursAndMinutes(10 - Att.work_hours)
+          : "---",
     }));
   };
 
@@ -189,25 +180,25 @@ export default function AttendanceTable({
 
   return (
     <div>
-
       <div className="container mx-auto px-4">
-      {alertsData.length > 0 && (
-      <ConfirmAlertModal
-        isOpen={isAlertModalOpen}
-        onConfirm={alertsConfirmed}
-title="تنبيه"
-body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
-        //map on alertsData to display the message
-        message={alertsData.map((alert) => (
-          //list the name of the employees who didn't confirm their attendance
-          //firmat date 
-          <ul key={alert.id}>
-            <li>{alert.name},{" "} تاريخ الحضور: {formatDate(alert.check_in)
-            }</li>
-          </ul>
-        ))}
-      />
-    )}
+        {/* {alertsData.length > 0 && (
+          <ConfirmAlertModal
+            isOpen={isAlertModalOpen}
+            onConfirm={alertsConfirmed}
+            title="تنبيه"
+            body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
+            //map on alertsData to display the message
+            message={alertsData.map((alert) => (
+              //list the name of the employees who didn't confirm their attendance
+              //firmat date
+              <ul key={alert.id}>
+                <li>
+                  {alert.name}, تاريخ الحضور: {formatDate(alert.check_in)}
+                </li>
+              </ul>
+            ))}
+          />
+        )} */}
         <div className="mb-4 flex justify-between">
           <div>
             <label
@@ -225,7 +216,7 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
             />
           </div>
           <div className="flex items-center gap-2">
-          <ExportToExcel data={customizedData} fileName="الدوام" />
+            <ExportToExcel data={customizedData} fileName="الدوام" />
 
             <button
               onClick={handlePrint}
@@ -259,9 +250,8 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                   الساعات غير العامل بها
                 </th>{" "}
                 <th className="border border-gray-300 px-4 py-2">
-               الاجر مقابل ساعات العمل الاضافية 
+                  الاجر مقابل ساعات العمل الاضافية
                 </th>{" "}
-
                 {/* Non-working hours */}
                 <th className="border border-gray-300 px-4 py-2"></th>
                 <th className="border border-gray-300 px-4 py-2"></th>
@@ -313,13 +303,12 @@ body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
                     </td>
                     <td
                       dir="ltr"
-                      className="border border-gray-300 px-4 py-2 text-center"  
+                      className="border border-gray-300 px-4 py-2 text-center"
                     >
                       {record.payment_amount != null &&
                       !isNaN(Number(record.payment_amount))
                         ? record.payment_amount
                         : "JOD 0.00"}
-                     
                     </td>
 
                     <td className="border border-gray-300 px-4 py-2">

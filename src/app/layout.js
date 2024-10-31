@@ -94,14 +94,14 @@ export default function Layout({ children }) {
     <html lang="en">
       <body>
         {/* Navigation Bar */}
-        <ConfirmAlertModal
+        {/* <ConfirmAlertModal
           isOpen={isModalOpen}
           onConfirm={() => setIsModalOpen(false)}
           title=" السيد المهندس احمد مهيدات المحترم "
           body="يجب اعادة احتساب دوام الموظفين للتمكن من استخراج مجموع المبلغ اللزمة للدفع مقابل ساعات العمل الاضافية"
           //map on alertsData to display the message
           message={"يمكن احتسابة بشكل يدوي و ادخالها في قاعدة البيانات وهذه البيانات متعلقة بالدوام منذ بداية الشهر الحالي"}
-        />
+        /> */}
         <nav
           dir="rtl"
           className="sticky top-0 z-50 bg-indigo-600 relative transition-opacity duration-300"
