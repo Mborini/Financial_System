@@ -132,9 +132,6 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
     const salary = salaryResult.rows[0].salary;
     const paymentAmount = calculatePaymentAmount(salary, overtimeHours);
 
-    // Format the payment amount as currency
-    const formattedPaymentAmount = formatCurrency(paymentAmount); // Format to currency string
-
     // Update the Attendance record with the payment amount and non-working hours
     await client.query(
       `UPDATE Attendance 
@@ -144,7 +141,7 @@ async function handleCheckOut(client, employee_id, checkOutDateTime) {
         checkOut,
         workHours.toFixed(2),
         overtimeHours.toFixed(2),
-        formattedPaymentAmount,
+        paymentAmount,
         nonWorkingHours.toFixed(2), // Save non-working hours
         id,
       ]
@@ -161,16 +158,6 @@ function calculateNonWorkingHours(workHours) {
   return Math.max(0, totalScheduledHours - workHours); // Non-working hours are those not worked
 }
 
-
-// Utility: Format amount as currency
-function formatCurrency(amount) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
 
 // Utility: Calculate payment amount
 function calculatePaymentAmount(salary, overtimeHours) {
