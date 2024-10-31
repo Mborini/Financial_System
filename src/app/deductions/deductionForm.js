@@ -8,16 +8,18 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [submitError, setSubmitError] = useState(null); // To handle submit errors
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         const response = await fetch("/api/employees");
+        if (!response.ok) throw new Error("Failed to load employees.");
         const data = await response.json();
         setEmployees(data);
         setLoading(false);
       } catch (error) {
-        setError("Failed to load employees.");
+        setError(error.message);
         setLoading(false);
       }
     };
@@ -27,7 +29,7 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = selectedDeduction ? "PUT" : "POST";
-    const url = selectedDeduction ? `/api/deductions/${selectedDeduction.id}` : "/api/deductions";
+    const url = "/api/deductions"; // Use the same URL for both POST and PUT
 
     const response = await fetch(url, {
       method,
@@ -35,7 +37,7 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: selectedDeduction?.id,
+        id: selectedDeduction?.id, // ID is still sent in the body
         amount,
         date,
         employee_id: employee,
@@ -51,19 +53,20 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
       setDeductionType("");
       setOpen(false);
       refetchDeductions();
+    } else {
+      const errorData = await response.json();
+      setSubmitError(errorData.error || "Failed to submit deduction.");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Error Message */}
+      {submitError && <p className="text-red-500">{submitError}</p>}
+
       {/* Date field */}
       <div>
-        <label
-          htmlFor="date"
-          className="block text-sm font-medium text-gray-700"
-        >
-          التاريخ
-        </label>
+        <label htmlFor="date" className="block text-sm font-medium text-gray-700">التاريخ</label>
         <input
           id="date"
           type="date"
@@ -76,12 +79,7 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
 
       {/* Amount field */}
       <div>
-        <label
-          htmlFor="amount"
-          className="block text-sm font-medium text-gray-700"
-        >
-          قيمة الخصم
-        </label>
+        <label htmlFor="amount" className="block text-sm font-medium text-gray-700">قيمة الخصم</label>
         <input
           id="amount"
           type="number"
@@ -95,12 +93,7 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
 
       {/* Employee field */}
       <div>
-        <label
-          htmlFor="employee"
-          className="block text-sm font-medium text-gray-700"
-        >
-          الموظف
-        </label>
+        <label htmlFor="employee" className="block text-sm font-medium text-gray-700">الموظف</label>
         <select
           id="employee"
           value={employee}
@@ -125,12 +118,7 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
 
       {/* Deduction Type field */}
       <div>
-        <label
-          htmlFor="deductionType"
-          className="block text-sm font-medium text-gray-700"
-        >
-          نوع الخصم
-        </label>
+        <label htmlFor="deductionType" className="block text-sm font-medium text-gray-700">نوع الخصم</label>
         <select
           id="deductionType"
           value={deductionType}
@@ -151,7 +139,7 @@ export default function DeductionForm({ refetchDeductions, setOpen, selectedDedu
         <button
           type="submit"
           className={`w-full inline-flex justify-center py-2 px-4 border ${selectedDeduction ? 'bg-orange-400' : 'bg-indigo-600'} border-transparent shadow-sm text-sm font-medium rounded-md text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
-          >
+        >
           {selectedDeduction ? "حفظ وتعديل" : "اضافة خصم"}
         </button>
       </div>

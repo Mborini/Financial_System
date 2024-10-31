@@ -112,17 +112,27 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
-  const { id, employee_id, amount } = await request.json();
-  console.log("Deleting deduction with:", { id, employee_id, amount }); // Log the parameters
+  // Parse the incoming request data
+  const payload = await request.json();
+  const { id, employee_id, amount } = payload || {};
+console.log(payload)
+  // Log parsed payload for debugging
+  console.log("Received payload for deletion:", payload);
+
+  // Validate required parameters
+  if (!id || !employee_id || !amount) {
+    console.error("ID, employee ID, and amount are required for deletion");
+    return new Response(
+      JSON.stringify({ error: "ID, employee ID, and amount are required" }),
+      { status: 400 }
+    );
+  }
 
   const client = await connectToDatabase();
 
   try {
+    // Start a transaction
     await client.query("BEGIN");
-
-    if (!id || !employee_id || !amount) {
-      throw new Error("ID, employee ID, and amount are required");
-    }
 
     // Delete the deduction from the Deductions table
     await client.query(
@@ -138,19 +148,18 @@ export async function DELETE(request) {
       [amount, employee_id]
     );
 
+    // Commit the transaction
     await client.query("COMMIT");
+
     return new Response(
-      JSON.stringify({
-        message: "Deduction deleted and salary account updated",
-      }),
+      JSON.stringify({ message: "Deduction deleted and salary account updated" }),
       { status: 200 }
     );
   } catch (error) {
+    // Rollback in case of error
     await client.query("ROLLBACK");
-    console.error(
-      "Error deleting deduction and updating salary account:",
-      error
-    );
+    console.error("Error deleting deduction and updating salary account:", error);
+
     return new Response(
       JSON.stringify({
         error: "Error deleting deduction and updating salary account",
@@ -158,6 +167,7 @@ export async function DELETE(request) {
       { status: 500 }
     );
   } finally {
+    // Release the database connection
     client.release();
   }
 }

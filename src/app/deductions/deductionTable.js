@@ -60,35 +60,34 @@ export default function DeductionTable({
     setRecordToDelete(record);
     setIsModalOpen(true);
   };
+// Updated handleDeleteConfirmed function
+const handleDeleteConfirmed = () => {
+  if (recordToDelete) {
+    handleDelete(recordToDelete); // Pass the entire record
+    setIsModalOpen(false);
+  }
+};
 
-  const handleDeleteConfirmed = () => {
-    if (recordToDelete && recordToDelete.id) {
-      handleDelete(recordToDelete.id);
-      setIsModalOpen(false);
-    }
-  };
-  const handleDelete = async (deduction) => {
-    try {
-      const response = await fetch(`/api/deductions`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: deduction.id,
-          employee_id: deduction.employee_id,
-          amount: deduction.amount,
-        }),
-      });
+// Updated handleDelete function
+const handleDelete = async (deduction) => {
+  try {
+    const { id, employee_id, amount } = deduction; // Destructure required fields from the deduction object
+    const response = await fetch(`/api/deductions`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, employee_id, amount }), // Send the required data
+    });
 
-      if (response.ok) {
-        refetchDeductions();
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to delete deduction:", errorData.error);
-      }
-    } catch (error) {
-      console.error("Error deleting deduction:", error);
+    if (response.ok) {
+      refetchDeductions();
+    } else {
+      const errorData = await response.json();
+      console.error("Failed to delete deduction:", errorData.error);
     }
-  };
+  } catch (error) {
+    console.error("Error deleting deduction:", error);
+  }
+};
 
   // Filter deductions based on date range and employee name
   const filteredDeductions = deductions.filter((deduction) => {
