@@ -20,7 +20,7 @@ export default function EditPayingSalariesForm({
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+const [note, setNote] = useState(selectedSalary?.note || ""); // Set initial note
   // Effect to load selected salary data
   useEffect(() => {
     if (selectedSalary) {
@@ -46,6 +46,7 @@ export default function EditPayingSalariesForm({
             date: PaidDate,
             employeeId: selectedEmployeeId,
             finallRemining: selectedSalary.finall_remaining - amountToPay, // Update final remaining
+            note: note,
           }),
         });
 
@@ -128,6 +129,24 @@ export default function EditPayingSalariesForm({
             onChange={(e) => setAmountToPay(e.target.value)}
             className="border border-gray-300 rounded-md p-2 w-full"
             required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="font-bold">رقم الشيك :</label>
+          <input
+            type="text"
+            value={(selectedSalary.check_number)}
+            disabled
+            className="border border-gray-300 rounded-md p-2 w-full cursor-not-allowed"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="font-bold">ملاحظات :</label>
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="border border-gray-300 rounded-md p-2 w-full"
           />
         </div>
         {message && <div className="text-red-500 text-sm">{message}</div>}

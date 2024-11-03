@@ -28,7 +28,8 @@ export default function PayingSalariesForm({
   const [amountToPay, setAmountToPay] = useState("");
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
-
+  const [checkField, setCheckField] = useState(false); // For check payment
+  const [checkNumber, setCheckNumber] = useState(""); // For check number
   // Fetch employee data when the component mounts
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -141,7 +142,10 @@ export default function PayingSalariesForm({
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-
+    if (checkField && !checkNumber) {
+      setError("Check number is required for check payments.");
+      return;
+    }
     if (amountToPay <= adjustedRemainingSalary) {
       try {
         const response = await fetch("/api/PayingSalaries", {
@@ -156,6 +160,8 @@ export default function PayingSalariesForm({
             adjustedRemainingSalary: adjustedRemainingSalary,
             employeeId: selectedEmployeeId,
             finallRemining: adjustedRemainingSalary - amountToPay,
+            check_number: checkField ? checkNumber : null, // Add check_number only if applicable
+
           }),
         });
 
@@ -296,7 +302,42 @@ export default function PayingSalariesForm({
               />
             </div>
             {message && <div className="text-red-500 text-sm">{message}</div>}
+ {/* Check field and check number */}
+ <div className="flex items-center gap-2 justify-start">
+        <input
+          type="checkbox"
+          id="checkField"
+          name="checkField"
+          checked={checkField}
+          onChange={() => setCheckField(!checkField)}
+        />
+        <label
+          htmlFor="checkField"
+          className="block text-sm font-medium text-gray-700"
+        >
+          هل الدفع بشيك؟
+        </label>
+      </div>
 
+      {checkField && (
+        <div>
+          <label
+            htmlFor="checkNumber"
+            className="block text-sm mt-2  font-medium text-gray-700"
+          >
+            رقم الشيك
+          </label>
+          <input
+            id="checkNumber"
+            type="text"
+            value={checkNumber}
+            onChange={(e) => setCheckNumber(e.target.value)}
+            placeholder="ادخل رقم الشيك"
+            required
+            className="mt-1 block mb-2 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      )}
             <div className="mb-4">
               <label className="font-bold">ملاحظات:</label>
               <textarea

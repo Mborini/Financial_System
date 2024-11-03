@@ -273,6 +273,7 @@ export default function PayingSalariesTable({
               <th className="border border-gray-300 px-4 py-2">
                 الراتب المتبقي
               </th>
+              <th className="border border-gray-300 px-4 py-2">رقم الشيك</th>
               <th className="border border-gray-300 px-4 py-2">ملاحظات</th>
               <th className="border border-gray-300 px-4 py-2 no-print"></th>
             </tr>
@@ -294,6 +295,9 @@ export default function PayingSalariesTable({
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {salary.finall_remaining}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  {salary.check_number || "لا يوجد رقم شيك"}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {salary.note || "لا يوجد ملاحظات"}

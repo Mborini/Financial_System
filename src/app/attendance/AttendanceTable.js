@@ -307,7 +307,7 @@ export default function AttendanceTable({
                     >
                       {record.payment_amount != null &&
                       !isNaN(Number(record.payment_amount))
-                        ? record.payment_amount
+                        ? " JOD " +record.payment_amount 
                         : "JOD 0.00"}
                     </td>
 

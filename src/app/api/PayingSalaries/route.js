@@ -45,69 +45,90 @@ export async function GET() {
 // Add a new staff food entry
 
 export async function POST(request) {
-    const { amount, date, note, adjustedRemainingSalary, employeeId, finallRemining } =
-        await request.json();
-    const client = await connectToDatabase();
-    
-    try {
-        await client.query("BEGIN");
-    
-        if (!employeeId) {
-        throw new Error("Employee ID is required");
-        }
-    
-        await client.query(
-        "INSERT INTO paying_salaries (paid_amount, date, note, adjusted_remaining_salary, employee_id, finall_remaining) VALUES ($1, $2, $3, $4, $5, $6)",
-        [amount, date, note, adjustedRemainingSalary, employeeId, finallRemining]
-        );
-    
-        await client.query("COMMIT");
-        return new Response(JSON.stringify({ message: "paid_amount entry added" }), {
+  const {
+    amount,
+    date,
+    note,
+    adjustedRemainingSalary,
+    employeeId,
+    finallRemining,
+    check_number,
+  } = await request.json();
+  const client = await connectToDatabase();
+
+  try {
+    await client.query("BEGIN");
+
+    if (!employeeId) {
+      throw new Error("Employee ID is required");
+    }
+
+    await client.query(
+      "INSERT INTO paying_salaries (paid_amount, date, note, adjusted_remaining_salary, employee_id, finall_remaining,check_number) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      [
+        amount,
+        date,
+        note,
+        adjustedRemainingSalary,
+        employeeId,
+        finallRemining,
+        check_number,
+      ]
+    );
+
+    await client.query("COMMIT");
+    return new Response(
+      JSON.stringify({ message: "paid_amount entry added" }),
+      {
         status: 201,
-        });
-    } catch (error) {
-        await client.query("ROLLBACK");
-        console.error("Error adding ", error);
-        return new Response(JSON.stringify({ error: "Error " }), {
-        status: 500,
-        });
-    } finally {
-        client.release();
-    }
-    }
+      }
+    );
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error adding ", error);
+    return new Response(JSON.stringify({ error: "Error " }), {
+      status: 500,
+    });
+  } finally {
+    client.release();
+  }
+}
 // Add this to your API file
 export async function PUT(request) {
-    const { amount, date, employeeId, finallRemining } = await request.json();
-    const client = await connectToDatabase();
-  
-    try {
-      await client.query("BEGIN");
-  
-      if (!employeeId) {
-        throw new Error("Employee ID is required");
-      }
-  
-      // Update the record in the database
-      await client.query(
-        "UPDATE paying_salaries SET paid_amount = $1, date = $2, finall_remaining = $3 WHERE employee_id = $4",
-        [amount, date, finallRemining, employeeId]
-      );
-  
-      await client.query("COMMIT");
-      return new Response(JSON.stringify({ message: "Salary entry updated" }), {
-        status: 200,
-      });
-    } catch (error) {
-      await client.query("ROLLBACK");
-      console.error("Error updating salary entry:", error);
-      return new Response(JSON.stringify({ error: "Error updating salary entry" }), {
-        status: 500,
-      });
-    } finally {
-      client.release();
+  const { amount, date, employeeId, finallRemining, note } =
+    await request.json();
+  const client = await connectToDatabase();
+
+  try {
+    await client.query("BEGIN");
+
+    if (!employeeId) {
+      throw new Error("Employee ID is required");
     }
+
+    // Update the record in the database
+    await client.query(
+      "UPDATE paying_salaries SET paid_amount = $1, date = $2, finall_remaining = $3, note=$4 WHERE employee_id = $5",
+      [amount, date, finallRemining, note, employeeId]
+    );
+
+    await client.query("COMMIT");
+    return new Response(JSON.stringify({ message: "Salary entry updated" }), {
+      status: 200,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error updating salary entry:", error);
+    return new Response(
+      JSON.stringify({ error: "Error updating salary entry" }),
+      {
+        status: 500,
+      }
+    );
+  } finally {
+    client.release();
   }
- 
+}
 
 export async function DELETE(request) {
   const { id } = await request.json(); // Expecting an id to be passed in the body
@@ -121,10 +142,7 @@ export async function DELETE(request) {
     }
 
     // Perform the delete operation
-    await client.query(
-      "DELETE FROM paying_salaries WHERE id = $1",
-      [id]
-    );
+    await client.query("DELETE FROM paying_salaries WHERE id = $1", [id]);
 
     await client.query("COMMIT");
     return new Response(JSON.stringify({ message: "Salary entry deleted" }), {
@@ -133,9 +151,12 @@ export async function DELETE(request) {
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Error deleting salary entry:", error);
-    return new Response(JSON.stringify({ error: "Error deleting salary entry" }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({ error: "Error deleting salary entry" }),
+      {
+        status: 500,
+      }
+    );
   } finally {
     client.release();
   }

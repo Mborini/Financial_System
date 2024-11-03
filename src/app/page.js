@@ -41,6 +41,7 @@ export default function Home() {
   const [deposits, setDeposits] = useState([]); // New state for deposits
   const [OverTimePaid, setOverTimePaid] = useState([]); // New state for over time paid
   const [cashWithdrawals, setCashWithdrawals] = useState([]); // New state for cash withdrawals
+  const [deductions, setDeductions] = useState([]); // New state for deductions
   const [costStartDate, setCostStartDate] = useState(startOfMonth(new Date()));
   const [costEndDate, setCostEndDate] = useState(endOfMonth(new Date()));
   const [open, setOpen] = useState(false);
@@ -77,6 +78,7 @@ export default function Home() {
     fetchData("/api/deposits").then(setDeposits); // Fetch deposits data
     fetchData("/api/cashWithdrawals").then(setCashWithdrawals); // Fetch alerts data
     fetchData("/api/attendance").then(setOverTimePaid); // Fetch alerts data
+    fetchData("/api/deductions").then(setDeductions); // Fetch alerts data
   }, []);
 
   const fetchAlerts = async () => {
@@ -237,6 +239,27 @@ export default function Home() {
 
       if (isNaN(amount) || isNaN(counts)) {
         console.error(`Invalid purchase data: ${JSON.stringify(purchase)}`);
+      }
+
+      return total + amount * counts;
+    },
+    0
+  );
+  const deductionsForCurrentMonth = deductions.filter((deduction) => {
+    const deductionDate = new Date(deduction.date);
+    return (
+      deductionDate.getMonth() === currentMonth &&
+      deductionDate.getFullYear() === currentYear
+    );
+  });
+
+  const totalDeductionsForCurrentMonth = deductionsForCurrentMonth.reduce(
+    (total, deduction) => {
+      const amount = parseFloat(deduction.amount) || 0; // Ensure amount is valid
+      const counts = parseFloat(deduction.counts) || 1; // Default counts to 1 if invalid
+
+      if (isNaN(amount) || isNaN(counts)) {
+        console.error(`Invalid deduction data: ${JSON.stringify(deduction)}`);
       }
 
       return total + amount * counts;
@@ -617,15 +640,23 @@ export default function Home() {
           </p>
         </div>
         <div
-          className={`border p-4 shadow-lg text-center rounded-lg transition-colors duration-500 ${
-            isRed ? "bg-rose-300" : "bg-white"
-          }`}
+          className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
           <p className="text-base font-bold">
             مجموع مبلغ ساعات العمل الاضافي للشهر الحالي
           </p>
           <p className="text-xl">
             JOD {totalOverTimePaidForCurrentMonth.toFixed(2)}
+          </p>
+        </div>
+        <div
+          className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
+        >
+          <p className="text-base font-bold">
+            مجموع الخصومات على الرواتب 
+          </p>
+          <p className="text-xl">
+            JOD {totalDeductionsForCurrentMonth.toFixed(2)}
           </p>
         </div>
       </div>
