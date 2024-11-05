@@ -23,8 +23,17 @@ export async function GET() {
         }
       );
     }
-
-    return new Response(JSON.stringify(result.rows), { status: 200 });
+const totalPaidAmount = await client.query(`
+  SELECT SUM(paid_amount) AS total_paid_salary
+FROM public.paying_salaries
+WHERE DATE_TRUNC('month', date) = DATE_TRUNC('month', CURRENT_DATE);
+`);
+const totalPaidAmountValue = totalPaidAmount.rows[0].total_paid_salary || 0;
+    return new Response(
+      JSON.stringify({ total_paid_salary: totalPaidAmountValue, data: result.rows }),
+      { status: 200 }
+    );
+    
   } catch (error) {
     console.error("Error fetching staff food entries:", error);
     return new Response(

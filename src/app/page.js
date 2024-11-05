@@ -12,7 +12,7 @@ import PieChartCard from "./components/PieChartCard";
 import { startOfYear, endOfYear } from "date-fns"; // Import these functions at the top
 import ConfirmModal from "./components/Modals/confirmDelete";
 import ConfirmAlertModal from "./components/Modals/confirmAlert";
-import { FaFileExcel } from "react-icons/fa";
+import { FaFileExcel, FaInfo, FaInfoCircle } from "react-icons/fa";
 import * as XLSX from "xlsx";
 // Fetch Data from API (replace the URL with your actual API endpoints)
 const fetchData = async (url) => {
@@ -45,7 +45,17 @@ export default function Home() {
   const [costStartDate, setCostStartDate] = useState(startOfMonth(new Date()));
   const [costEndDate, setCostEndDate] = useState(endOfMonth(new Date()));
   const [open, setOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [
+    totalVacationDeductionsForCurrentMonth,
+    setTotalVacationDeductionsForCurrentMonth,
+  ] = useState(0);
+  const [totalPaidSalaryForCurrentMonth, setTotalPaidSalaryForCurrentMonth] =
+    useState(0);
+  const [
+    totalNonWorkingHoursDeductionsForCurrentMonth,
+    setTotalNonWorkingHoursDeductionsForCurrentMonth,
+  ] = useState(0);
   const [costDateRange, setCostDateRange] = useState([
     startOfYear(new Date()),
     endOfYear(new Date()),
@@ -78,9 +88,23 @@ export default function Home() {
     fetchData("/api/deposits").then(setDeposits); // Fetch deposits data
     fetchData("/api/cashWithdrawals").then(setCashWithdrawals); // Fetch alerts data
     fetchData("/api/attendance").then(setOverTimePaid); // Fetch alerts data
-    fetchData("/api/deductions").then(setDeductions); // Fetch alerts data
-  }, []);
+    fetchData("/api/attendance/nonWorkingHours").then((data) => {
+      setTotalNonWorkingHoursDeductionsForCurrentMonth(
+        data.total_deduction_for_non_working_hours || 0
+      );
+    });
+    fetchData("/api/PayingSalaries").then((total_paid_salary) => {
+      setTotalPaidSalaryForCurrentMonth(
+        total_paid_salary.total_paid_salary || 0
+      );
+    });
 
+    fetchData("/api/deductions").then(setDeductions); // Fetch alerts data
+    fetchData("/api/vacations/totalVacations").then((data) => {
+      setTotalVacationDeductionsForCurrentMonth(data.total_daily_salary || 0);
+    });
+  }, []);
+  console.log();
   const fetchAlerts = async () => {
     const response = await fetch("/api/alerts");
     const data = await response.json();
@@ -551,117 +575,173 @@ export default function Home() {
     // Cleanup the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
+  const totalSales = parseFloat(totalSalesForCurrentMonth) || 0;
+  const totalDeductions = parseFloat(totalDeductionsForCurrentMonth) || 0;
+  const totalVacationDeductions =
+    parseFloat(totalVacationDeductionsForCurrentMonth) || 0;
+  const totalNonWorkingHoursDeductions =
+    parseFloat(totalNonWorkingHoursDeductionsForCurrentMonth) || 0;
+  const totalStaffFood = parseFloat(totalStaffFoodForCurrentMonth) || 0;
+  const totalPurchases = parseFloat(totalPurchasesForCurrentMonth) || 0;
+  const totalCosts = parseFloat(totalCostsForCurrentMonth) || 0;
+  const totalWithdrawals = parseFloat(totalcashWithdrawalsForCurrentMonth) || 0;
+  const totalOverTimePaid = parseFloat(totalOverTimePaidForCurrentMonth) || 0;
+  const totalPaidSalary = parseFloat(totalPaidSalaryForCurrentMonth) || 0;
+
+  const result =
+    totalSales +
+    totalDeductions +
+    totalVacationDeductions +
+    totalNonWorkingHoursDeductions +
+    totalStaffFood -
+    totalPurchases -
+    totalCosts -
+    totalWithdrawals -
+    totalOverTimePaid -
+    totalPaidSalary;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* {alertsData.length > 0 && (
+      {isModalOpen  && (
         <ConfirmAlertModal
           isOpen={isModalOpen}
           onConfirm={alertsConfirmed}
-          title="تنبيه"
-          body="يوجد موظفين لم يتم ادخال تاريخ الانصراف"
+          title="تفاصيل القيمة"
+          body="ان القيمة الظاهرة تمثل نتيجة العمليات الحسابية التالية"
           //map on alertsData to display the message
-          message={alertsData.map((alert) => (
-            //list the name of the employees who didn't confirm their attendance
-            //firmat date
-            <ul key={alert.id}>
-              <li>
-                {alert.name}, تاريخ الحضور: {formatDate(alert.check_in)}
-              </li>
-            </ul>
-          ))}
+          message={
+            <div>
+              المبيعات + الخصومات + خصومات الاجازات + خصومات ساعات العمل الزائدة + وجبات الموظفين - المشتريات - التكاليف - المسحوبات - مبلغ ساعات العمل الاضافية - الرواتب المدفوعة
+            </div>
+          }
         />
-      )} */}
+      )}
       {/* Summary Section */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="mb-6 justify-center flex items-center">
+        <h1 className="text-2xl font-bold text-gray-800 border-b border-black pb-6">
+          ملخص الشهر الحالي
+        </h1>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-6 ">
         {/* Total Employees */}
-        <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">الموظفين</p>
-          <p className="text-xl">{employees.length}</p>
-        </div>
-
-        {/* Total Suppliers */}
-        <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">الموردين</p>
-          <p className="text-xl">{suppliers.length}</p>
-        </div>
+        
 
         {/* Total Purchases for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">المشتريات</p>
-          <p className="text-xl">
+          <p className="text-sm font-bold">المشتريات</p>
+          <p className="text-lg">
             JOD {totalPurchasesForCurrentMonth.toFixed(2)}
           </p>
         </div>
 
         {/* Total Sales for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">مبيعات الشهر الحالي</p>
-          <p className="text-xl">JOD {totalSalesForCurrentMonth.toFixed(2)}</p>
+          <p className="text-sm font-bold">المبيعات </p>
+          <p className="text-lg">JOD {totalSalesForCurrentMonth.toFixed(2)}</p>
         </div>
 
         {/* Total Costs for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">تكاليف الشهر الحالي</p>
-          <p className="text-xl">JOD {totalCostsForCurrentMonth.toFixed(2)}</p>
+          <p className="text-sm font-bold">التكاليف</p>
+          <p className="text-lg">JOD {totalCostsForCurrentMonth.toFixed(2)}</p>
         </div>
 
         {/* Total Remaining Amount for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">ديون الشهر الحالي</p>
-          <p className="text-xl">
+          <p className="text-sm font-bold">الديون  </p>
+          <p className="text-lg">
             JOD {totalRemainingAmountForCurrentMonth.toFixed(2)}
           </p>
         </div>
         {/* Total Staff Food for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">وجبات الموظفين</p>
-          <p className="text-xl">
+          <p className="text-sm font-bold">وجبات الموظفين</p>
+          <p className="text-lg">
             JOD {totalStaffFoodForCurrentMonth.toFixed(2)}
           </p>
         </div>
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">الايداعات للشهر الحالي </p>
-          <p className="text-xl">
+          <p className="text-sm font-bold">الايداعات</p>
+          <p className="text-lg">
             JOD {totalDepositsForCurrentMonth.toFixed(2)}
           </p>
         </div>
         {/* Total Withdrawals for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">مسحوبات الموظفين للشهر الحالي</p>
-          <p className="text-xl">
+          <p className="text-sm font-bold">مسحوبات الموظفين</p>
+          <p className="text-lg">
             JOD {totalWithdrawalsForCurrentMonth.toFixed(2)}
           </p>
         </div>
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-base font-bold">مسحوبات النقدية للشهر الحالي</p>
-          <p className="text-xl">
+          <p className="text-sm font-bold">المسحوبات النقدية  </p>
+          <p className="text-lg">
             JOD {totalcashWithdrawalsForCurrentMonth.toFixed(2)}
           </p>
         </div>
         <div
           className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
-          <p className="text-base font-bold">
-            مجموع مبلغ ساعات العمل الاضافي للشهر الحالي
+          <p className="text-sm font-bold">
+            مجموع مبلغ ساعات العمل الاضافية
           </p>
-          <p className="text-xl">
+          <p className="text-lg">
             JOD {totalOverTimePaidForCurrentMonth.toFixed(2)}
           </p>
         </div>
         <div
           className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
-          <p className="text-base font-bold">
-            مجموع الخصومات على الرواتب 
-          </p>
-          <p className="text-xl">
+          <p className="text-sm font-bold">مجموع الخصومات على الرواتب</p>
+          <p className="text-lg">
             JOD {totalDeductionsForCurrentMonth.toFixed(2)}
           </p>
         </div>
+        <div
+          className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
+        >
+          <p className="text-sm font-bold">مجموع خصم الاجازات الزائدة</p>
+          <p className="text-lg">
+            JOD {totalVacationDeductionsForCurrentMonth}
+          </p>
+        </div>
+        <div
+          className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
+        >
+          <p className="text-sm font-bold">
+            مجموع خصم ساعات العمل   
+          </p>
+          <p className="text-lg">
+            JOD {totalNonWorkingHoursDeductionsForCurrentMonth}
+          </p>
+        </div>
+        <div
+          className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
+        >
+          <p className="text-sm font-bold">الرواتب المدفوعة</p>
+          <p className="text-lg">JOD {totalPaidSalaryForCurrentMonth}</p>
+        </div>
+        <div
+          className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
+        >
+        <div className="flex justify-between items-center">
+        <p>
+        <FaInfoCircle className="text-blue-500 cursor-pointer" onClick={() => setIsModalOpen(true)} />
+        </p>
+        <p className="text-sm font-bold">صافي الايراد</p>
+<p></p>
+        </div>
+          <p className="text-lg">JOD {result}</p>
+        </div>
+      </div>
+      <div className="mb-6 justify-center flex items-center">
+        <h1 className="text-2xl font-bold text-gray-800 border-b border-black pb-6">
+          احصائيات عامة{" "}
+        </h1>
       </div>
       <div className="grid grid-cols-1 mb-4 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {/* Costs and Income by Type Chart */}
+
         <div className="p-4 bg-white shadow-lg rounded-lg">
           <div className="justify-between flex text-2xl font-semibold mb-4">
             <h1></h1>
