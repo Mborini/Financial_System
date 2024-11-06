@@ -40,10 +40,10 @@ export default function PayingSalariesTable({
         const data = await response.json();
 
         // Ensure data is an array before setting it to state
-        if (Array.isArray(data)) {
-          setStaffSalaries(data);
+        if (Array.isArray(data.data)) {
+          setStaffSalaries(data.data);
         } else {
-          console.error("Expected an array but got:", data);
+          console.error("Expected an array but got:", data.data);
           setStaffSalaries([]); // Set an empty array if data is not an array
         }
 
