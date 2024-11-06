@@ -93,6 +93,7 @@ export default function Home() {
         data.total_deduction_for_non_working_hours || 0
       );
     });
+
     fetchData("/api/PayingSalaries").then((total_paid_salary) => {
       setTotalPaidSalaryForCurrentMonth(
         total_paid_salary.total_paid_salary || 0
@@ -104,7 +105,7 @@ export default function Home() {
       setTotalVacationDeductionsForCurrentMonth(data.total_daily_salary || 0);
     });
   }, []);
-  console.log();
+ 
   const fetchAlerts = async () => {
     const response = await fetch("/api/alerts");
     const data = await response.json();
