@@ -104,11 +104,11 @@ export default function Layout({ children }) {
         /> */}
         <nav
           dir="rtl"
-          className="sticky top-0 z-50 bg-indigo-600 relative transition-opacity duration-300"
+          className="sticky top-0 z-50 bg-red-600 relative transition-opacity duration-300"
           style={{ opacity: navbarOpacity }}
         >
           {/* Mobile Navigation */}
-          <div className="p-4 bg-blue-500 text-white font-bold flex justify-between items-center md:hidden">
+          <div className="p-4 bg-red-500 text-white font-bold flex justify-between items-center md:hidden">
             <button
               className="text-white "
               onClick={() => setIsDrawerOpen(true)}
@@ -119,7 +119,7 @@ export default function Layout({ children }) {
             </button>{" "}
             <div className="flex gap-2 items-center">
               <h1>MR. HOTDOG</h1>
-              <Image width={25} height={25} src="/logoHotDog.jpg" />
+              <Image width={25} height={25} src="/logoHotDog.png" />
             </div>
           </div>
 
@@ -335,8 +335,8 @@ export default function Layout({ children }) {
           </NavDrawer>
 
           {/* Desktop Navigation */}
-          <ul className="hidden md:flex justify-around p-4 text-sm bg-blue-500 text-white font-bold items-center space-x-4">
-            <li className="bg-white text-black rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+          <ul className="hidden md:flex justify-around p-4 text-sm bg-red-500 text-white font-bold items-center space-x-4">
+            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a className=" gap-1 flex items-center" href="/">
                 <FaChartBar className="flex-shrink-0" /> الاحصائيات{" "}
                 {/* Dashboard */}
@@ -345,7 +345,7 @@ export default function Layout({ children }) {
 
             {/* Costs dropdown */}
             <li
-              className="relative bg-white text-black rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105"
+              className="relative bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105"
               ref={costDropdownRef}
             >
               <button
@@ -360,7 +360,7 @@ export default function Layout({ children }) {
               </button>
 
               {isCostDropdownOpen && (
-                <ul className="absolute -left-9  mt-4 bg-blue-500 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
+                <ul className="absolute -left-9  mt-4 bg-red-600 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
                   <li>
                     <a
                       className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
@@ -385,7 +385,7 @@ export default function Layout({ children }) {
               )}
             </li>
 
-            <li className="bg-white text-black rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a
                 className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                 href="/sales"
@@ -395,7 +395,7 @@ export default function Layout({ children }) {
               </a>
             </li>
 
-            <li className="bg-white text-black rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a
                 className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                 href="/purchases"
@@ -405,7 +405,7 @@ export default function Layout({ children }) {
               </a>
             </li>
 
-            <li className="bg-white text-black rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a
                 className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                 href="/suppliers"
@@ -415,7 +415,7 @@ export default function Layout({ children }) {
               </a>
             </li>
 
-            <li className="bg-white text-black rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a
                 className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                 href="/Deposits"
@@ -424,7 +424,7 @@ export default function Layout({ children }) {
                 الايداعات البنكية{/* Purchases */}
               </a>
             </li>
-            <li className="bg-white text-black rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a
                 className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                 href="/cashWithdrawals"
@@ -436,8 +436,7 @@ export default function Layout({ children }) {
             {/* Employees dropdown */}
             <li className="relative " ref={dropdownRef}>
               <button
-              
-                className="cursor-pointer  gap-2 flex items-center transition-transform duration-300 ease-in-out transform bg-white text-black rounded-md p-2   hover:scale-105"
+                className="cursor-pointer  gap-2 flex items-center transition-transform duration-300 ease-in-out transform bg-red-600 text-white rounded-md p-2   hover:scale-105"
                 onClick={() => {
                   setIsDropdownOpen(!isDropdownOpen);
                   setIsCostDropdownOpen(false); // Close other dropdown
@@ -448,8 +447,8 @@ export default function Layout({ children }) {
               </button>
 
               {isDropdownOpen && (
-                <ul className="absolute -left-9  mt-4 bg-blue-500 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
-                  <li>
+                <ul className="absolute -left-9  mt-4 bg-red-600 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
+                  <li >
                     <a
                       className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/attendance"
@@ -546,13 +545,13 @@ export default function Layout({ children }) {
                 </ul>
               )}
             </li>
-            <li className=" bg-blue-500 text-white font-bold hidden md:flex justify-center items-center md:justify-between">
+            <li className=" bg-red-500 text-white font-bold hidden md:flex justify-center items-center md:justify-between">
               <div className="flex gap-3 items-center">
                 <h1 className="text-lg">MR. HOTDOG</h1>{" "}
                 <Image
                   width={30}
                   height={30}
-                  src="/logoHotDog.jpg"
+                  src="/logoHotDog.png"
                   alt="MR. HOTDOG Logo"
                 />
               </div>

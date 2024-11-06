@@ -105,7 +105,7 @@ export default function Home() {
       setTotalVacationDeductionsForCurrentMonth(data.total_daily_salary || 0);
     });
   }, []);
- 
+
   const fetchAlerts = async () => {
     const response = await fetch("/api/alerts");
     const data = await response.json();
@@ -566,16 +566,7 @@ export default function Home() {
     return `${day}/${month}/${year}`;
   };
 
-  const [isRed, setIsRed] = useState(true);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setIsRed((prev) => !prev);
-    }, 500); // Change color every 500ms
-
-    // Cleanup the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []);
+ 
   const totalSales = parseFloat(totalSalesForCurrentMonth) || 0;
   const totalDeductions = parseFloat(totalDeductionsForCurrentMonth) || 0;
   const totalVacationDeductions =
@@ -591,19 +582,17 @@ export default function Home() {
 
   const result =
     totalSales +
-    totalDeductions +
     totalVacationDeductions +
+    totalDeductions +
     totalNonWorkingHoursDeductions +
     totalStaffFood -
     totalPurchases -
     totalCosts -
-    totalWithdrawals -
     totalOverTimePaid -
     totalPaidSalary;
-
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {isModalOpen  && (
+      {isModalOpen && (
         <ConfirmAlertModal
           isOpen={isModalOpen}
           onConfirm={alertsConfirmed}
@@ -612,7 +601,9 @@ export default function Home() {
           //map on alertsData to display the message
           message={
             <div>
-              المبيعات + الخصومات + خصومات الاجازات + خصومات ساعات العمل الزائدة + وجبات الموظفين - المشتريات - التكاليف - المسحوبات - مبلغ ساعات العمل الاضافية - الرواتب المدفوعة
+              المبيعات + الخصومات + خصومات الاجازات + خصومات ساعات العمل الزائدة
+              + وجبات الموظفين - المشتريات - التكاليف - المسحوبات - مبلغ ساعات
+              العمل الاضافية - الرواتب المدفوعة
             </div>
           }
         />
@@ -625,7 +616,6 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-6 ">
         {/* Total Employees */}
-        
 
         {/* Total Purchases for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
@@ -649,7 +639,7 @@ export default function Home() {
 
         {/* Total Remaining Amount for Current Month */}
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-sm font-bold">الديون  </p>
+          <p className="text-sm font-bold">الديون </p>
           <p className="text-lg">
             JOD {totalRemainingAmountForCurrentMonth.toFixed(2)}
           </p>
@@ -675,7 +665,7 @@ export default function Home() {
           </p>
         </div>
         <div className="border p-4 shadow-lg rounded-lg bg-white text-center">
-          <p className="text-sm font-bold">المسحوبات النقدية  </p>
+          <p className="text-sm font-bold">المسحوبات النقدية </p>
           <p className="text-lg">
             JOD {totalcashWithdrawalsForCurrentMonth.toFixed(2)}
           </p>
@@ -683,9 +673,7 @@ export default function Home() {
         <div
           className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
-          <p className="text-sm font-bold">
-            مجموع مبلغ ساعات العمل الاضافية
-          </p>
+          <p className="text-sm font-bold">حساب ساعات العمل الاضافية</p>
           <p className="text-lg">
             JOD {totalOverTimePaidForCurrentMonth.toFixed(2)}
           </p>
@@ -693,7 +681,7 @@ export default function Home() {
         <div
           className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
-          <p className="text-sm font-bold">مجموع الخصومات على الرواتب</p>
+          <p className="text-sm font-bold"> الخصومات على الرواتب</p>
           <p className="text-lg">
             JOD {totalDeductionsForCurrentMonth.toFixed(2)}
           </p>
@@ -701,7 +689,7 @@ export default function Home() {
         <div
           className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
-          <p className="text-sm font-bold">مجموع خصم الاجازات الزائدة</p>
+          <p className="text-sm font-bold"> خصومات الاجازات الزائدة</p>
           <p className="text-lg">
             JOD {totalVacationDeductionsForCurrentMonth}
           </p>
@@ -709,9 +697,7 @@ export default function Home() {
         <div
           className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
-          <p className="text-sm font-bold">
-            مجموع خصم ساعات العمل   
-          </p>
+          <p className="text-sm font-bold">  خصم ساعات العمل</p>
           <p className="text-lg">
             JOD {totalNonWorkingHoursDeductionsForCurrentMonth}
           </p>
@@ -725,13 +711,16 @@ export default function Home() {
         <div
           className={`border p-4 shadow-lg text-center rounded-lg bg-white `}
         >
-        <div className="flex justify-between items-center">
-        <p>
-        <FaInfoCircle className="text-blue-500 cursor-pointer" onClick={() => setIsModalOpen(true)} />
-        </p>
-        <p className="text-sm font-bold">صافي الايراد</p>
-<p></p>
-        </div>
+          <div className="flex justify-between items-center">
+            <p>
+              <FaInfoCircle
+                className="text-blue-500 cursor-pointer"
+                onClick={() => setIsModalOpen(true)}
+              />
+            </p>
+            <p className="text-sm font-bold">صافي الايراد</p>
+            <p></p>
+          </div>
           <p className="text-lg">JOD {result}</p>
         </div>
       </div>

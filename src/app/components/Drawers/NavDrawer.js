@@ -33,7 +33,7 @@ export default function NavDrawer({ title, children, open, setOpen }) {
                 leaveTo="translate-x-full"
               >
                 {/* Ensuring full height */}
-                <Dialog.Panel className="pointer-events-auto w-screen max-w-md h-full bg-blue-500 shadow-xl transform transition-all flex flex-col">
+                <Dialog.Panel className="pointer-events-auto w-screen max-w-md h-full bg-indigo-500 shadow-xl transform transition-all flex flex-col">
                   <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 rtl">
                     <Dialog.Title className="text-xl font-bold text-yellow-300">
                       {title}
