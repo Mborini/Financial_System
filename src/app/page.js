@@ -590,6 +590,11 @@ export default function Home() {
     totalCosts -
     totalOverTimePaid -
     totalPaidSalary;
+  
+      const currentDate = new Date();
+      const month = currentDate.toLocaleString('default', { month: 'short' }); // e.g., 'October'
+      const year = currentDate.getFullYear(); // e.g., 2024
+    
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       {isModalOpen && (
@@ -611,7 +616,7 @@ export default function Home() {
       {/* Summary Section */}
       <div className="mb-6 justify-center flex items-center">
         <h1 className="text-2xl font-bold text-gray-800 border-b border-black pb-6">
-          ملخص الشهر الحالي
+        {month} {year} ملخص الشهر الحالي
         </h1>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-6 ">
