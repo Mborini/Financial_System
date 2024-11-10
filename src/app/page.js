@@ -736,7 +736,7 @@ export default function Home() {
           <div className="justify-between flex text-2xl font-semibold mb-4">
             <h1></h1>
             <h2 className="text-xl text-center font-bold mb-4">
-              000نسبة التكاليف للشهر الحالي{" "}
+              نسبة التكاليف للشهر الحالي{" "}
             </h2>
             <button
               className="ml-2 p-2 bg-green-500 text-white rounded-md"
