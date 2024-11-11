@@ -10,6 +10,7 @@ import {
   FaUserLock,
   FaUserSlash,
 } from "react-icons/fa";
+import ConfirmAlertModal from "../components/Modals/confirmAlert";
 
 // Utility function to format dates to DD/MM/YYYY
 const formatDate = (dateString) => {
@@ -32,13 +33,14 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState(null); // Track the record to delete
   const [modalType, setModalType] = useState(""); // Track whether it's a delete or disable modal
-
+  const [alertMessage, setAlertMessage] = useState(null);
   // Fetch data when component mounts or costsTypesUpdated changes
   useEffect(() => {
     const fetchCostsTypes = async () => {
       try {
         const response = await fetch("/api/allEmployees");
         const data = await response.json();
+        
         setCostsTypes(data);
         setLoading(false);
       } catch (error) {
@@ -64,8 +66,14 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
     setIsModalOpen(true); // Open confirmation modal
   };
 
-  // Confirm deletion of the employee
   const handleConfirmDelete = async () => {
+    if (!isContractEndDatePassed(recordToDelete.contract_end_date)) {
+      setAlertMessage("لا يمكن حذف الموظف لأن تاريخ نهاية العقد لم يحن بعد");
+      setIsModalOpen(false);
+
+      return;
+    }
+
     try {
       const response = await fetch("/api/employees", {
         method: "DELETE",
@@ -76,19 +84,26 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
       });
 
       if (response.ok) {
-        // Remove the deleted employee from the state
+        // Update the list and close the modal after successful deletion
         setCostsTypes(
           costsTypes.filter((cost) => cost.id !== recordToDelete.id)
         );
-        refetchCostsTypes(); // Refetch employees to reflect the deletion
+        refetchCostsTypes();
+        setIsModalOpen(false);
       } else {
         console.error("Error deleting employee");
+        setAlertMessage("تعذر حذف الموظف. حدث خطأ ما.");
       }
     } catch (error) {
       console.error("Error deleting employee:", error);
-    } finally {
-      setIsModalOpen(false); // Close modal after action
+      setAlertMessage("حدث خطأ أثناء محاولة الحذف. يرجى المحاولة لاحقاً.");
     }
+  };
+
+  const isContractEndDatePassed = (endDate) => {
+    const contractEndDate = new Date(endDate);
+    const currentDate = new Date();
+    return contractEndDate <= currentDate;
   };
 
   // Confirm disabling the employee
@@ -174,9 +189,14 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {formatDate(costType.contract_start_date)}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  {formatDate(costType.contract_end_date)}
-                </td>
+                <td
+  className={`border border-gray-300 px-4 py-2 text-center ${
+    new Date(costType.contract_end_date) < new Date() ? 'text-red-500' : ''
+  }`}
+>
+  {formatDate(costType.contract_end_date)}
+</td>
+
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   <div className="flex justify-center">
                     {/* Conditionally render the button based on the employee status */}
@@ -228,7 +248,16 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
             : `هل أنت متأكد من انهاء خدمات ${recordToDelete?.name}؟ لن يظهر الموظف في القوائم بعد الآن.`
         }
       />
-
+ {alertMessage && (
+        <ConfirmAlertModal
+          isOpen={!!alertMessage}
+          onClose={() => setAlertMessage(null)}
+          title="تنبيه"
+          body="لا يمكن الحذف"
+          message={alertMessage}
+          onConfirm={() => setAlertMessage(null)} // Close the alert
+        />
+      )}
       {/* Pagination */}
       <div className="flex justify-center my-4">
         <button

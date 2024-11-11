@@ -5,7 +5,7 @@ export async function GET() {
 
   try {
     // Fetch all records from the "costsTypes" table
-    const result = await client.query('SELECT * FROM Employees WHERE status = TRUE');
+    const result = await client.query('SELECT * FROM Employees WHERE status = TRUE AND is_deleted = false');
 
     if (result.rows.length === 0) {
         return new Response(JSON.stringify({ message: 'No employees found' }), { status: 404 });
@@ -125,10 +125,10 @@ export async function GET() {
             await client.query('BEGIN');
     
             // Delete the record from "SalaryAccount" table first (to maintain referential integrity)
-            await client.query("DELETE FROM SalaryAccount WHERE employee_id = $1", [id]);
+            // await client.query("DELETE FROM SalaryAccount WHERE employee_id = $1", [id]);
     
             // Delete the employee from "Employees" table
-            await client.query("DELETE FROM Employees WHERE id = $1", [id]);
+            await client.query("update Employees set is_deleted = True where id = $1", [id]);
     
             // Commit the transaction
             await client.query('COMMIT');
