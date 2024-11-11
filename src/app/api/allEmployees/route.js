@@ -5,7 +5,7 @@ export async function GET() {
 
   try {
     // Fetch all records from the "costsTypes" table
-    const result = await client.query('SELECT * FROM Employees ');
+    const result = await client.query('SELECT * FROM Employees WHERE is_deleted = false');
 
     if (result.rows.length === 0) {
         return new Response(JSON.stringify({ message: 'No employees found' }), { status: 404 });
