@@ -38,7 +38,7 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
   useEffect(() => {
     const fetchCostsTypes = async () => {
       try {
-        const response = await fetch("/api/allEmployees");
+        const response = await fetch("/api/employees");
         const data = await response.json();
         
         setCostsTypes(data);
