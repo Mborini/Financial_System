@@ -38,9 +38,8 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
   useEffect(() => {
     const fetchCostsTypes = async () => {
       try {
-        const response = await fetch("/api/allEmployees");
+        const response = await fetch("/api/employees");
         const data = await response.json();
-        
         setCostsTypes(data);
         setLoading(false);
       } catch (error) {
@@ -190,12 +189,14 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
                   {formatDate(costType.contract_start_date)}
                 </td>
                 <td
-  className={`border border-gray-300 px-4 py-2 text-center ${
-    new Date(costType.contract_end_date) < new Date() ? 'text-red-500' : ''
-  }`}
->
-  {formatDate(costType.contract_end_date)}
-</td>
+                  className={`border border-gray-300 px-4 py-2 text-center ${
+                    new Date(costType.contract_end_date) < new Date()
+                      ? "text-red-500"
+                      : ""
+                  }`}
+                >
+                  {formatDate(costType.contract_end_date)}
+                </td>
 
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   <div className="flex justify-center">
@@ -248,7 +249,7 @@ function EmployeesTable({ costsTypesUpdated, refetchCostsTypes }) {
             : `هل أنت متأكد من انهاء خدمات ${recordToDelete?.name}؟ لن يظهر الموظف في القوائم بعد الآن.`
         }
       />
- {alertMessage && (
+      {alertMessage && (
         <ConfirmAlertModal
           isOpen={!!alertMessage}
           onClose={() => setAlertMessage(null)}
