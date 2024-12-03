@@ -287,12 +287,12 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   <div className="flex justify-center">
-                    <button
+                    {/* <button
                       className="text-orange-500 font-bold py-1 px-2 rounded"
                       onClick={() => handleEditClick(withdrawal)}
                     >
                       <FaEdit />
-                    </button>
+                    </button> */}
                     <button
                       className="text-red-500 font-bold py-1 px-2 rounded ml-2"
                       onClick={() => confirmDelete(withdrawal)}
