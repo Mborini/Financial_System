@@ -92,6 +92,7 @@ export default function Layout({ children }) {
 
   return (
     <html lang="en">
+    <title>LECHE</title>
       <body>
         {/* Navigation Bar */}
         {/* <ConfirmAlertModal

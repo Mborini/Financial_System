@@ -30,8 +30,8 @@ export async function GET() {
     
             // Insert a new employee with contract start and end dates
             const employeeResult = await client.query(
-                `INSERT INTO Employees (name, salary, contract_start_date, contract_end_date) 
-                 VALUES ($1, $2, $3, $4) RETURNING id`,
+                `INSERT INTO Employees (name, salary, contract_start_date, contract_end_date, is_deleted) 
+                 VALUES ($1, $2, $3, $4, False) RETURNING id`,
                 [name, salary, contract_start_date, contract_end_date]
             );
     
