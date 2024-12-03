@@ -26,10 +26,16 @@ export default function EmployeeForm({ refetchcostsTypes, setOpen }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 shadow-md rounded-md">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 bg-white p-6 shadow-md rounded-md"
+    >
       {/* Name Field */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700"
+        >
           اسم الموظف
         </label>
         <input
@@ -45,7 +51,10 @@ export default function EmployeeForm({ refetchcostsTypes, setOpen }) {
 
       {/* Salary Field */}
       <div>
-        <label htmlFor="salary" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="salary"
+          className="block text-sm font-medium text-gray-700"
+        >
           الراتب
         </label>
         <input
@@ -61,7 +70,10 @@ export default function EmployeeForm({ refetchcostsTypes, setOpen }) {
 
       {/* Contract Start Date Field */}
       <div>
-        <label htmlFor="contractStartDate" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="contractStartDate"
+          className="block text-sm font-medium text-gray-700"
+        >
           تاريخ بدء العقد
         </label>
         <input
@@ -76,7 +88,10 @@ export default function EmployeeForm({ refetchcostsTypes, setOpen }) {
 
       {/* Contract End Date Field */}
       <div>
-        <label htmlFor="contractEndDate" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="contractEndDate"
+          className="block text-sm font-medium text-gray-700"
+        >
           تاريخ نهاية العقد
         </label>
         <input
@@ -87,7 +102,15 @@ export default function EmployeeForm({ refetchcostsTypes, setOpen }) {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
-
+      <div>
+        <label
+          htmlFor="contractEndDate"
+          className="block text-sm font-medium text-red-700"
+        >
+          * ملاحظة: سيتم اعتبار أول يوم للعمل هو اليوم الذي يلي تاريخ بدء سريان
+          العقد{" "}
+        </label>
+      </div>
       {/* Submit Button */}
       <div>
         <button
