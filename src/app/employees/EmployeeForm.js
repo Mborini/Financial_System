@@ -87,6 +87,11 @@ export default function EmployeeForm({ refetchcostsTypes, setOpen }) {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
+      <div>
+        <label htmlFor="contractEndDate" className="block text-sm font-medium text-red-700">
+* ملاحظة: سيتم اعتبار أول يوم للعمل هو اليوم الذي يلي تاريخ بدء سريان العقد    </label>
+        
+      </div>
 
       {/* Submit Button */}
       <div>

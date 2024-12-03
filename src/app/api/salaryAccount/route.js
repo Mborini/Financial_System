@@ -35,7 +35,7 @@ export async function GET(request) {
         THEN
             -- Prorate the salary for the days worked in the month
             (CAST(e.salary AS DECIMAL(10, 2)) / EXTRACT(DAY FROM (TO_DATE($1, 'YYYY-MM') + INTERVAL '1 month' - INTERVAL '1 day'))) 
-            * (EXTRACT(DAY FROM (TO_DATE($1, 'YYYY-MM') + INTERVAL '1 month' - INTERVAL '1 day')) - EXTRACT(DAY FROM e.contract_start_date) + 1)
+            * (EXTRACT(DAY FROM (TO_DATE($1, 'YYYY-MM') + INTERVAL '1 month' - INTERVAL '1 day')) - EXTRACT(DAY FROM e.contract_start_date))
         ELSE
             -- If the contract is ongoing or ends at the end of the month, return the full salary
             CAST(e.salary AS DECIMAL(10, 2))
