@@ -65,7 +65,7 @@ const MonthlySummary = () => {
       {/* Print Summary Section */}
       <div className="max-w-md mx-auto mt-5 bg-white border w-96 border-gray-300 rounded-lg shadow-md p-4 print-summary">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold">Mr.HotDog</h1>
+          <h1 className="text-2xl font-bold">LECHE</h1>
           <p className="text-sm text-gray-600 mt-2">
             <strong>الملخص المالي لتاريخ : {period}</strong>
           </p>

@@ -116,7 +116,7 @@ export default function Layout({ children }) {
 
   return (
     <html lang="en">
-      <title>HotDog</title>
+      <title>LECHE</title>
       <body className="flex">
         {/* Sidebar */}
         <header className="w-full z-1 flex justify-between bg-amber-700 text-white py-4 px-6 fixed top-0 z-50">
@@ -125,9 +125,9 @@ export default function Layout({ children }) {
               width={30}
               height={30}
               src="/logoLeche.jpg"
-              alt="MR. HOTDOG Logo"
+              alt="LECHE Logo"
             />
-            <h1 className="text-xl font-bold">MR.Hotdog</h1>
+            <h1 className="text-xl font-bold">LECHE</h1>
           </div>
           <div className="flex items-center justify-around">
             <h1 className="text-xl font-bold">
