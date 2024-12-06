@@ -23,6 +23,8 @@ import {
   FaDailymotion,
   FaRegMehRollingEyes,
   FaCoins,
+  FaGlassMartini,
+  FaFileArchive,
 } from "react-icons/fa";
 import NavDrawer from "./components/Drawers/NavDrawer";
 import "./globals.css";
@@ -92,7 +94,7 @@ export default function Layout({ children }) {
 
   return (
     <html lang="en">
-    <title>LECHE</title>
+      <title>LECHE</title>
       <body>
         {/* Navigation Bar */}
         {/* <ConfirmAlertModal
@@ -405,6 +407,15 @@ export default function Layout({ children }) {
                 فواتير المشتريات {/* Purchases */}
               </a>
             </li>
+            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+              <a
+                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                href="/MonthlySummary"
+              >
+                <FaFileArchive className="flex-shrink-0  cursor-pointer" />
+                تقرير الملخص الشهري{" "}
+              </a>
+            </li>
 
             <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a
@@ -449,7 +460,7 @@ export default function Layout({ children }) {
 
               {isDropdownOpen && (
                 <ul className="absolute -left-9  mt-4 bg-amber-600 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
-                  <li >
+                  <li>
                     <a
                       className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/attendance"

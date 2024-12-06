@@ -144,21 +144,21 @@ function SalaryAccountTable({ costsTypesUpdated, refetchCostsTypes }) {
       </div>
       <div id="printTable" className='overflow-x-auto'>
         <table dir='rtl' className="min-w-full table-auto border-collapse border border-gray-200">
-          <thead>
+          <thead className='text-sm'>
             <tr className="bg-gray-100">
               <th className="border border-gray-300 px-1 py-1">اسم الموضف</th>
-              <th className="border border-gray-300 px-1 py-1">الراتب الشهري (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">الراتب الشهري</th>
               <th className="border border-gray-300 px-1 py-1">عدد ايام العمل</th>
               <th className="border border-gray-300 px-1 py-1">مجموع ساعات العمل الاضافية</th>
               <th className="border border-gray-300 px-1 py-1">مجموع ايام الاجازات</th>
               <th className="border border-gray-300 px-1 py-1">ايام الاجازات الزائدة</th>
-              <th className="border border-gray-300 px-1 py-1">مكافأة العمل الاضافي (JOD)</th>
-              <th className="border border-gray-300 px-1 py-1">مجموع السحب (JOD)</th>
-              <th className="border border-gray-300 px-1 py-1">مجموع حساب وجبات الاكل (JOD)</th>
-              <th className="border border-gray-300 px-1 py-1">مجموع الخصومات (JOD)</th>
-              <th className="border border-gray-300 px-1 py-1">خصم الاجازات الزائدة (JOD)</th>
-              <th className="border border-gray-300 px-1 py-1">خصم الساعات غير العامل بها (JOD)</th>
-              <th className="border border-gray-300 px-1 py-1">الراتب المتبقي (JOD)</th>
+              <th className="border border-gray-300 px-1 py-1">مكافأة العمل الاضافي </th>
+              <th className="border border-gray-300 px-1 py-1">مجموع السحب </th>
+              <th className="border border-gray-300 px-1 py-1">مجموع حساب وجبات الاكل </th>
+              <th className="border border-gray-300 px-1 py-1">مجموع الخصومات </th>
+              <th className="border border-gray-300 px-1 py-1">خصم الاجازات الزائدة </th>
+              <th className="border border-gray-300 px-1 py-1">خصم الساعات غير العامل بها </th>
+              <th className="border border-gray-300 px-1 py-1">الراتب المتبقي </th>
             </tr>
           </thead>
           <tbody>
