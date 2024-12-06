@@ -1,25 +1,29 @@
 "use client";
 import { useState, useEffect } from "react";
 import { FaMinusCircle, FaPlusCircle, FaPrint } from "react-icons/fa";
+
 const MonthlySummary = () => {
   const [data, setData] = useState(null);
   const [period, setPeriod] = useState("2024-10"); // Example initial period
+
   const fetchData = async () => {
     try {
       const response = await fetch(`/api/monthlySummary?period=${period}`);
       const result = await response.json();
       setData(result);
-      
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, [period]); // Fetch data whenever the period changes
+
   if (!data) {
     return <div>Loading...</div>;
   }
+
   const {
     totalSales,
     totalDeductions,
@@ -32,13 +36,20 @@ const MonthlySummary = () => {
     totalPaymentAmountForOverTime,
     totalSummary,
   } = data;
+
   const handleDateChange = (event) => {
     const selectedPeriod = event.target.value;
     setPeriod(selectedPeriod); // Update the period when the date is changed
   };
+
   const handlePrint = () => {
     window.print();
   };
+
+  const formatCurrency = (value) => {
+    return typeof value === 'number' ? value.toFixed(2) : '0.00';
+  };
+
   return (
     <div className="justify-around flex mx-24">
       {/* Date Picker */}
@@ -62,11 +73,11 @@ const MonthlySummary = () => {
         <div className="space-y-4" dir="rtl">
           <div className="space-y-4" dir="rtl">
             <div className="flex justify-between">
-              <span className="font-semibold flex  items-center gap-1">
+              <span className="font-semibold flex items-center gap-1">
                 <FaPlusCircle className="text-green-500" /> مجموع المبيعات :
               </span>
               <span className="font-medium text-green-500">
-                ${totalSales.toFixed(2)}
+                ${formatCurrency(totalSales)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -75,7 +86,7 @@ const MonthlySummary = () => {
                 مجموع الخصومات على الرواتب :
               </span>
               <span className="font-medium text-green-500">
-                ${totalDeductions.toFixed(2)}
+                ${formatCurrency(totalDeductions)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -84,7 +95,7 @@ const MonthlySummary = () => {
                 مجموع خصومات الإجازات :
               </span>
               <span className="font-medium text-green-500">
-                ${totalVacationDeductions.toFixed(2)}
+                ${formatCurrency(totalVacationDeductions)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -93,7 +104,7 @@ const MonthlySummary = () => {
                 مجموع خصم الساعات غير العامل بها :
               </span>
               <span className="font-medium text-green-500">
-                ${totalNonWorkingHours.toFixed(2)}
+                ${formatCurrency(totalNonWorkingHours)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -102,7 +113,7 @@ const MonthlySummary = () => {
                 مجموع خصم وجبات طعام الموظفين :
               </span>
               <span className="font-medium text-green-500">
-                ${totalStaffFood.toFixed(2)}
+                ${formatCurrency(totalStaffFood)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -111,7 +122,7 @@ const MonthlySummary = () => {
                 مجموع المشتريات :
               </span>
               <span className="font-medium text-red-500 ">
-                ${totalPurchases.toFixed(2)}
+                ${formatCurrency(totalPurchases)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -120,7 +131,7 @@ const MonthlySummary = () => {
                 مجموع التكاليف :
               </span>
               <span className="font-medium text-red-500">
-                ${totalCosts.toFixed(2)}
+                ${formatCurrency(totalCosts)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -129,7 +140,7 @@ const MonthlySummary = () => {
                 مجموع المبلغ لساعات العمل الإضافية :
               </span>
               <span className="font-medium text-red-500">
-                ${totalPaymentAmountForOverTime.toFixed(2)}
+                ${formatCurrency(totalPaymentAmountForOverTime)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -138,7 +149,7 @@ const MonthlySummary = () => {
                 مجموع الرواتب المدفوعة :
               </span>
               <span className="font-medium text-red-500">
-                ${payingSalaries.toFixed(2)}
+                ${formatCurrency(payingSalaries)}
               </span>
             </div>
           </div>
@@ -149,7 +160,7 @@ const MonthlySummary = () => {
             <span
               className={totalSummary > 0 ? "text-green-500" : "text-red-500"}
             >
-              ${totalSummary.toFixed(2)}
+              ${formatCurrency(totalSummary)}
             </span>
           </div>
         </div>
@@ -166,4 +177,5 @@ const MonthlySummary = () => {
     </div>
   );
 };
+
 export default MonthlySummary;
