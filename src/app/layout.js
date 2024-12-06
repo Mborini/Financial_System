@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  FaChartArea,
-  FaRegEdit,
   FaMoneyBill,
   FaShoppingCart,
   FaListAlt,
@@ -12,28 +10,23 @@ import {
   FaClock,
   FaUtensils,
   FaPlaneDeparture,
-  FaListUl,
   FaCog,
   FaChartBar,
   FaPlusCircle,
   FaMoneyCheckAlt,
-  FaMoneyBillWave,
-  FaAmazonPay,
   FaBuilding,
-  FaDailymotion,
-  FaRegMehRollingEyes,
   FaCoins,
-  FaGlassMartini,
   FaFileArchive,
+  FaHandHoldingUsd,
+  FaCashRegister,
+  FaBalanceScaleLeft,
+  FaRegBuilding,
 } from "react-icons/fa";
-import NavDrawer from "./components/Drawers/NavDrawer";
 import "./globals.css";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import ConfirmAlertModal from "./components/Modals/confirmAlert";
 
 export default function Layout({ children }) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCostDropdownOpen, setIsCostDropdownOpen] = useState(false);
   const [navbarOpacity, setNavbarOpacity] = useState(1);
@@ -41,7 +34,7 @@ export default function Layout({ children }) {
   const costDropdownRef = useRef(null);
   const [isEmployeesDropdownOpen, setIsEmployeesDropdownOpen] = useState(false);
   const employeesDropdownRef = useRef(null);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+
   // Handle click outside to close the dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -62,19 +55,20 @@ export default function Layout({ children }) {
     };
   }, []);
 
-  // Handle scroll to change navbar opacity
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const newOpacity = Math.max(1 - scrollY / 300, 0.7); // Reduce opacity as user scrolls down
-      setNavbarOpacity(newOpacity);
-    };
+  // // Handle scroll to change navbar opacity
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const scrollY = window.scrollY;
+  //     const newOpacity = Math.max(1 - scrollY / 300, 0.7); // bg-amber-700opacity as user scrolls down
+  //     setNavbarOpacity(newOpacity);
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, []);
+
   // Handle toggling the Costs dropdown
   const toggleCostDropdown = () => {
     setIsCostDropdownOpen(!isCostDropdownOpen);
@@ -86,490 +80,283 @@ export default function Layout({ children }) {
     setIsEmployeesDropdownOpen(!isEmployeesDropdownOpen);
     setIsCostDropdownOpen(false); // Close Costs dropdown when Employees is opened
   };
+
   // Handle closing dropdown after clicking a link
   const handleLinkClick = () => {
     setIsDropdownOpen(false);
     setIsCostDropdownOpen(false);
   };
 
+  const [dateTime, setDateTime] = useState("");
+
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+
+      // Format the date as dd/mm/yyyy, hh:mm
+      const formattedDateTime = `${String(now.getDate()).padStart(
+        2,
+        "0"
+      )}/${String(now.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${now.getFullYear()}, ${String(now.getHours()).padStart(
+        2,
+        "0"
+      )}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      setDateTime(formattedDateTime);
+    };
+
+    updateDateTime();
+    const timer = setInterval(updateDateTime, 60000);
+
+    return () => clearInterval(timer); // Cleanup interval on unmount
+  }, []);
+
   return (
     <html lang="en">
-      <title>LECHE</title>
-      <body>
-        {/* Navigation Bar */}
-        {/* <ConfirmAlertModal
-          isOpen={isModalOpen}
-          onConfirm={() => setIsModalOpen(false)}
-          title=" السيد المهندس احمد مهيدات المحترم "
-          body="يجب اعادة احتساب دوام الموظفين للتمكن من استخراج مجموع المبلغ اللزمة للدفع مقابل ساعات العمل الاضافية"
-          //map on alertsData to display the message
-          message={"يمكن احتسابة بشكل يدوي و ادخالها في قاعدة البيانات وهذه البيانات متعلقة بالدوام منذ بداية الشهر الحالي"}
-        /> */}
-        <nav
-          dir="rtl"
-          className="sticky top-0 z-50 bg-amber-500 relative transition-opacity duration-300"
-          style={{ opacity: navbarOpacity }}
-        >
-          {/* Mobile Navigation */}
-          <div className="p-4 bg-amber-900 text-white font-bold flex justify-between items-center md:hidden">
-            <button
-              className="text-white "
-              onClick={() => setIsDrawerOpen(true)}
-            >
-              <div>
-                <FaListUl className="" size={20} />
-              </div>
-            </button>{" "}
-            <div className="flex gap-2 items-center">
-              <h1>LECHE</h1>
-              <Image width={25} height={25} src="/logoLeche.jpg" />
-            </div>
+      <title>HotDog</title>
+      <body className="flex">
+        {/* Sidebar */}
+        <header className="w-full z-1 flex justify-between bg-amber-700 text-white py-4 px-6 fixed top-0 z-50">
+          <div className="flex gap-3 items-center">
+            <Image
+              width={30}
+              height={30}
+              src="/logoLeche.jpg"
+              alt="MR. HOTDOG Logo"
+            />
+            <h1 className="text-xl font-bold">MR.Hotdog</h1>
+          </div>
+          <div className="flex items-center justify-around">
+            <h1 className="text-xl font-bold">
+              {" "}
+              النــظــام المــــــــــــــالـي
+            </h1>
           </div>
 
-          <NavDrawer
-            open={isDrawerOpen}
-            setOpen={setIsDrawerOpen}
-            title="التنقل"
-          >
-            <ul className="space-y-4">
-              <li>
-                <a
-                  className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                  href="/"
-                >
-                  <FaChartBar className="flex-shrink-0" /> الاحصائيات{" "}
-                  {/* Dashboard */}
-                </a>
-              </li>
-
-              {/* Costs Dropdown */}
-              <li ref={costDropdownRef} className="relative">
-                <button
-                  onClick={toggleCostDropdown}
-                  className=" items-center gap-2 flex w-full text-left"
-                >
-                  <FaCog className="flex-shrink-0   cursor-pointer" />
-                  ادارة الكلف التشغيلية + {/* Costs */}{" "}
-                </button>
-                {isCostDropdownOpen && (
-                  <ul className="space-y-2 text-base mr-5 mt-5">
-                    <li>
-                      <a
-                        className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/costs"
-                        onClick={handleLinkClick}
-                      >
-                        <FaCog className="flex-shrink-0  cursor-pointer" />
-                        الكلف التشغيلية{/* Costs */}
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/costsTypes"
-                        onClick={handleLinkClick}
-                      >
-                        <FaListAlt className="flex-shrink-0  cursor-pointer" />
-                        أنواع الكلف {/* Cost Types */}
-                      </a>
-                    </li>
-                  </ul>
-                )}
-              </li>
-
-              <li>
-                <a
-                  className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                  href="/sales"
-                >
-                  <FaMoneyBill className="flex-shrink-0  cursor-pointer" />
-                  المبيعات اليومية{/* Sales */}
-                </a>
-              </li>
-              <li>
-                <a
-                  className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                  href="/cashWithdrawals"
-                >
-                  <FaMoneyBill className="flex-shrink-0  cursor-pointer" />
-                  سحوبات النقدية{/* Cash Withdrawals */}
-                </a>
-              </li>
-              <li>
-                <a
-                  className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                  href="/PayingSalaries"
-                >
-                  <FaTruck className="flex-shrink-0  cursor-pointer" />
-                  دفع الرواتب {/*  */}
-                </a>
-              </li>
-              <li>
-                <a
-                  className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                  href="/purchases"
-                >
-                  <FaShoppingCart className="flex-shrink-0  cursor-pointer" />
-                  فواتير المشتريات {/* Purchases */}
-                </a>
-              </li>
-              <li>
-                <a
-                  className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                  href="/Deposits"
-                >
-                  <FaShoppingCart className="flex-shrink-0  cursor-pointer" />
-                  الايداعات البنكية{/* Purchases */}
-                </a>
-              </li>
-
-              <li>
-                <a
-                  className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                  href="/suppliers"
-                >
-                  <FaTruck className="flex-shrink-0  cursor-pointer" />
-                  الموردين {/* Suppliers */}
-                </a>
-              </li>
-
-              {/* Employees Dropdown */}
-              <li ref={employeesDropdownRef} className="relative">
-                <button
-                  onClick={toggleEmployeesDropdown}
-                  className=" items-baseline gap-2 flex w-full text-left"
-                >
-                  <FaUsers className="flex-shrink-0  cursor-pointer" />
-                  ادارة الموظفين و الحسابات +{/* Employees */}
-                </button>
-                {isEmployeesDropdownOpen && (
-                  <ul className="space-y-2 mr-5 text-base mt-5">
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/employees"
-                        onClick={handleLinkClick}
-                      >
-                        <FaUsers className="flex-shrink-0  cursor-pointer" />
-                        ادارة الموظفين {/* Employees */}
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/deductions"
-                        onClick={handleLinkClick}
-                      >
-                        <FaWallet className="flex-shrink-0  cursor-pointer" />
-                        ادارة الخصومات على الرواتب{/* Deductions */}
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/withdrawals"
-                        onClick={handleLinkClick}
-                      >
-                        <FaMoneyBill className="flex-shrink-0  cursor-pointer" />
-                        ادارة السحوبات من الرواتب {/* Withdrawals */}
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/salaryAccount"
-                        onClick={handleLinkClick}
-                      >
-                        <FaMoneyCheckAlt className="flex-shrink-0  cursor-pointer" />
-                        التقرير الشهري لحساب الرواتب {/* Salary Account */}
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/attendance"
-                        onClick={handleLinkClick}
-                      >
-                        <FaClock className="flex-shrink-0  cursor-pointer" />
-                        سجل الدوام اليومي{/* Attendance */}
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/overTime"
-                        onClick={handleLinkClick}
-                      >
-                        <FaPlusCircle className="flex-shrink-0  cursor-pointer" />
-                        تقرير العمل الإضافي {/* Over Time */}
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/staffFood"
-                        onClick={handleLinkClick}
-                      >
-                        <FaUtensils className="flex-shrink-0  cursor-pointer" />
-                        ادارة وجبات الطعام {/* Staff Food */}
-                      </a>
-                    </li>
-
-                    <li>
-                      <a
-                        className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        href="/Vacations"
-                        onClick={handleLinkClick}
-                      >
-                        <FaPlaneDeparture className="flex-shrink-0  cursor-pointer" />
-                        ادارة الإجازات و العطل{/* Vacations */}
-                      </a>
-                    </li>
-                  </ul>
-                )}
-              </li>
-            </ul>
-          </NavDrawer>
-
-          {/* Desktop Navigation */}
-          <ul className="hidden md:flex justify-around p-4 text-sm bg-amber-900 text-white font-bold items-center space-x-4">
-            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <a className=" gap-1 flex items-center" href="/">
-                <FaChartBar className="flex-shrink-0" /> الاحصائيات{" "}
-                {/* Dashboard */}
+          <div className="flex gap-3 items-center">
+            <div className="text-xl font-bold">{dateTime}</div>
+          </div>
+        </header>
+        <nav
+          dir="rtl"
+          className=" h-screen w-18 fixed left-0 top-0  bg-amber-700 transition-opacity duration-300"
+          style={{ opacity: navbarOpacity }}
+        >
+          {/* Sidebar Navigation */}
+          <ul className="flex flex-col p-4 text-sm mt-16 text-white font-bold items-start space-y-4">
+            <li className=" text-orange-500 rounded-md p-2 bg-white  transition-transform duration-300 ease-in-out transform hover:scale-125">
+              <a className="gap-1 flex items-center" href="/">
+                <FaChartBar size={25} className="flex-shrink-0" />
               </a>
             </li>
 
             {/* Costs dropdown */}
             <li
-              className="relative bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105"
+              className="relative  text-red-700 rounded-md p-2  bg-white transition-transform duration-300 ease-in-out transform hover:scale-125"
               ref={costDropdownRef}
             >
               <button
-                className="cursor-pointer  gap-1 flex items-center transition-transform duration-300 ease-in-out transform"
+                className="cursor-pointer gap-1 flex items-center "
                 onClick={() => {
                   setIsCostDropdownOpen(!isCostDropdownOpen);
                   setIsDropdownOpen(false); // Close other dropdown
                 }}
               >
-                <FaCog className="flex-shrink-0  cursor-pointer" />
-                ادارة الكلف التشغيلية{/* Costs */}
+                <FaHandHoldingUsd
+                  size={25}
+                  className="flex-shrink-0 cursor-pointer"
+                />
               </button>
-
               {isCostDropdownOpen && (
-                <ul className="absolute -left-9  mt-4 bg-amber-600 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
-                  <li>
-                    <a
-                      className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                      href="/costs"
-                      onClick={handleLinkClick}
-                    >
-                      <FaCog className="flex-shrink-0  cursor-pointer" />
-                      الكلف التشغيلية{/* Costs */}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                      href="/costsTypes"
-                      onClick={handleLinkClick}
-                    >
-                      <FaListAlt className="flex-shrink-0  cursor-pointer" />
-                      أنواع الكلف {/* Cost Types */}
-                    </a>
-                  </li>
-                </ul>
+                <ul className="absolute left-20 -mt-4 bg-amber-700 text-black rounded-md p-2 w-60 shadow-lg space-y-2">
+      {/* Arrow */}
+      <div className="absolute top-2 -left-2">
+        <span className="block w-4 h-4 bg-amber-700 transform rotate-45" />
+      </div>
+
+      {/* Dropdown Items */}
+      <li>
+        <a
+          className="gap-1 flex bg-white text-black rounded-md px-2 py-1 items-center"
+          href="/costs"
+          onClick={handleLinkClick}
+        >
+          <FaCog className="flex-shrink-0" />
+          ادارة التكاليف {/* Manage Costs */}
+        </a>
+      </li>
+      <li>
+        <a
+          className="gap-1 flex bg-white text-black rounded-md px-2 py-1 items-center"
+          href="/costsTypes"
+          onClick={handleLinkClick}
+        >
+          <FaListAlt className="flex-shrink-0" />
+          ادراة انواع التكاليف {/* Manage Cost Types */}
+        </a>
+      </li>
+    </ul>
               )}
-            </li>
-
-            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <a
-                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                href="/sales"
-              >
-                <FaCoins className="flex-shrink-0  cursor-pointer" />
-                المبيعات اليومية{/* Sales */}
-              </a>
-            </li>
-
-            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <a
-                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                href="/purchases"
-              >
-                <FaShoppingCart className="flex-shrink-0  cursor-pointer" />
-                فواتير المشتريات {/* Purchases */}
-              </a>
-            </li>
-            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <a
-                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                href="/MonthlySummary"
-              >
-                <FaFileArchive className="flex-shrink-0  cursor-pointer" />
-                تقرير الملخص الشهري{" "}
-              </a>
-            </li>
-
-            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <a
-                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                href="/suppliers"
-              >
-                <FaTruck className="flex-shrink-0  cursor-pointer" />
-                ادارة الموردين {/* Suppliers */}
-              </a>
-            </li>
-
-            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <a
-                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                href="/Deposits"
-              >
-                <FaBuilding className="flex-shrink-0  cursor-pointer" />
-                الايداعات البنكية{/* Purchases */}
-              </a>
-            </li>
-            <li className="bg-amber-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
-              <a
-                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
-                href="/cashWithdrawals"
-              >
-                <FaMoneyBill className="flex-shrink-0  cursor-pointer" />
-                سحوبات النقدية{/* Cash Withdrawals */}
-              </a>
-            </li>
+</li>
+            
             {/* Employees dropdown */}
-            <li className="relative " ref={dropdownRef}>
+            <li className="relative" ref={dropdownRef}>
               <button
-                className="cursor-pointer  gap-2 flex items-center transition-transform duration-300 ease-in-out transform bg-amber-600 text-white rounded-md p-2   hover:scale-105"
+                className="cursor-pointer gap-2 flex items-center bg-white text-gray-600 rounded-md p-2 hover:scale-125"
                 onClick={() => {
                   setIsDropdownOpen(!isDropdownOpen);
                   setIsCostDropdownOpen(false); // Close other dropdown
                 }}
               >
-                <FaUsers className="flex-shrink-0  cursor-pointer" />
-                ادارة الموظفين و الحسابات{/* Employees */}
+                <FaUsers size={25} className="flex-shrink-0" />
               </button>
 
               {isDropdownOpen && (
-                <ul className="absolute -left-9  mt-4 bg-amber-600 text-white rounded-md p-2 w-60 shadow-lg space-y-2 z-10">
+                <ul className="absolute left-20  -mt-12 bg-amber-700  text-black rounded-md p-2 w-60 shadow-lg space-y-2 ">
+                  <div className="absolute top-4 -left-2">
+                    <span className="block w-10 h-10 bg-amber-700 transform rotate-45" />
+                  </div>
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex bg-white rounded-md px-2 py-1 items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/attendance"
                       onClick={handleLinkClick}
                     >
-                      <FaClock className="flex-shrink-0  cursor-pointer" />
+                      <FaClock className="flex-shrink-0 text-lime-500 cursor-pointer" />
                       سجل الدوام اليومي{/* Attendance */}
                     </a>
                   </li>
                   <li>
                     <a
-                      className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-1 flex items-center  bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/PayingSalaries"
                     >
-                      <FaMoneyCheckAlt className="flex-shrink-0  cursor-pointer" />
+                      <FaMoneyCheckAlt className="flex-shrink-0 text-purple-800 cursor-pointer" />
                       دفع الرواتب {/*  */}
                     </a>
                   </li>
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex items-center bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/employees"
                       onClick={handleLinkClick}
                     >
-                      <FaUsers className="flex-shrink-0  cursor-pointer" />
-                      ادارة سجل الموظفين {/* Employees */}
+                      <FaUsers className="flex-shrink-0 text-blue-800 cursor-pointer" />
+                      ادارة الموظفين {/* Employees */}
                     </a>
                   </li>
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex items-center  bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/deductions"
                       onClick={handleLinkClick}
                     >
-                      <FaWallet className="flex-shrink-0  cursor-pointer" />
-                      ادارة الخصومات على الرواتب{/* Deductions */}
+                      <FaWallet className="flex-shrink-0 text-amber-400  cursor-pointer" />
+                      الخصومات على الرواتب{/* Deductions */}
                     </a>
                   </li>
 
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex items-center bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/withdrawals"
                       onClick={handleLinkClick}
                     >
-                      <FaMoneyBill className="flex-shrink-0  cursor-pointer" />
-                      ادارة السحوبات الشهرية من الرواتب{/* Withdrawals */}
+                      <FaMoneyBill className="flex-shrink-0 text-rose-500 cursor-pointer" />
+                      السحوبات الشهرية من الرواتب{/* Withdrawals */}
                     </a>
                   </li>
 
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex items-center bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/salaryAccount"
                       onClick={handleLinkClick}
                     >
-                      <FaMoneyCheckAlt className="flex-shrink-0  cursor-pointer" />
+                      <FaMoneyCheckAlt className="flex-shrink-0 text-orange-500 cursor-pointer" />
                       التقرير الشهري لحساب الرواتب {/* Salary Account */}
                     </a>
                   </li>
 
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex items-center bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/overTime"
                       onClick={handleLinkClick}
                     >
-                      <FaPlusCircle className="flex-shrink-0  cursor-pointer" />
+                      <FaPlusCircle className="flex-shrink-0 text-green-700 cursor-pointer" />
                       تقرير العمل الإضافي {/* Over Time */}
                     </a>
                   </li>
 
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex items-center bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/staffFood"
                       onClick={handleLinkClick}
                     >
-                      <FaUtensils className="flex-shrink-0  cursor-pointer" />
-                      ادارة وجبات الطعام {/* Staff Food */}
+                      <FaUtensils className="flex-shrink-0 text-fuchsia-700 cursor-pointer" />
+                      وجبات الطعام {/* Staff Food */}
                     </a>
                   </li>
 
                   <li>
                     <a
-                      className=" gap-2 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                      className=" gap-2 flex items-center bg-white rounded-md px-2 py-1 transition-transform duration-300 ease-in-out transform hover:scale-105"
                       href="/Vacations"
                       onClick={handleLinkClick}
                     >
-                      <FaPlaneDeparture className="flex-shrink-0  cursor-pointer" />
-                      ادارة الإجازات و العطل{/* Vacations */}
+                      <FaPlaneDeparture className="flex-shrink-0 text-blue-600 cursor-pointer" />
+                      الإجازات و العطل{/* Vacations */}
                     </a>
                   </li>
                 </ul>
               )}
             </li>
-            <li className=" bg-amber-900 text-white font-bold hidden md:flex justify-center items-center md:justify-between">
-              <div className="flex gap-3  items-center">
-                <Image
-                  width={50}
-                  height={50}
-                  src="/logoLeche.jpg"
-                  alt="MR. HOTDOG Logo"
-                />
-              </div>
+
+            <li className=" text-yellow-500 rounded-md p-2 bg-white transition-transform duration-300 ease-in-out transform hover:scale-125">
+              <a className="gap-1 flex items-center" href="/sales">
+                <FaCoins size={25} className="flex-shrink-0" />
+              </a>
+            </li>
+
+            <li className=" text-black rounded-md p-2 bg-white transition-transform duration-300 ease-in-out transform hover:scale-125">
+              <a className="gap-1 flex items-center" href="/purchases">
+                <FaShoppingCart size={25} className="flex-shrink-0" />
+              </a>
+            </li>
+
+            <li className=" text-violet-600 rounded-md p-2 bg-white transition-transform duration-300 ease-in-out transform hover:scale-125">
+              <a className="gap-1 flex items-center" href="/MonthlySummary">
+                <FaBalanceScaleLeft size={25} className="flex-shrink-0" />
+              </a>
+            </li>
+
+            <li className=" text-cyan-600 rounded-md p-2 bg-white transition-transform duration-300 ease-in-out transform hover:scale-125">
+              <a className="gap-1 flex items-center" href="/suppliers">
+                <FaTruck size={25} className="flex-shrink-0" />
+              </a>
+            </li>
+
+            <li className=" text-green-700 rounded-md p-2 bg-white transition-transform duration-300 ease-in-out transform hover:scale-125">
+              <a className="gap-1 flex items-center" href="/Deposits">
+                <FaRegBuilding size={25} className="flex-shrink-0" />
+              </a>
+            </li>
+
+            <li className=" text-lime-500 rounded-md p-2 bg-white transition-transform duration-300 ease-in-out transform hover:scale-125">
+              <a className="gap-1 flex items-center" href="/cashWithdrawals">
+                <FaCashRegister size={25} className="flex-shrink-0" />
+              </a>
             </li>
           </ul>
         </nav>
-        <main>{children}</main>
+
+        {/* Main content */}
+        <main className="flex-1 mt-16 ml-16">{children}</main>
       </body>
     </html>
   );
