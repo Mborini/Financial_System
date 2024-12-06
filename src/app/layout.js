@@ -23,6 +23,8 @@ import {
   FaDailymotion,
   FaRegMehRollingEyes,
   FaCoins,
+  FaGlassMartini,
+  FaFileArchive,
 } from "react-icons/fa";
 import NavDrawer from "./components/Drawers/NavDrawer";
 import "./globals.css";
@@ -92,6 +94,7 @@ export default function Layout({ children }) {
 
   return (
     <html lang="en">
+    <title>HotDog</title>
       <body>
         {/* Navigation Bar */}
         {/* <ConfirmAlertModal
@@ -336,7 +339,7 @@ export default function Layout({ children }) {
 
           {/* Desktop Navigation */}
           <ul className="hidden md:flex justify-around p-4 text-sm bg-red-500 text-white font-bold items-center space-x-4">
-            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+            <li className="bg-red-600 text-white rounded-md p-2 ml-4 transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a className=" gap-1 flex items-center" href="/">
                 <FaChartBar className="flex-shrink-0" /> الاحصائيات{" "}
                 {/* Dashboard */}
@@ -404,7 +407,15 @@ export default function Layout({ children }) {
                 فواتير المشتريات {/* Purchases */}
               </a>
             </li>
-
+            <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
+              <a
+                className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
+                href="/MonthlySummary"
+              >
+                <FaFileArchive className="flex-shrink-0  cursor-pointer" />
+                تقرير الملخص الشهري{" "}
+              </a>
+            </li>
             <li className="bg-red-600 text-white rounded-md p-2  transition-transform duration-300 ease-in-out transform hover:scale-105">
               <a
                 className=" gap-1 flex items-center transition-transform duration-300 ease-in-out transform hover:scale-105"
@@ -547,7 +558,7 @@ export default function Layout({ children }) {
             </li>
             <li className=" bg-red-500 text-white font-bold hidden md:flex justify-center items-center md:justify-between">
               <div className="flex gap-3 items-center">
-                <h1 className="text-lg">MR. HOTDOG</h1>{" "}
+                <h1 className="text-xs">MR.HOTDOG</h1>{" "}
                 <Image
                   width={30}
                   height={30}

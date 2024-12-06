@@ -22,7 +22,12 @@
     padding: 0;
     zoom: 90%; /* Adjust zoom to fit the table nicely within the page */
   }
-
+/* Hide elements during printing */
+@media print {
+  .print-hidden {
+    display: none !important;
+  }
+}
   .container, table {
     width: 100%;
     margin: 0;
