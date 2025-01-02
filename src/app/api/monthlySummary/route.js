@@ -31,19 +31,26 @@ export async function GET(request) {
       FROM paying_salaries
       WHERE TO_CHAR(date, 'YYYY-MM') = $1`,
       // Total Vacation Deductions
-      `SELECT SUM(daily_salary) AS total_daily_salary
-      FROM (
-        SELECT v.employee_id,
-               e.name,
-               e.salary,
-               CAST(e.salary AS numeric) / 30 AS daily_salary,
-               COUNT(v.id) AS vacation_count 
-        FROM public.vacations v
-        INNER JOIN public.employees e ON e.id = v.employee_id
-        WHERE DATE_TRUNC('month', v.vacation_date) = DATE_TRUNC('month', TO_DATE($1, 'YYYY-MM'))
-        GROUP BY v.employee_id, e.name, e.salary
-        HAVING COUNT(v.id) > 4
-      ) AS employee_vacations`,
+      `SELECT SUM((vacation_count - 4) * daily_salary) AS total_daily_salary
+FROM (
+    SELECT 
+        v.employee_id,
+        e.name,
+        e.salary,
+        CAST(e.salary AS numeric) / 30 AS daily_salary,
+        COUNT(v.id) AS vacation_count
+    FROM 
+        public.vacations v
+    INNER JOIN 
+        public.employees e ON e.id = v.employee_id
+    WHERE 
+        DATE_TRUNC('month', v.vacation_date) = DATE_TRUNC('month', TO_DATE($1, 'YYYY-MM'))
+    GROUP BY 
+        v.employee_id, e.name, e.salary
+    HAVING 
+        COUNT(v.id) > 4
+) AS employee_vacations;
+`,
       // Total Non-Working Hours
       `SELECT SUM(
         CASE 
