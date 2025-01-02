@@ -1,7 +1,7 @@
 import { connectToDatabase } from "../../../../lib/db";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const period = searchParams.get("period"); // e.g., '2024-10'
+  const period = searchParams.get("period");
   const client = await connectToDatabase();
   try {
     // Query to fetch data for the different categories
@@ -59,32 +59,41 @@ export async function GET(request) {
       // Total Payment for Over Time
       `SELECT SUM(CAST(payment_amount AS numeric)) AS totalPaymentAmountForOverTime
       FROM attendance
-      WHERE TO_CHAR(attendance_date, 'YYYY-MM') = $1`
+      WHERE TO_CHAR(attendance_date, 'YYYY-MM') = $1`,
     ];
     // Execute all the queries with the period parameter
     const results = await Promise.all(
       queries.map((query) => client.query(query, [period]))
     );
-    // Extract results from each query
-    const totalSales = results[0].rows[0].totalSales || 0;
-    const totalDeductions = results[1].rows[0].totalDeductions || 0;
-    const totalStaffFood = results[2].rows[0].totalStaffFood || 0;
-    const totalPurchases = results[3].rows[0].totalPurchases || 0;
-    const totalCosts = results[4].rows[0].totalCosts || 0;
-    const payingSalaries = results[5].rows[0].payingSalaries || 0;
-    const totalVacationDeductions = results[6].rows[0].total_daily_salary || 0;
-    const totalNonWorkingHours = results[7].rows[0].total_deduction_for_non_working_hours || 0;
-    const totalPaymentAmountForOverTime = results[8].rows[0].totalPaymentAmountForOverTime || 0;
-   
+
+    const totalSales = parseFloat(results[0]?.rows?.[0]?.totalsales) || 0;
+    const totalDeductions =
+      parseFloat(results[1]?.rows?.[0]?.totaldeductions) || 0;
+    const totalStaffFood =
+      parseFloat(results[2]?.rows?.[0]?.totalstafffood) || 0;
+    const totalPurchases =
+      parseFloat(results[3]?.rows?.[0]?.totalpurchases) || 0;
+    const totalCosts = parseFloat(results[4]?.rows?.[0]?.totalcosts) || 0;
+    const payingSalaries =
+      parseFloat(results[5]?.rows?.[0]?.payingsalaries) || 0;
+    const totalVacationDeductions =
+      parseFloat(results[6]?.rows?.[0]?.total_daily_salary) || 0;
+    const totalNonWorkingHours =
+      parseFloat(
+        results[7]?.rows?.[0]?.total_deduction_for_non_working_hours
+      ) || 0;
+    const totalPaymentAmountForOverTime =
+      parseFloat(results[8]?.rows?.[0]?.totalpaymentamountforovertime) || 0;
+
     const totalSummary =
       totalSales +
       totalVacationDeductions +
       totalDeductions +
       totalNonWorkingHours +
-      totalStaffFood - 
-      totalPurchases - 
-      totalCosts - 
-      totalPaymentAmountForOverTime - 
+      totalStaffFood -
+      totalPurchases -
+      totalCosts -
+      totalPaymentAmountForOverTime -
       payingSalaries;
     // Return the detailed result as a JSON response
     return new Response(
@@ -98,7 +107,7 @@ export async function GET(request) {
         totalVacationDeductions,
         totalNonWorkingHours,
         totalPaymentAmountForOverTime,
-        totalSummary
+        totalSummary,
       }),
       {
         status: 200,
