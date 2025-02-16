@@ -1,34 +1,49 @@
 import { useState, useEffect } from "react";
 
-export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen }) {
- 
+export default function EditCostTypesForm({
+  selectedCost,
+  refetchCosts,
+  setOpen,
+}) {
   const [description, setDescription] = useState("");
-
   const [name, setName] = useState("");
+  const [supplier, setSupplier] = useState(""); // This will store the selected supplier
+  const [suppliers, setSuppliers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
-
-  // Populate the form fields when the selectedCost changes
   useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const response = await fetch("/api/suppliers");
+        const data = await response.json();
+        if (data && Array.isArray(data)) {
+          setSuppliers(data);
+        } else {
+          setError("Failed to load suppliers.");
+        }
+        setLoading(false);
+      } catch (error) {
+        setError("Failed to load suppliers.");
+        setLoading(false);
+      }
+    };
+    fetchSuppliers();
+ 
     if (selectedCost) {
-   
       setDescription(selectedCost.description);
-    
       setName(selectedCost.name);
-     
+      setSupplier(selectedCost.supplier); // Ensure this matches the supplier's id
     }
-  }, [selectedCost]);
-
+ 
   // Fetch the cost types when the component mounts
-  useEffect(() => {
+  
     const fetchTypes = async () => {
       try {
         const response = await fetch("/api/costsTypes");
         const data = await response.json();
-        setTypes(data); 
-        setLoading(false); 
+        setTypes(data);
+        setLoading(false);
       } catch (error) {
         setError("Failed to load cost types.");
         setLoading(false);
@@ -36,7 +51,8 @@ export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen 
     };
 
     fetchTypes();
-  }, []); 
+  
+ }, [selectedCost]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,27 +61,23 @@ export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen 
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
-        
-        description, 
-        
-        name, 
-       
-        id: selectedCost.id 
+      body: JSON.stringify({
+        description,
+        name,
+        id: selectedCost.id,
+        supplier, // sending selected supplier
       }),
     });
 
     if (response.ok) {
       // Reset form after successful submission
-      
       setDescription("");
-      
       setName("");
-      
+      setSupplier(""); // Reset supplier selection
 
       // Close the drawer and refetch the table
-      setOpen(false);  // Close the drawer
-      refetchCosts();  // Call refetch after successful submission
+      setOpen(false); // Close the drawer
+      refetchCosts(); // Call refetch after successful submission
     }
   };
 
@@ -73,7 +85,10 @@ export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen 
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Form fields */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700"
+        >
           اسم النوع
         </label>
         <input
@@ -88,7 +103,31 @@ export default function EditCostTypesForm({ selectedCost, refetchCosts, setOpen 
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="supplier"
+          className="block text-sm font-medium text-gray-700"
+        >
+          المورد
+        </label>
+        <select
+          value={supplier} // This ensures the selected supplier is shown in the dropdown
+          onChange={(e) => setSupplier(e.target.value)} // Handle change
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">Select Supplier</option>
+          {suppliers.map((supplierItem) => (
+            <option key={supplierItem.id} value={supplierItem.id}>
+              {supplierItem.name} {/* Adjust based on the data structure */}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700"
+        >
           الوصف
         </label>
         <input

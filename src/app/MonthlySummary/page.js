@@ -11,15 +11,22 @@ const MonthlySummary = () => {
   
   const fetchData = async () => {
     try {
-      const response = await fetch(`/api/monthlySummary?period=${period}`);
+      const response = await fetch('/api/monthlySummary', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Period': period, // Sending period in headers
+        },
+      });
       const result = await response.json();
       setData(result);
-      console.log("Data fetched successfully:", result); // Logging fetched data
+      console.log("Data fetched successfully:", result);
     } catch (error) {
       console.error("Failed to fetch data:", error);
     }
   };
-
+  
+  
   useEffect(() => {
     fetchData();
   }, [period]);
@@ -41,6 +48,8 @@ const MonthlySummary = () => {
     totalNonWorkingHours,
     totalPaymentAmountForOverTime,
     totalSummary,
+    totalWithdrawals,
+    totalCashWithdrawals
   } = data;
 
   const handleDateChange = (event) => {
@@ -153,6 +162,24 @@ const MonthlySummary = () => {
               </span>
               <span className="font-medium text-red-500 ">
                 ${formatCurrency(totalPurchases)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-semibold flex items-center gap-1">
+                <FaMinusCircle className="text-red-500" />
+                 مجموع السحب من الرواتب :
+              </span>
+              <span className="font-medium text-red-500 ">
+                ${formatCurrency(totalWithdrawals)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-semibold flex items-center gap-1">
+                <FaMinusCircle className="text-red-500" />
+                 مجموع السحب النقدي :
+              </span>
+              <span className="font-medium text-red-500 ">
+                ${formatCurrency(totalCashWithdrawals)}
               </span>
             </div>
             <div className="flex justify-between">

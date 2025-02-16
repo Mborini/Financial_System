@@ -4,7 +4,7 @@ import { connectToDatabase } from "../../../../lib/db"; // Adjust the path as ne
 export async function GET() {
   const client = await connectToDatabase();
   try {
-    const result = await client.query('SELECT * FROM "cashWithdrawals"');
+    const result = await client.query('SELECT * FROM "cashwithdrawals"');
     return new Response(JSON.stringify(result.rows), { status: 200 });
   } catch (error) {
     console.error("Error fetching cash withdrawals:", error);
@@ -27,7 +27,7 @@ export async function POST(request) {
     const client = await connectToDatabase();
     try {
         const queryString = 
-            'INSERT INTO "cashWithdrawals" (type, amount, date, notes, "checkNumber") VALUES ($1, $2, $3, $4, $5) RETURNING *';
+            'INSERT INTO "cashwithdrawals" (type, amount, date, notes, "checkNumber") VALUES ($1, $2, $3, $4, $5) RETURNING *';
         
         // Debugging: Log the query string
         console.log("Query String:", queryString);
@@ -51,7 +51,7 @@ export async function POST(request) {
     const client = await connectToDatabase();
     try {
       const result = await client.query(
-        'UPDATE "cashWithdrawals" SET type = $1, amount = $2, date = $3, notes = $4, "checkNumber" = $5 WHERE id = $6 RETURNING *', // Add checkNumber to query
+        'UPDATE "cashwithdrawals" SET type = $1, amount = $2, date = $3, notes = $4, "checkNumber" = $5 WHERE id = $6 RETURNING *', // Add checkNumber to query
         [type, amount, date, notes, checkNumber, id]
       );
       
@@ -78,7 +78,7 @@ export async function DELETE(request) {
   const client = await connectToDatabase();
   try {
     const result = await client.query(
-      'DELETE FROM "cashWithdrawals" WHERE id = $1 RETURNING *',
+      'DELETE FROM "cashwithdrawals" WHERE id = $1 RETURNING *',
       [id]
     );
     

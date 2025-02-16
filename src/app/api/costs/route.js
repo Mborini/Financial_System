@@ -4,8 +4,15 @@ import { connectToDatabase } from "../../../../lib/db";
 export async function GET() {
   const client = await connectToDatabase();
   try {
-    const result = await client.query("SELECT * FROM costs order by date desc");
+    const result = await client.query(`
+      SELECT *, suppliers.name AS supplier_name 
+      FROM costs 
+      left JOIN suppliers ON costs.supplier = suppliers.id 
+      ORDER BY costs.date DESC
+    `);
+        
     return new Response(JSON.stringify(result.rows), { status: 200 });
+
   } catch (error) {
     console.error("Error fetching sales:", error);
     return new Response("Error fetching sales", { status: 500 });
@@ -16,14 +23,14 @@ export async function GET() {
 
 // POST API to add a new cost
 export async function POST(req) {
-  const { amount, description, date, name, type, check_number } =
+  const { amount, description, date, name, type, check_number,SupplierId } =
     await req.json();
   const client = await connectToDatabase();
-
+console.log(SupplierId)
   try {
     const result = await client.query(
-      "INSERT INTO costs (amount, description, date, name, type,check_number) VALUES ($1, $2, $3, $4, $5,$6) RETURNING *",
-      [amount, description, date, name, type, check_number || null]
+      "INSERT INTO costs (amount, description, date, name, type,check_number,Supplier) VALUES ($1, $2, $3, $4, $5,$6,$7) RETURNING *",
+      [amount, description, date, name, type, check_number, SupplierId || null]
     );
     return new Response(JSON.stringify(result.rows[0]), { status: 201 });
   } catch (error) {
@@ -35,14 +42,14 @@ export async function POST(req) {
 }
 // PUT API to update a cost by ID
 export async function PUT(req) {
-  const { id, amount, description, date, name, type, check_number } =
+  const { id, amount, description, date, name, type, check_number, SupplierId } =
     await req.json();
   const client = await connectToDatabase();
 
   try {
     const result = await client.query(
-      "UPDATE costs SET amount = $1, description = $2, date = $3, name = $4, type = $5, check_number=$6 WHERE id = $7 RETURNING *",
-      [amount, description, date, name, type, check_number, id]
+      "UPDATE costs SET amount = $1, description = $2, date = $3, name = $4, type = $5, check_number=$6,Supplier=$7 WHERE id = $8 RETURNING *",
+      [amount, description, date, name, type, check_number,SupplierId , id]
     );
 
     if (result.rowCount === 0) {

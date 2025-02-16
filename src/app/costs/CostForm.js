@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Suppliers from "../suppliers/page";
 
 export default function CostForm({ refetchCosts, setOpen }) {
   const [amount, setAmount] = useState("");
@@ -10,7 +11,8 @@ export default function CostForm({ refetchCosts, setOpen }) {
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [idsup, setIdSup] = useState(""); // Correctly declare the state
+  const [SupplierId, setSupplierId] = useState(""); // Correctly declare the state
   const [checkField, setCheckField] = useState(false); // For check payment
   const [checkNumber, setCheckNumber] = useState(""); // For check number
 
@@ -29,13 +31,26 @@ export default function CostForm({ refetchCosts, setOpen }) {
     fetchTypes();
   }, []);
 
+  // Handle type change and update supplier name (idsup)
+  const handleTypeChange = (e) => {
+    const selectedType = e.target.value;
+    setType(selectedType);
+
+    const supplierName = types.find((t) => t.name === selectedType)?.supplier_name || "";
+    setIdSup(supplierName); // Update the idsup state
+    
+    const SupplierId = types.find((t) => t.name === selectedType)?.supplier || "";
+    setSupplierId(SupplierId); // Update the Supplier state
+    
+  };
+
   const handleSubmit = async (e) => {
-      // Check number validation
-      if (checkField && !checkNumber) {
-        setError("Check number is required for check payments.");
-        return;
-      }
-  
+    // Check number validation
+    if (checkField && !checkNumber) {
+      setError("Check number is required for check payments.");
+      return;
+    }
+
     e.preventDefault();
     const response = await fetch("/api/costs", {
       method: "POST",
@@ -49,6 +64,8 @@ export default function CostForm({ refetchCosts, setOpen }) {
         name,
         type,
         check_number: checkField ? checkNumber : null, // Add check_number only if applicable
+        idsup,
+        SupplierId 
       }),
     });
 
@@ -164,7 +181,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
           htmlFor="description"
           className="block text-sm font-medium text-gray-700"
         >
-          الوصف
+          ملاحظات{" "}
         </label>
         <input
           id="description"
@@ -172,7 +189,6 @@ export default function CostForm({ refetchCosts, setOpen }) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="ادخل الوصف"
-          required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
@@ -188,7 +204,7 @@ export default function CostForm({ refetchCosts, setOpen }) {
         <select
           id="type"
           value={type}
-          onChange={(e) => setType(e.target.value)}
+          onChange={handleTypeChange} // Update type and supplier name when changed
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
@@ -206,6 +222,24 @@ export default function CostForm({ refetchCosts, setOpen }) {
           )}
         </select>
       </div>
+
+      {type && (
+        <div>
+          <label
+            htmlFor="supplier_name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            اسم المورد
+          </label>
+          <input
+            id="supplier_name"
+            type="text"
+            value={idsup}
+            disabled
+            className="cursor-not-allowed mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      )}
 
       {/* Submit button */}
       <div>

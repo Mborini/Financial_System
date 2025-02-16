@@ -101,6 +101,7 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
         <thead>
           <tr className="bg-gray-100">
             <th className="border border-gray-300 px-4 py-2">النوع</th>
+            <th className="border border-gray-300 px-4 py-2">المورد</th>
             <th className="border border-gray-300 px-4 py-2">الوصف</th>
            
             <th className="border border-gray-300 px-4 py-2"></th>
@@ -110,6 +111,7 @@ if (!loading && Array.isArray(costsTypes) && costsTypes.length === 0) {
           {currentcostsTypes.map((costType) => (
             <tr key={costType.id} className="bg-white hover:bg-gray-50">
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.name}</td>
+              <td className="border border-gray-300 px-4 py-2 text-center">{costType.supplier_name}</td>
               <td className="border border-gray-300 px-4 py-2 text-center">{costType.description}</td>
              
               <td className="border border-gray-300 px-4  py-2 text-center">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { format } from 'date-fns'; // Import format from date-fns
+import { format } from "date-fns"; // Import format from date-fns
 
 export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
   const [amount, setAmount] = useState("");
@@ -7,20 +7,23 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
   const [date, setDate] = useState("");
   const [name, setName] = useState("");
   const [type, setType] = useState("");
-  const [types, setTypes] = useState([]); 
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
+  const [types, setTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [checkField, setCheckField] = useState(false); // For check payment
   const [checkNumber, setCheckNumber] = useState(""); // For check number
+  const [idsup, setIdSup] = useState(""); // Correctly declare the state
+  const [SupplierId, setSupplierId] = useState(""); // Correctly declare the state
+
 
   // Populate the form fields when the selectedCost changes
   useEffect(() => {
     if (selectedCost) {
       setAmount(selectedCost.amount);
       setDescription(selectedCost.description);
-      setDate(format(new Date(selectedCost.date), 'yyyy-MM-dd')); // Format the date for input[type="date"]
+      setDate(format(new Date(selectedCost.date), "yyyy-MM-dd")); // Format the date for input[type="date"]
       setName(selectedCost.name);
-      setType(selectedCost.type.toLowerCase()); 
+      setType(selectedCost.type.toLowerCase());
     }
   }, [selectedCost]);
 
@@ -30,26 +33,35 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
       try {
         const response = await fetch("/api/costsTypes");
         const data = await response.json();
-        setTypes(data); 
-        setLoading(false); 
+        setTypes(data);
+        setLoading(false);
       } catch (error) {
         setError("Failed to load cost types.");
         setLoading(false);
       }
     };
-// Populate check-related fields if available
-if (selectedCost.check_number) {
-  setCheckField(true);
-  setCheckNumber(selectedCost.check_number);
-} else {
-  setCheckField(false);
-  setCheckNumber("");
-}
+    // Populate check-related fields if available
+    if (selectedCost.check_number) {
+      setCheckField(true);
+      setCheckNumber(selectedCost.check_number);
+    } else {
+      setCheckField(false);
+      setCheckNumber("");
+    }
     fetchTypes();
-  }, [selectedCost]); 
+  }, [selectedCost]);
+  const handleTypeChange = (e) => {
+    const selectedType = e.target.value;
+    setType(selectedType);
 
-  const handleSubmit = async (e) => {
+    const supplierName = types.find((t) => t.name === selectedType)?.supplier_name || "";
+    setIdSup(supplierName); // Update the idsup state
     
+    const SupplierId = types.find((t) => t.name === selectedType)?.supplier || "";
+    setSupplierId(SupplierId); // Update the Supplier state
+    
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Check number validation
     if (checkField && !checkNumber) {
@@ -62,15 +74,16 @@ if (selectedCost.check_number) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
-        amount, 
-        description, 
-        date, 
-        name, 
-        type: type.toLowerCase(), 
-        id: selectedCost.id ,
+      body: JSON.stringify({
+        amount,
+        description,
+        date,
+        name,
+        type: type.toLowerCase(),
+        id: selectedCost.id,
         check_number: checkField ? checkNumber : null, // Add check_number only if applicable
-
+        idsup,
+        SupplierId 
       }),
     });
 
@@ -83,8 +96,8 @@ if (selectedCost.check_number) {
       setType("");
 
       // Close the drawer and refetch the table
-      setOpen(false);  // Close the drawer
-      refetchCosts();  // Refetch the table data
+      setOpen(false); // Close the drawer
+      refetchCosts(); // Refetch the table data
       setCheckField(false);
       setCheckNumber("");
     }
@@ -94,7 +107,10 @@ if (selectedCost.check_number) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Form fields */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700"
+        >
           اسم الكلفة
         </label>
         <input
@@ -109,7 +125,10 @@ if (selectedCost.check_number) {
       </div>
 
       <div>
-        <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="date"
+          className="block text-sm font-medium text-gray-700"
+        >
           التاريخ
         </label>
         <input
@@ -123,7 +142,10 @@ if (selectedCost.check_number) {
       </div>
 
       <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="amount"
+          className="block text-sm font-medium text-gray-700"
+        >
           القيمة
         </label>
         <input
@@ -136,8 +158,8 @@ if (selectedCost.check_number) {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
       </div>
- {/* Check field and check number */}
- <div className="flex items-center gap-2 justify-start">
+      {/* Check field and check number */}
+      <div className="flex items-center gap-2 justify-start">
         <input
           type="checkbox"
           id="checkField"
@@ -145,7 +167,10 @@ if (selectedCost.check_number) {
           checked={checkField}
           onChange={() => setCheckField(!checkField)} // Toggle check field
         />
-        <label htmlFor="checkField" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="checkField"
+          className="block text-sm font-medium text-gray-700"
+        >
           هل الدفع بشيك؟
         </label>
       </div>
@@ -171,8 +196,11 @@ if (selectedCost.check_number) {
       )}
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          الوصف
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700"
+        >
+          ملاحظات{" "}
         </label>
         <input
           id="description"
@@ -186,13 +214,16 @@ if (selectedCost.check_number) {
       </div>
 
       <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="type"
+          className="block text-sm font-medium text-gray-700"
+        >
           النوع
         </label>
         <select
           id="type"
-          value={type}  
-          onChange={(e) => setType(e.target.value.toLowerCase())} 
+          value={type}
+          onChange={handleTypeChange} // Update type and supplier name when changed
           required
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
@@ -210,7 +241,23 @@ if (selectedCost.check_number) {
           )}
         </select>
       </div>
-
+      {type && (
+        <div>
+          <label
+            htmlFor="supplier_name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            اسم المورد
+          </label>
+          <input
+            id="supplier_name"
+            type="text"
+            value={idsup}
+            disabled
+            className="cursor-not-allowed mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+      )}
       <div>
         <button
           type="submit"

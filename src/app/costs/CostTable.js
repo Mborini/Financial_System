@@ -299,11 +299,12 @@ function CostTable({ costsUpdated, refetchCosts }) {
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-300 px-4 py-2">الكلفة</th>
-                <th className="border border-gray-300 px-4 py-2">وصف</th>
+                <th className="border border-gray-300 px-4 py-2">نوع الكلفة</th>
+                <th className="border border-gray-300 px-4 py-2">المورد </th>
                 <th className="border border-gray-300 px-4 py-2">القيمة</th>
                 <th className="border border-gray-300 px-4 py-2">رقم الشيك </th>
-                <th className="border border-gray-300 px-4 py-2">نوع الكلفة</th>
                 <th className="border border-gray-300 px-4 py-2">التاريخ</th>
+                <th className="border border-gray-300 px-4 py-2">ملاحظات</th>
                 <th className="border border-gray-300 px-4 py-2 no-print"></th>
               </tr>
             </thead>
@@ -314,7 +315,10 @@ function CostTable({ costsUpdated, refetchCosts }) {
                     {cost.name}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
-                    {cost.description}
+                    {cost.type}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {cost.supplier_name  || "-"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
                     {cost.amount}
@@ -323,10 +327,10 @@ function CostTable({ costsUpdated, refetchCosts }) {
                     {cost.check_number || "-"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
-                    {cost.type}
+                    {format(new Date(cost.date), "yyyy-MM-dd")}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
-                    {format(new Date(cost.date), "yyyy-MM-dd")}
+                    {cost.description}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center no-print">
                     <div className="flex justify-center">
