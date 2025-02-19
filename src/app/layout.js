@@ -59,7 +59,7 @@ export default function Layout({ children }) {
 
           {/* Drawer for mobile */}
           <div
-            className={`fixed top-5 right-0 w-72 h-full  bg-gray-800 text-white transform transition-transform duration-300 ${
+            className={`fixed top-5 right-0 w-72 h-full  overflow-y-auto bg-gray-800 text-white transform transition-transform duration-300 ${
               isOpen ? "translate-x-0" : "translate-x-full"
             }`}
           >
