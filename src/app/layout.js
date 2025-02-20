@@ -34,12 +34,46 @@ export default function Layout({ children }) {
 
   const toggleDrawer = () => setIsOpen(!isOpen);
   const [isExpanded, setIsExpanded] = useState(false); // State for expanding/collapsing
-
   const toggleExpand = () => setIsExpanded(!isExpanded);
+  const originalSizeMB = 500; // الحجم الأصلي لقاعدة البيانات
+  const [DbSize, setDbSize] = useState("0 kB"); // القيمة الافتراضية
+  const [sizeInMB, setSizeInMB] = useState(0); // الحجم المحول إلى MB
+  const [percentage, setPercentage] = useState(0); // النسبة المئوية
+
+  useEffect(() => {
+    const fetchDbSize = async () => {
+      try {
+        const response = await fetch("/api/dbSize");
+        const data = await response.json();
+        console.log("API Response:", data);
+        const x = data[0].pg_size_pretty;
+        // تحديث حالة DbSize بالبيانات الجديدة
+        setDbSize(x); // افترض أن API يعيد حجمًا مثل "10232 kB"
+
+        // تحويل الحجم من kB إلى MB
+        const sizeInKB = parseInt(x, 10); // استخراج الرقم من النص
+        const calculatedSizeInMB = sizeInKB / 1024; // التحويل إلى MB
+
+        // حساب النسبة المئوية
+        const calculatedPercentage = (
+          (calculatedSizeInMB / originalSizeMB) *
+          100
+        ).toFixed(2);
+
+        // تحديث الحالات
+        setSizeInMB(calculatedSizeInMB);
+        setPercentage(calculatedPercentage);
+      } catch (error) {
+        console.error("Error fetching DbSize:", error);
+      }
+    };
+
+    fetchDbSize();
+  }, []); // [] يعني أن useEffect سيعمل مرة واحدة عند التحميل
 
   return (
     <html lang="en">
-      <title>HotDog</title>
+      <title>Financial Management System</title>
       <body className="flex">
         {/* Sidebar */}
         <div className="relative">
@@ -49,6 +83,7 @@ export default function Layout({ children }) {
               <div className="text-white font-bold text-xl">
                 نظام الادارة المالية
               </div>
+
               <div className="">
                 <button onClick={toggleDrawer}>
                   <FaBars className="text-white text-2xl" />
@@ -64,6 +99,7 @@ export default function Layout({ children }) {
             }`}
           >
             <div dir="rtl" className="flex flex-col space-y-4 p-4 z-10 mt-16  ">
+
               <a
                 href="/"
                 className="text-white border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
@@ -84,8 +120,9 @@ export default function Layout({ children }) {
                 </button>
                 {isExpanded && (
                   <ul className="pr-4  space-y-4">
-                  <li className="text-white flex items-center">
-                  <FaMinus className="flex ml-2"/>                      <a
+                    <li className="text-white flex items-center">
+                      <FaMinus className="flex ml-2" />{" "}
+                      <a
                         href="/costs"
                         className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1 mb-3"
                       >
@@ -93,7 +130,8 @@ export default function Layout({ children }) {
                       </a>
                     </li>
                     <li className="text-white flex items-center">
-                     <FaMinus className="flex ml-2"/> <a
+                      <FaMinus className="flex ml-2" />{" "}
+                      <a
                         href="/costsTypes"
                         className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
                       >
@@ -108,7 +146,7 @@ export default function Layout({ children }) {
                   className="flex items-center text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1  w-full"
                   onClick={toggleExpand}
                 >
-                   الموظفين{" "}
+                  الموظفين{" "}
                   {isExpanded ? (
                     <FaChevronUp className="mr-2" />
                   ) : (
@@ -192,7 +230,6 @@ export default function Layout({ children }) {
                   </ul>
                 )}
               </div>
-
               <a
                 href="/sales"
                 className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
@@ -230,6 +267,9 @@ export default function Layout({ children }) {
                 السحوبات النقدية
               </a>
             </div>
+            <div className="absolute  p-4">
+                      DB Storage: {sizeInMB.toFixed(2)} MB From {originalSizeMB} MB ({percentage}%)
+</div>
           </div>
         </div>
 
