@@ -187,68 +187,74 @@ function CostTable({ costsUpdated, refetchCosts }) {
     <div dir="rtl" className="container mx-auto px-4">
       {/* Filters */}
       <div dir="ltr" className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
-        <div  className="flex gap-2 flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full">
-          {/* Name Filter */}
-          <div className="mb-4 md:mb-0 w-full md:w-auto">
-            <input
-              type="text"
-              value={nameFilter}
-              onChange={(e) => setNameFilter(e.target.value)}
-              placeholder="Filter by name"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
+     <div className="flex flex-wrap gap-4 mb-4 w-full">
+  {/* Name Filter */}
+  <div className="w-full md:w-auto">
+    <input
+      dir="rtl"
+      type="text"
+      value={nameFilter}
+      onChange={(e) => setNameFilter(e.target.value)}
+      placeholder="بحث حسب اسم الكلفة"
+      className="border border-gray-300 p-2 rounded w-full md:w-auto"
+    />
+  </div>
 
-          {/* Type Filter */}
-          <div className="mb-4 md:mb-0 w-full md:w-auto">
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="">اختر</option>
-              {types.map((t) => (
-                <option key={t.id} value={t.name.toLowerCase()}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          {/* Right Section: Check Filter and Check Number Search */}
-          <div className="mb-4 md:mb-0 w-full md:w-auto">
-            <select
-              value={checkFilter}
-              onChange={(e) => setCheckFilter(e.target.value)}
-              className="border border-gray-300 p-2 rounded"
-            >
-              <option value="">كل طرق الدفع</option>
-              <option value="check">مدفوع بشيك</option>
-              <option value="cash">مدفوع نقدي</option>
-            </select>
-          </div>
-          <div className="mb-4 md:mb-0 w-full md:w-auto">
-            <input
-              type="text"
-              placeholder="بحث حسب رقم الشيك"
-              value={checkNumberSearch}
-              onChange={(e) => setCheckNumberSearch(e.target.value)}
-              className="border border-gray-300 p-2 rounded"
-            />
-          </div>
-          {/* Date Range Filter */}
-          <div className="mb-4 md:mb-0 w-full md:w-auto">
-            <DatePicker
-              selected={startDate}
-              onChange={(update) => setDateRange(update)}
-              startDate={startDate}
-              endDate={endDate}
-              selectsRange
-              isClearable
-              placeholderText="Select a date range"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-        </div>
+  {/* Type Filter */}
+  <div className="w-full md:w-auto">
+    <select
+      value={typeFilter}
+      onChange={(e) => setTypeFilter(e.target.value)}
+      className="border border-gray-300 p-2 rounded w-full md:w-auto"
+    >
+      <option dir="rtl" value="">اختر</option>
+      {types.map((t) => (
+        <option dir="rtl" key={t.id} value={t.name.toLowerCase()}>
+          {t.name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Check Filter */}
+  <div className="w-full md:w-auto">
+    <select
+      value={checkFilter}
+      onChange={(e) => setCheckFilter(e.target.value)}
+      className="border border-gray-300 p-2 rounded w-full md:w-auto"
+    >
+      <option value="">كل طرق الدفع</option>
+      <option value="check">مدفوع بشيك</option>
+      <option value="cash">مدفوع نقدي</option>
+    </select>
+  </div>
+
+  {/* Check Number Search */}
+  <div className="w-full md:w-auto">
+    <input
+      type="text"
+      placeholder="بحث حسب رقم الشيك"
+      value={checkNumberSearch}
+      onChange={(e) => setCheckNumberSearch(e.target.value)}
+      className="border border-gray-300 p-2 rounded w-full md:w-auto"
+    />
+  </div>
+
+  {/* Date Range Filter */}
+  <div className="w-full md:w-auto">
+    <DatePicker
+      selected={startDate}
+      onChange={(update) => setDateRange(update)}
+      startDate={startDate}
+      endDate={endDate}
+      selectsRange
+      isClearable
+      placeholderText="Select a date range"
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    />
+  </div>
+</div>
+
 
         {/* Print Button */}
         <div className="flex justify-end md:justify-start mt-4 gap-2 md:mt-0">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaPrint, FaSpinner } from "react-icons/fa";
+import { FaEdit, FaPrint, FaSpinner, FaTrashAlt } from "react-icons/fa";
 import { parseISO, isValid, format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -239,15 +239,17 @@ function SalesTable({ salesUpdated, refetchSales }) {
               <td className="border border-gray-300 px-4 py-2 text-center">
                 <button
                   onClick={() => handleEditClick(sale)}
-                  className="bg-orange-500 hover:bg-orange-600 ml-2 text-white font-bold py-1 px-2 rounded"
+                  className="text-orange-500 font-bold py-1 px-2 rounded ml-2"
                 >
-                  Edit
+                                        <FaEdit />
+                  
                 </button>
                 <button
                   onClick={() => confirmDelete(sale)}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
-                >
-                  Delete
+                  className="text-red-700 font-bold py-1 px-2 rounded ml-2"
+                  >
+                                        <FaTrashAlt />
+                  
                 </button>
               </td>
             </tr>

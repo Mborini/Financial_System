@@ -33,7 +33,9 @@ export default function Layout({ children }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer = () => setIsOpen(!isOpen);
+  const [isExpandedCosts, setIsExpandedCosts] = useState(false); // State for expanding/collapsing
   const [isExpanded, setIsExpanded] = useState(false); // State for expanding/collapsing
+  const toggleExpandCosts = () => setIsExpandedCosts(!isExpandedCosts);
   const toggleExpand = () => setIsExpanded(!isExpanded);
   const originalSizeMB = 500; // الحجم الأصلي لقاعدة البيانات
   const [DbSize, setDbSize] = useState("0 kB"); // القيمة الافتراضية
@@ -97,43 +99,40 @@ export default function Layout({ children }) {
             className={`fixed top-5 right-0 w-72 h-full  overflow-y-auto bg-gray-800 text-white transform transition-transform duration-300 ${
               isOpen ? "translate-x-0" : "translate-x-full"
             }`}
-          >
-            <div dir="rtl" className="flex flex-col space-y-4 p-4 z-10 mt-16  ">
-
-              <a
+          > 
+            <div dir="rtl" className="flex flex-col space-y-4 p-4 z-10 mt-14  ">              <a
                 href="/"
-                className="text-white border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
-              >
+                className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
+                >
                 الاحصائيات العامة
               </a>
               <div className="space-y-2">
                 <button
-                  className="flex items-center text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1  w-full"
-                  onClick={toggleExpand}
+                  className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
+                  onClick={toggleExpandCosts}
                 >
-                  <span> ادارة التكاليف</span>
-                  {isExpanded ? (
-                    <FaChevronUp className="mr-2" />
+                  <span>إدارة التكاليف</span>
+                  {isExpandedCosts ? (
+                    <FaChevronUp className="text-gray-400" />
                   ) : (
-                    <FaChevronDown className="mr-2" />
+                    <FaChevronDown className="text-gray-400" />
                   )}
                 </button>
-                {isExpanded && (
-                  <ul className="pr-4  space-y-4">
-                    <li className="text-white flex items-center">
-                      <FaMinus className="flex ml-2" />{" "}
+
+                {isExpandedCosts && (
+                  <ul className="pr-4 space-y-2">
+                    <li className="flex items-center text-white">
                       <a
                         href="/costs"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1 mb-3"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         التكاليف
                       </a>
                     </li>
-                    <li className="text-white flex items-center">
-                      <FaMinus className="flex ml-2" />{" "}
+                    <li className="flex items-center text-white">
                       <a
                         href="/costsTypes"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         انواع التكاليف
                       </a>
@@ -143,7 +142,7 @@ export default function Layout({ children }) {
               </div>
               <div className="pl-1 space-y-4">
                 <button
-                  className="flex items-center text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1  w-full"
+                  className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                   onClick={toggleExpand}
                 >
                   الموظفين{" "}
@@ -158,15 +157,15 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/attendance"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1 mb-3"
-                      >
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
+                        >
                         الدوام اليومي
                       </a>
                     </li>
                     <li>
                       <a
                         href="/PayingSalaries"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         دفع الرواتب {/*  */}
                       </a>
@@ -174,7 +173,7 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/employees"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         ادارة الموظفين{/*  */}
                       </a>
@@ -182,7 +181,7 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/deductions"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         الخصومات على الرواتب{" "}
                       </a>
@@ -190,7 +189,7 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/withdrawals"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         السحوبات الشهرية من الرواتب{/*  */}
                       </a>
@@ -198,7 +197,7 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/salaryAccount"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         التقرير الشهري لحساب الرواتب{" "}
                       </a>
@@ -206,7 +205,7 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/overTime"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         تقرير العمل الإضافي {/* Over Time */}
                       </a>
@@ -214,7 +213,7 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/staffFood"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         وجبات الطعام {/* Staff Food */}
                       </a>
@@ -222,7 +221,7 @@ export default function Layout({ children }) {
                     <li>
                       <a
                         href="/Vacations"
-                        className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                        className="text-white bg-gray-700  rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                       >
                         الإجازات و العطل{/* Vacations */}
                       </a>
@@ -232,49 +231,50 @@ export default function Layout({ children }) {
               </div>
               <a
                 href="/sales"
-                className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
               >
                 المبيعات
               </a>
               <a
                 href="/purchases"
-                className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
               >
                 المشتريات
               </a>
               <a
                 href="/MonthlySummary"
-                className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
               >
                 التقرير الشهري
               </a>
               <a
                 href="/suppliers"
-                className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
               >
                 الموردين
               </a>
               <a
                 href="/Deposits"
-                className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
               >
                 الايداعات
               </a>
               <a
                 href="/cashWithdrawals"
-                className="text-white  border-neutral-200 border rounded-lg hover:bg-gray-700 p-1"
+                className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
               >
                 السحوبات النقدية
               </a>
             </div>
             <div className="absolute  p-4">
-                      DB Storage: {sizeInMB.toFixed(2)} MB From {originalSizeMB} MB ({percentage}%)
-</div>
+              DB Storage: {sizeInMB.toFixed(2)} MB From {originalSizeMB} MB (
+              {percentage}%)
+            </div>
           </div>
         </div>
 
         {/* Main content */}
-        <main className="flex-1 mt-16 ml-16">{children}</main>
+        <main className="flex-1 mt-16 ">{children}</main>
       </body>
     </html>
   );
