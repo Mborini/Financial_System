@@ -1,35 +1,21 @@
 "use client";
 
 import {
-  FaMoneyBill,
-  FaShoppingCart,
-  FaListAlt,
-  FaTruck,
-  FaUsers,
-  FaWallet,
-  FaClock,
-  FaUtensils,
-  FaPlaneDeparture,
-  FaCog,
-  FaChartBar,
-  FaPlusCircle,
-  FaMoneyCheckAlt,
-  FaBuilding,
-  FaCoins,
-  FaFileArchive,
-  FaHandHoldingUsd,
-  FaCashRegister,
-  FaBalanceScaleLeft,
-  FaRegBuilding,
+  
   FaChevronUp,
   FaChevronDown,
-  FaMinus,
+ 
 } from "react-icons/fa";
 import "./globals.css";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { usePathname } from "next/navigation";
+import CheckPassword from "./checkpassword";
+
 export default function Layout({ children }) {
+  const pathname = usePathname();
+ 
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer = () => setIsOpen(!isOpen);
@@ -72,13 +58,25 @@ export default function Layout({ children }) {
 
     fetchDbSize();
   }, []); // [] يعني أن useEffect سيعمل مرة واحدة عند التحميل
-
-  return (
+  if (pathname === "/") { 
+return (
     <html lang="en">
       <title>Financial Management System</title>
       <body className="flex">
+
+  
+    <main className="flex-1 mt-16 ">
+      {children}
+    </main>
+    </body>
+  </html>)
+  }
+  return (
+    <html lang="en">
+      <title>Financial Management System</title>
+      <body className="">
         {/* Sidebar */}
-        <div className="relative">
+        <div className="relative z-10">
           {/* Navbar */}
           <nav className="bg-gray-800 p-4 fixed w-full z-10 top-0 left-0 shadow-md">
             <div className="flex items-center justify-between">
@@ -272,7 +270,10 @@ export default function Layout({ children }) {
             </div>
           </div>
         </div>
+<>
+<CheckPassword /> Check the password cookie on every page
 
+</>
         {/* Main content */}
         <main className="flex-1 mt-16 ">{children}</main>
       </body>
