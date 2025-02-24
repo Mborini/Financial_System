@@ -271,35 +271,43 @@ function SalesTable({ salesUpdated, refetchSales }) {
         }`}
       />
 
-      <div className="flex justify-center my-4">
+<div className="flex justify-center mt-4">
+<button
+    onClick={() => paginate(currentPage - 1)}
+    disabled={currentPage === 1}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Previous
+  </button>
+
+  {Array.from({ length: 3 }, (_, i) => {
+    const pageNumber = currentPage - 1 + i;
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      return (
         <button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          key={pageNumber}
+          onClick={() => paginate(pageNumber)}
+          className={`px-4 py-2 mx-1 rounded ${
+            pageNumber === currentPage
+              ? "bg-blue-500 text-white"
+              : "bg-gray-300 hover:bg-gray-400"
+          }`}
         >
-          Previous
+          {pageNumber}
         </button>
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => paginate(i + 1)}
-            className={`px-4 py-2 mx-1 rounded ${
-              i + 1 === currentPage
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 hover:bg-gray-400"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-        <button
-          onClick={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      );
+    }
+    return null;
+  })}
+
+  <button
+    onClick={() => paginate(currentPage + 1)}
+    disabled={currentPage === totalPages}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
 
       {/* Edit Drawer */}
       {selectedSale && (

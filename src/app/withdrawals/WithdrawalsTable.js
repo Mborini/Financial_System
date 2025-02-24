@@ -181,56 +181,78 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
     <div className="container mx-auto px-4">
       {/* Date Range and Employee Name Filter */}
       <div className="lg:flex justify-between items-center my-4">
-        <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 items-start lg:items-center w-full">
-          <DatePicker
-            selected={startDate}
-            onChange={(update) => setDateRange(update)}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            isClearable
-            placeholderText="Select a date range"
-            className="border border-gray-300 p-2 rounded w-full lg:w-auto"
-          />
-          <select
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-            className="border border-gray-300 p-2 rounded w-50 lg:w-auto"
-          >
-            <option value="">اختر الموظف</option>
-            {employees.map((employee) => (
-              <option key={employee.id} value={employee.name}>
-                {employee.name}
-              </option>
-            ))}
-          </select>
+      <div className="flex flex-wrap gap-4 w-full">
+  {/* Row 1: Date Picker & Employee Select */}
+  <div className="flex w-full md:w-1/2 lg:w-auto gap-4">
+    {/* Date Picker */}
+    <div className="w-full md:w-1/2 lg:w-auto">
+      <DatePicker
+        selected={startDate}
+        onChange={(update) => setDateRange(update)}
+        startDate={startDate}
+        endDate={endDate}
+        selectsRange
+        isClearable
+        placeholderText="Select a date range"
+        className="border border-gray-300 p-2 rounded w-full"
+      />
+    </div>
 
-          {/* Right Section: Check Filter and Check Number Search */}
-          <div className="lg:flex space-y-4 lg:space-y-0 lg:space-x-4">
-            <select
-              value={checkFilter}
-              onChange={(e) => setCheckFilter(e.target.value)}
-              className="border border-gray-300 p-2 rounded"
-            >
-              <option value="">كل طرق الدفع</option>
-              <option value="check">مدفوع بشيك</option>
-              <option value="cash">مدفوع نقدي</option>
-            </select>
-            <input
-              type="text"
-              placeholder="بحث حسب رقم الشيك"
-              value={checkNumberSearch}
-              onChange={(e) => setCheckNumberSearch(e.target.value)}
-              className="border border-gray-300 p-2 rounded"
-            />
-          </div>
-        </div>
+    {/* Employee Select */}
+    <div className="w-full md:w-1/2 lg:w-auto">
+      <select
+        value={selectedEmployee}
+        onChange={(e) => setSelectedEmployee(e.target.value)}
+        className="border border-gray-300 p-2 rounded w-full"
+      >
+        <option value="">اختر الموظف</option>
+        {employees.map((employee) => (
+          <option key={employee.id} value={employee.name}>
+            {employee.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  {/* Row 2: Check Filter & Check Number Search */}
+  <div className="flex w-full md:w-1/2 lg:w-auto gap-4">
+    {/* Check Filter */}
+    <div className="w-full md:w-1/2 lg:w-auto">
+      <select
+        value={checkFilter}
+        onChange={(e) => setCheckFilter(e.target.value)}
+        className="border border-gray-300 p-2 rounded w-full"
+      >
+        <option value="">كل طرق الدفع</option>
+        <option value="check">مدفوع بشيك</option>
+        <option value="cash">مدفوع نقدي</option>
+      </select>
+    </div>
+
+    {/* Check Number Search */}
+    <div className="w-full md:w-1/2 lg:w-auto">
+      <input
+        type="text"
+        placeholder="بحث حسب رقم الشيك"
+        value={checkNumberSearch}
+        onChange={(e) => setCheckNumberSearch(e.target.value)}
+        className="border border-gray-300 p-2 rounded w-full"
+      />
+    </div>
+  </div>
+</div>
+
+
+<div dir="rtl" className="flex justify-between items-center w-full">
         <button
+        dir="rtl"
           onClick={handlePrint}
           className="mt-4 flex lg:mt-0 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           <FaPrint className="inline-block mr-2" />
         </button>
+        </div>
       </div>
 
       <div dir="rtl" className="overflow-x-auto">
@@ -257,10 +279,9 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
             </tr>
           </tbody>
         </table>
-        <table
-          dir="rtl"
-          className="min-w-full table-auto border-collapse border border-gray-200"
-        >
+        <div className="overflow-x-auto container ">
+          <table className="min-w-full table-auto border-collapse border border-gray-200">
+        
           <thead>
             <tr className="bg-gray-100">
               <th className="border border-gray-300 px-4 py-2">اسم الموظف</th>
@@ -306,37 +327,47 @@ function WithdrawalsTable({ costsTypesUpdated, refetchCostsTypes }) {
           </tbody>
         </table>
       </div>
+      </div>
 
       {!isPrinting && (
-        <div className="flex justify-center my-4">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => paginate(i + 1)}
-              className={`px-4 py-2 mx-1 rounded ${
-                i + 1 === currentPage
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        <div className="flex justify-center mt-4">
+        <button
+    onClick={() => paginate(currentPage - 1)}
+    disabled={currentPage === 1}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Previous
+  </button>
+
+  {Array.from({ length: 3 }, (_, i) => {
+    const pageNumber = currentPage - 1 + i;
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      return (
+        <button
+          key={pageNumber}
+          onClick={() => paginate(pageNumber)}
+          className={`px-4 py-2 mx-1 rounded ${
+            pageNumber === currentPage
+              ? "bg-blue-500 text-white"
+              : "bg-gray-300 hover:bg-gray-400"
+          }`}
+        >
+          {pageNumber}
+        </button>
+      );
+    }
+    return null;
+  })}
+
+  <button
+    onClick={() => paginate(currentPage + 1)}
+    disabled={currentPage === totalPages}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
       )}
 
       <ConfirmModal

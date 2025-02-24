@@ -243,94 +243,97 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
           dir="ltr"
           className="mb-4 flex flex-col md:flex-row justify-between md:items-center"
         >
-          <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 mb-4 md:mb-0 w-full md:w-auto">
-            {/* Filter by Supplier */}
-            <div className="mb-4 md:mb-0 ml-4 w-full md:w-auto">
-              <select
-                id="supplier-filter"
-                value={selectedSupplier}
-                onChange={(e) => setSelectedSupplier(e.target.value)}
-                className="mt-1 block w-full  px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              >
-                <option value="">اختر المورد</option>
-                {suppliers.map((supplier) => (
-                  <option key={supplier.id} value={supplier.name}>
-                    {supplier.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 w-full">
+  {/* Filter by Supplier */}
+  <div>
+    <select
+      id="supplier-filter"
+      value={selectedSupplier}
+      onChange={(e) => setSelectedSupplier(e.target.value)}
+      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    >
+      <option value="">اختر المورد</option>
+      {suppliers.map((supplier) => (
+        <option key={supplier.id} value={supplier.name}>
+          {supplier.name}
+        </option>
+      ))}
+    </select>
+  </div>
 
-            {/* Filter by Payment Status */}
-            <div className="mb-4 md:mb-0 w-full md:w-auto">
-              <select
-                id="payment-status-filter"
-                value={selectedPaymentStatus}
-                onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              >
-                <option value="">حالة الفاتورة</option>
-                {paymentStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {statusTranslations[status] || status}
-                  </option>
-                ))}
-              </select>
-            </div>
+  {/* Filter by Payment Status */}
+  <div>
+    <select
+      id="payment-status-filter"
+      value={selectedPaymentStatus}
+      onChange={(e) => setSelectedPaymentStatus(e.target.value)}
+      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    >
+      <option value="">حالة الفاتورة</option>
+      {paymentStatuses.map((status) => (
+        <option key={status} value={status}>
+          {statusTranslations[status] || status}
+        </option>
+      ))}
+    </select>
+  </div>
 
-            <div className="mb-4 md:mb-0 w-full md:w-auto">
-              <select
-                id="payment-type-filter"
-                value={selectedPaymentType}
-                onChange={(e) => setSelectedPaymentType(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              >
-                <option value="">كل طرق الدفع </option> {/* Default option */}
-                <option value="check">مدفوع بشيك</option>
-                <option value="cash">مدفوع نقدي</option>
-              </select>
-            </div>
+  {/* Filter by Payment Type */}
+  <div>
+    <select
+      id="payment-type-filter"
+      value={selectedPaymentType}
+      onChange={(e) => setSelectedPaymentType(e.target.value)}
+      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    >
+      <option value="">كل طرق الدفع</option>
+      <option value="check">مدفوع بشيك</option>
+      <option value="cash">مدفوع نقدي</option>
+    </select>
+  </div>
 
-            {/* Filter by Check Number */}
-            <div className="mb-4 md:mb-0 w-full md:w-auto">
-              <input
-                id="check-number-filter"
-                type="text"
-                value={selectedCheckNumber}
-                onChange={(e) => setSelectedCheckNumber(e.target.value)}
-                placeholder="بحث حسب رقم الشيك"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-            {/* Search by Name */}
-            <div className="mb-4 md:mb-0 w-full md:w-auto">
-              <input
-                id="name-search"
-                type="text"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-                placeholder="بحث حسب اسم الصنف"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
+  {/* Filter by Check Number */}
+  <div>
+    <input
+      id="check-number-filter"
+      type="text"
+      value={selectedCheckNumber}
+      onChange={(e) => setSelectedCheckNumber(e.target.value)}
+      placeholder="بحث حسب رقم الشيك"
+      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    />
+  </div>
 
-            {/* Date Range Filter */}
-            <div className="mb-4 md:mb-0 w-full md:w-auto">
-              <DatePicker
-                selected={startDate}
-                onChange={(update) => setDateRange(update)}
-                startDate={startDate}
-                endDate={endDate}
-                selectsRange
-                isClearable
-                placeholderText="Select a date range"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-          </div>
+  {/* Search by Name */}
+  <div>
+    <input
+      id="name-search"
+      type="text"
+      value={searchName}
+      onChange={(e) => setSearchName(e.target.value)}
+      placeholder="بحث حسب اسم الصنف"
+      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    />
+  </div>
 
+  {/* Date Range Filter */}
+  <div>
+    <DatePicker
+      selected={startDate}
+      onChange={(update) => setDateRange(update)}
+      startDate={startDate}
+      endDate={endDate}
+      selectsRange
+      isClearable
+      placeholderText="Select a date range"
+      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    />
+  </div>
+</div>
+
+ </div>
           {/* Align the Print Button Responsively */}
-          <div className="flex justify-end md:justify-start mt-4 md:mt-0">
+          <div className="flex justify-end md:justify-start mt-4 gap-4 mb-6 md:mt-0">
             <ExportToExcel data={customizedData} fileName={"  مشتريات"} />
 
             <button
@@ -340,7 +343,7 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
               <FaPrint className="inline-block" />
             </button>
           </div>
-        </div>
+       
 
         {/* Summary Table */}
         <div dir="rtl" className="mb-4">
@@ -504,35 +507,44 @@ function PurchasesTable({ costsUpdated, refetchCosts }) {
         </div>
 
         {!isPrinting && (
-          <div className="flex justify-center my-4">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => paginate(i + 1)}
-                className={`px-4 py-2 mx-1 rounded ${
-                  i + 1 === currentPage
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-300 hover:bg-gray-400"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+          <div className="flex justify-center mt-4">
+          <button
+    onClick={() => paginate(currentPage - 1)}
+    disabled={currentPage === 1}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Previous
+  </button>
+
+  {Array.from({ length: 3 }, (_, i) => {
+    const pageNumber = currentPage - 1 + i;
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      return (
+        <button
+          key={pageNumber}
+          onClick={() => paginate(pageNumber)}
+          className={`px-4 py-2 mx-1 rounded ${
+            pageNumber === currentPage
+              ? "bg-blue-500 text-white"
+              : "bg-gray-300 hover:bg-gray-400"
+          }`}
+        >
+          {pageNumber}
+        </button>
+      );
+    }
+    return null;
+  })}
+
+  <button
+    onClick={() => paginate(currentPage + 1)}
+    disabled={currentPage === totalPages}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
         )}
       </div>
 

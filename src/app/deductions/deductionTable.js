@@ -284,35 +284,44 @@ const handleDelete = async (deduction) => {
 
       {/* Pagination Controls */}
       {!isPrinting && (
-        <div className="flex justify-center my-4">
-          <button
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          >
-            Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-4 py-2 mx-1 rounded ${
-                i + 1 === currentPage
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        <div className="flex justify-center mt-4">
+        <button
+    onClick={() => paginate(currentPage - 1)}
+    disabled={currentPage === 1}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Previous
+  </button>
+
+  {Array.from({ length: 3 }, (_, i) => {
+    const pageNumber = currentPage - 1 + i;
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      return (
+        <button
+          key={pageNumber}
+          onClick={() => paginate(pageNumber)}
+          className={`px-4 py-2 mx-1 rounded ${
+            pageNumber === currentPage
+              ? "bg-blue-500 text-white"
+              : "bg-gray-300 hover:bg-gray-400"
+          }`}
+        >
+          {pageNumber}
+        </button>
+      );
+    }
+    return null;
+  })}
+
+  <button
+    onClick={() => paginate(currentPage + 1)}
+    disabled={currentPage === totalPages}
+    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
       )}
     </div>
   );

@@ -99,7 +99,7 @@ return (
             }`}
           > 
             <div dir="rtl" className="flex flex-col space-y-4 p-4 z-10 mt-14  ">              <a
-                href="/"
+                href="/statistics"
                 className="flex items-center justify-between text-white bg-gray-700 rounded-lg px-4 py-2 w-full transition-colors duration-200 hover:bg-gray-600 hover:border-gray-500"
                 >
                 الاحصائيات العامة

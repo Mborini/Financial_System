@@ -159,7 +159,7 @@ function CostTable({ costsUpdated, refetchCosts }) {
   const totalPages = Math.ceil(filteredCosts.length / costsPerPage);
   const customizeDataForExport = (data) => {
     return data.map(
-      ({  name, description, amount, check_number, type, date }) => ({
+      ({ name, description, amount, check_number, type, date }) => ({
         الكلفة: name,
         الوصف: description,
         القيمة: amount,
@@ -186,86 +186,86 @@ function CostTable({ costsUpdated, refetchCosts }) {
   return (
     <div dir="rtl" className="container mx-auto px-4">
       {/* Filters */}
-      <div dir="ltr" className="mb-4 flex flex-col md:flex-row justify-between md:items-center">
-     <div className="flex flex-wrap gap-4 mb-4 w-full">
-  {/* Name Filter */}
-  <div className="w-full md:w-auto">
-    <input
-      dir="rtl"
-      type="text"
-      value={nameFilter}
-      onChange={(e) => setNameFilter(e.target.value)}
-      placeholder="بحث حسب اسم الكلفة"
-      className="border border-gray-300 p-2 rounded w-full md:w-auto"
-    />
-  </div>
+      <div
+        dir="ltr"
+        className="mb-4 flex flex-col md:flex-row justify-between md:items-center"
+      >
+        <div className="flex flex-wrap gap-4 mb-4 w-full">
+          {/* Row 1 */}
+          <div className="flex w-full md:w-full md:flex-wrap md:flex-row gap-4">
+            {/* Name Filter */}
+            <div className="w-full md:w-1/3">
+              <input
+                dir="rtl"
+                type="text"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                placeholder="بحث حسب اسم الكلفة"
+                className="border border-gray-300 p-2 rounded w-full"
+              />
+            </div>
 
-  {/* Type Filter */}
-  <div className="w-full md:w-auto">
-    <select
-      value={typeFilter}
-      onChange={(e) => setTypeFilter(e.target.value)}
-      className="border border-gray-300 p-2 rounded w-full md:w-auto"
-    >
-      <option dir="rtl" value="">اختر</option>
-      {types.map((t) => (
-        <option dir="rtl" key={t.id} value={t.name.toLowerCase()}>
-          {t.name}
-        </option>
-      ))}
-    </select>
-  </div>
+            {/* Type Filter */}
+            <div className="w-full md:w-1/3">
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="border border-gray-300 p-2 rounded w-full"
+              >
+                <option dir="rtl" value="">
+                  اختر
+                </option>
+                {types.map((t) => (
+                  <option dir="rtl" key={t.id} value={t.name.toLowerCase()}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-  {/* Check Filter */}
-  <div className="w-full md:w-auto">
-    <select
-      value={checkFilter}
-      onChange={(e) => setCheckFilter(e.target.value)}
-      className="border border-gray-300 p-2 rounded w-full md:w-auto"
-    >
-      <option value="">كل طرق الدفع</option>
-      <option value="check">مدفوع بشيك</option>
-      <option value="cash">مدفوع نقدي</option>
-    </select>
-  </div>
+            {/* Check Filter */}
+            <div className="w-full md:w-1/3">
+              <select
+                dir="rtl"
+                value={checkFilter}
+                onChange={(e) => setCheckFilter(e.target.value)}
+                className="border border-gray-300 p-2 rounded w-full"
+              >
+                <option value="">كل طرق الدفع</option>
+                <option value="check">مدفوع بشيك</option>
+                <option value="cash">مدفوع نقدي</option>
+              </select>
+            </div>
+          </div>
 
-  {/* Check Number Search */}
-  <div className="w-full md:w-auto">
-    <input
-      type="text"
-      placeholder="بحث حسب رقم الشيك"
-      value={checkNumberSearch}
-      onChange={(e) => setCheckNumberSearch(e.target.value)}
-      className="border border-gray-300 p-2 rounded w-full md:w-auto"
-    />
-  </div>
+          {/* Row 2 */}
+          <div className="flex w-full md:w-full md:flex-wrap md:flex-row gap-4">
+            {/* Check Number Search */}
+            <div className="w-full md:w-1/3">
+              <input
+                dir="rtl"
+                type="text"
+                placeholder="بحث حسب رقم الشيك"
+                value={checkNumberSearch}
+                onChange={(e) => setCheckNumberSearch(e.target.value)}
+                className="border border-gray-300 p-2 rounded w-full"
+              />
+            </div>
 
-  {/* Date Range Filter */}
-  <div className="w-full md:w-auto">
-    <DatePicker
-      selected={startDate}
-      onChange={(update) => setDateRange(update)}
-      startDate={startDate}
-      endDate={endDate}
-      selectsRange
-      isClearable
-      placeholderText="Select a date range"
-      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-    />
-  </div>
-</div>
-
-
-        {/* Print Button */}
-        <div className="flex justify-end md:justify-start mt-4 gap-2 md:mt-0">
-          <ExportToExcel data={customizedData} fileName="التكاليف التشغيلية" />
-
-          <button
-            onClick={handlePrint}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            <FaPrint className="inline-block" />
-          </button>
+            {/* Date Range Filter */}
+            <div dir="rtl" className="w-full md:w-1/3">
+              <DatePicker
+                selected={startDate}
+                onChange={(update) => setDateRange(update)}
+                startDate={startDate}
+                endDate={endDate}
+                selectsRange
+                isClearable
+                placeholderText="Select a date range"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -324,7 +324,7 @@ function CostTable({ costsUpdated, refetchCosts }) {
                     {cost.type}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
-                    {cost.supplier_name  || "-"}
+                    {cost.supplier_name || "-"}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
                     {cost.amount}
@@ -369,27 +369,35 @@ function CostTable({ costsUpdated, refetchCosts }) {
       </div>
       {/* Pagination */}
       {!isPrinting && (
-        <div className="flex justify-center my-4">
-          <button
+        <div className="flex justify-center mt-4">
+        <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
             className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
           >
             Previous
           </button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => paginate(i + 1)}
-              className={`px-4 py-2 mx-1 rounded ${
-                i + 1 === currentPage
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 hover:bg-gray-400"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+
+          {Array.from({ length: 3 }, (_, i) => {
+            const pageNumber = currentPage - 1 + i;
+            if (pageNumber >= 1 && pageNumber <= totalPages) {
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => paginate(pageNumber)}
+                  className={`px-4 py-2 mx-1 rounded ${
+                    pageNumber === currentPage
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            }
+            return null;
+          })}
+
           <button
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages}
