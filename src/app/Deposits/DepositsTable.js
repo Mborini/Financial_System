@@ -100,9 +100,9 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
   const filteredDeposits = Array.isArray(deposits)
     ? deposits.filter((deposit) => {
         const depositDate = new Date(deposit.date);
-        const dateMatches = 
-          (startDate && endDate) 
-            ? depositDate >= startDate && depositDate <= endDate 
+        const dateMatches =
+          startDate && endDate
+            ? depositDate >= startDate && depositDate <= endDate
             : true; // If date range is empty, show all
         const employeeMatches = selectedEmployee
           ? deposit.employee_name === selectedEmployee
@@ -111,20 +111,20 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
       })
     : [];
 
-    const customizeDataForExport = (data) => {
-      return data.map((item) => {
-        return {
-          "التاريخ": item.date,
-          "القيمة": item.amount,
-          "ملاحظات": item.note,
-          "مكان الايداع": item.place,
-          "ايداع باليد": item.is_hand_handing ? "نعم" : "لا",
-          "المستلم": item.name_handler ? item.name_handler : "الايداع بنكي",
-        };
-      });
-    };
-  
-    const customizedData = customizeDataForExport(filteredDeposits);
+  const customizeDataForExport = (data) => {
+    return data.map((item) => {
+      return {
+        التاريخ: item.date,
+        القيمة: item.amount,
+        ملاحظات: item.note,
+        "مكان الايداع": item.place,
+        "ايداع باليد": item.is_hand_handing ? "نعم" : "لا",
+        المستلم: item.name_handler ? item.name_handler : "الايداع بنكي",
+      };
+    });
+  };
+
+  const customizedData = customizeDataForExport(filteredDeposits);
 
   const totalAmount = filteredDeposits.reduce(
     (sum, deposit) => sum + parseFloat(deposit.amount || 0),
@@ -179,7 +179,7 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
         </div>
 
         <div className="w-25 flex items-start gap-2 md:w-auto">
-        <ExportToExcel data={customizedData} fileName="الايداعات البنكية" />
+          <ExportToExcel data={customizedData} fileName="الايداعات البنكية" />
 
           <button
             onClick={handlePrint}
@@ -203,8 +203,6 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
                 <th className="border border-gray-300 px-4 py-2 text-center">
                   عدد حركات الايداع
                 </th>
-               
-               
               </tr>
             </thead>
             <tbody>
@@ -215,8 +213,6 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {filteredDeposits.length}
                 </td>
-              
-                
               </tr>
             </tbody>
           </table>
@@ -282,49 +278,50 @@ export default function DepositsTable({ depositsUpdated, refetchDeposits }) {
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleDeleteConfirmed}
           title="تأكيد الحذف"
-          message={` هل أنت متأكد من حذف الايداع بتاريخ ${new Date( recordToDelete?.date).toLocaleDateString()} بقيمة ${recordToDelete?.amount}؟`}
+          message={` هل أنت متأكد من حذف الايداع بتاريخ ${new Date(
+            recordToDelete?.date
+          ).toLocaleDateString()} بقيمة ${recordToDelete?.amount}؟`}
         />
       </div>
       {/* Pagination */}
       {!isPrinting && (
         <div className="flex justify-center mt-4">
-        <button
-    onClick={() => paginate(currentPage - 1)}
-    disabled={currentPage === 1}
-    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-  >
-    Previous
-  </button>
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          >
+            Previous
+          </button>
 
-  {Array.from({ length: 3 }, (_, i) => {
-    const pageNumber = currentPage - 1 + i;
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      return (
-        <button
-          key={pageNumber}
-          onClick={() => paginate(pageNumber)}
-          className={`px-4 py-2 mx-1 rounded ${
-            pageNumber === currentPage
-              ? "bg-blue-500 text-white"
-              : "bg-gray-300 hover:bg-gray-400"
-          }`}
-        >
-          {pageNumber}
-        </button>
-      );
-    }
-    return null;
-  })}
+          {Array.from({ length: 3 }, (_, i) => {
+            const pageNumber = currentPage - 1 + i;
+            if (pageNumber >= 1 && pageNumber <= totalPages) {
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => paginate(pageNumber)}
+                  className={`px-4 py-2 mx-1 rounded ${
+                    pageNumber === currentPage
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            }
+            return null;
+          })}
 
-  <button
-    onClick={() => paginate(currentPage + 1)}
-    disabled={currentPage === totalPages}
-    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-  >
-    Next
-  </button>
-</div>
-
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       )}
 
       {/* Edit Drawer */}

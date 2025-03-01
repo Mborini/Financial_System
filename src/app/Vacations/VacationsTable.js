@@ -151,7 +151,7 @@ export default function VacationsTable({ vacationsUpdated, refetchVacations }) {
             onChange={(e) => setSelectedEmployee(e.target.value)}
             className="w-full md:w-auto px-4 py-2 border border-gray-300 rounded-md"
           >
-            <option value="">All Employees</option>
+            <option value="">اختر الموظف</option>
             {employees.map((employee) => (
               <option key={employee.id} value={employee.name}>
                 {employee.name}

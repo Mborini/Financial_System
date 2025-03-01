@@ -44,7 +44,7 @@ export default function VacationForm({ refetchVacations, setOpen }) {
   };
 
   if (loading) {
-    return <div>Loading employees...</div>;
+    return <div>Loading...</div>;
   }
 
   if (error) {
@@ -56,7 +56,7 @@ export default function VacationForm({ refetchVacations, setOpen }) {
       {/* Employee Dropdown */}
       <div>
         <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700">
-          Select Employee
+          اختر الموظف
         </label>
         <select
           id="employeeId"
@@ -77,7 +77,7 @@ export default function VacationForm({ refetchVacations, setOpen }) {
       {/* Vacation Date field */}
       <div>
         <label htmlFor="vacationDate" className="block text-sm font-medium text-gray-700">
-          Vacation Date
+          تاريخ الاجازة
         </label>
         <input
           id="vacationDate"
@@ -95,7 +95,7 @@ export default function VacationForm({ refetchVacations, setOpen }) {
           type="submit"
           className="w-full inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600"
         >
-          Add Vacation
+          حفظ
         </button>
       </div>
     </form>

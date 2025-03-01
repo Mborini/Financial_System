@@ -187,87 +187,82 @@ function CostTable({ costsUpdated, refetchCosts }) {
     <div dir="rtl" className="container mx-auto px-4">
       {/* Filters */}
       <div
-        dir="ltr"
-        className="mb-4 flex flex-col md:flex-row justify-between md:items-center"
+ 
+  className="mb-4 flex flex-wrap justify-between md:items-center gap-6"
+>
+  <div className="flex flex-wrap gap-4 w-full">
+    {/* Name Filter */}
+    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+      <input
+        dir="rtl"
+        type="text"
+        value={nameFilter}
+        onChange={(e) => setNameFilter(e.target.value)}
+        placeholder="بحث حسب اسم الكلفة"
+        className="border border-gray-300 p-2 rounded w-full"
+      />
+    </div>
+
+    {/* Type Filter */}
+    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+      <select
+        value={typeFilter}
+        onChange={(e) => setTypeFilter(e.target.value)}
+        className="border border-gray-300 p-2 rounded w-full"
       >
-        <div className="flex flex-wrap gap-4 mb-4 w-full">
-          {/* Row 1 */}
-          <div className="flex w-full md:w-full md:flex-wrap md:flex-row gap-4">
-            {/* Name Filter */}
-            <div className="w-full md:w-1/3">
-              <input
-                dir="rtl"
-                type="text"
-                value={nameFilter}
-                onChange={(e) => setNameFilter(e.target.value)}
-                placeholder="بحث حسب اسم الكلفة"
-                className="border border-gray-300 p-2 rounded w-full"
-              />
-            </div>
+        <option dir="rtl" value="">
+          اختر
+        </option>
+        {types.map((t) => (
+          <option dir="rtl" key={t.id} value={t.name.toLowerCase()}>
+            {t.name}
+          </option>
+        ))}
+      </select>
+    </div>
 
-            {/* Type Filter */}
-            <div className="w-full md:w-1/3">
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="border border-gray-300 p-2 rounded w-full"
-              >
-                <option dir="rtl" value="">
-                  اختر
-                </option>
-                {types.map((t) => (
-                  <option dir="rtl" key={t.id} value={t.name.toLowerCase()}>
-                    {t.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+    {/* Check Filter */}
+    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+      <select
+        dir="rtl"
+        value={checkFilter}
+        onChange={(e) => setCheckFilter(e.target.value)}
+        className="border border-gray-300 p-2 rounded w-full"
+      >
+        <option value="">كل طرق الدفع</option>
+        <option value="check">مدفوع بشيك</option>
+        <option value="cash">مدفوع نقدي</option>
+      </select>
+    </div>
 
-            {/* Check Filter */}
-            <div className="w-full md:w-1/3">
-              <select
-                dir="rtl"
-                value={checkFilter}
-                onChange={(e) => setCheckFilter(e.target.value)}
-                className="border border-gray-300 p-2 rounded w-full"
-              >
-                <option value="">كل طرق الدفع</option>
-                <option value="check">مدفوع بشيك</option>
-                <option value="cash">مدفوع نقدي</option>
-              </select>
-            </div>
-          </div>
+    {/* Check Number Search */}
+    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+      <input
+        dir="rtl"
+        type="text"
+        placeholder="بحث حسب رقم الشيك"
+        value={checkNumberSearch}
+        onChange={(e) => setCheckNumberSearch(e.target.value)}
+        className="border border-gray-300 p-2 rounded w-full"
+      />
+    </div>
 
-          {/* Row 2 */}
-          <div className="flex w-full md:w-full md:flex-wrap md:flex-row gap-4">
-            {/* Check Number Search */}
-            <div className="w-full md:w-1/3">
-              <input
-                dir="rtl"
-                type="text"
-                placeholder="بحث حسب رقم الشيك"
-                value={checkNumberSearch}
-                onChange={(e) => setCheckNumberSearch(e.target.value)}
-                className="border border-gray-300 p-2 rounded w-full"
-              />
-            </div>
+    {/* Date Range Filter */}
+    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+      <DatePicker
+        selected={startDate}
+        onChange={(update) => setDateRange(update)}
+        startDate={startDate}
+        endDate={endDate}
+        selectsRange
+        isClearable
+        placeholderText="Select a date range"
+        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      />
+    </div>
+  </div>
+</div>
 
-            {/* Date Range Filter */}
-            <div dir="rtl" className="w-full md:w-1/3">
-              <DatePicker
-                selected={startDate}
-                onChange={(update) => setDateRange(update)}
-                startDate={startDate}
-                endDate={endDate}
-                selectsRange
-                isClearable
-                placeholderText="Select a date range"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Summary Table */}
       <div className="mb-4">
@@ -370,7 +365,7 @@ function CostTable({ costsUpdated, refetchCosts }) {
       {/* Pagination */}
       {!isPrinting && (
         <div className="flex justify-center mt-4">
-        <button
+          <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
             className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"

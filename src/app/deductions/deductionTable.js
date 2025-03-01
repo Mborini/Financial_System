@@ -124,6 +124,7 @@ const handleDelete = async (deduction) => {
     }));
   };
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const customizedDeductions = customizeDataForExport(currentDeductions);
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -285,43 +286,42 @@ const handleDelete = async (deduction) => {
       {/* Pagination Controls */}
       {!isPrinting && (
         <div className="flex justify-center mt-4">
-        <button
-    onClick={() => paginate(currentPage - 1)}
-    disabled={currentPage === 1}
-    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-  >
-    Previous
-  </button>
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          >
+            Previous
+          </button>
 
-  {Array.from({ length: 3 }, (_, i) => {
-    const pageNumber = currentPage - 1 + i;
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      return (
-        <button
-          key={pageNumber}
-          onClick={() => paginate(pageNumber)}
-          className={`px-4 py-2 mx-1 rounded ${
-            pageNumber === currentPage
-              ? "bg-blue-500 text-white"
-              : "bg-gray-300 hover:bg-gray-400"
-          }`}
-        >
-          {pageNumber}
-        </button>
-      );
-    }
-    return null;
-  })}
+          {Array.from({ length: 3 }, (_, i) => {
+            const pageNumber = currentPage - 1 + i;
+            if (pageNumber >= 1 && pageNumber <= totalPages) {
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => paginate(pageNumber)}
+                  className={`px-4 py-2 mx-1 rounded ${
+                    pageNumber === currentPage
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            }
+            return null;
+          })}
 
-  <button
-    onClick={() => paginate(currentPage + 1)}
-    disabled={currentPage === totalPages}
-    className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
-  >
-    Next
-  </button>
-</div>
-
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       )}
     </div>
   );
