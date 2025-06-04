@@ -5,12 +5,11 @@ export async function GET() {
   const client = await connectToDatabase();
   try {
     const result = await client.query(`
-      SELECT *, suppliers.name AS supplier_name 
-      FROM costs 
-      left JOIN suppliers ON costs.supplier = suppliers.id 
-      ORDER BY costs.date DESC
+      SELECT c.*, suppliers.name AS supplier_name
+FROM costs AS c
+LEFT JOIN suppliers ON c.supplier = suppliers.id
+ORDER BY c.date DESC;
     `);
-        
     return new Response(JSON.stringify(result.rows), { status: 200 });
 
   } catch (error) {
@@ -42,14 +41,16 @@ console.log(SupplierId)
 }
 // PUT API to update a cost by ID
 export async function PUT(req) {
-  const { id, amount, description, date, name, type, check_number, SupplierId } =
-    await req.json();
+  const data = await req.json();
+  console.log("Request body:", data);
+
+  const { id, amount, description, date, name, type, check_number, idsup } = data;
   const client = await connectToDatabase();
 
   try {
     const result = await client.query(
-      "UPDATE costs SET amount = $1, description = $2, date = $3, name = $4, type = $5, check_number=$6,Supplier=$7 WHERE id = $8 RETURNING *",
-      [amount, description, date, name, type, check_number,SupplierId , id]
+      "UPDATE costs SET amount = $1, description = $2, date = $3, name = $4, type = $5, check_number=$6, Supplier=$7 WHERE id = $8 RETURNING *",
+      [amount, description, date, name, type, check_number, idsup, id]
     );
 
     if (result.rowCount === 0) {
@@ -64,16 +65,19 @@ export async function PUT(req) {
     client.release();
   }
 }
-// DELETE API to delete a cost by ID
-export async function DELETE(req) {
-  const { id } = await req.json();
-  const client = await connectToDatabase();
 
+export async function DELETE(request) {
   try {
+    const { id } = await request.json();
+
+    const client = await connectToDatabase();
+
     const result = await client.query(
-      "DELETE FROM costs WHERE id = $1 RETURNING *",
+     'DELETE FROM "costs" WHERE id = $1 RETURNING *',
       [id]
     );
+
+    client.release();
 
     if (result.rowCount === 0) {
       return new Response("Cost not found", { status: 404 });
@@ -83,7 +87,6 @@ export async function DELETE(req) {
   } catch (error) {
     console.error("Error deleting cost:", error);
     return new Response("Error deleting cost", { status: 500 });
-  } finally {
-    client.release();
   }
 }
+

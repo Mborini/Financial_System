@@ -114,25 +114,29 @@ function CostTable({ costsUpdated, refetchCosts }) {
   // Filter costs by date range, name, and type
   const filteredCosts = costs.filter((cost) => {
     const matchesName = nameFilter
-      ? cost.name.toLowerCase().includes(nameFilter.toLowerCase())
+      ? cost.name && cost.name.toLowerCase().includes(nameFilter.toLowerCase())
       : true;
+
     const matchesType = typeFilter
-      ? cost.type.toLowerCase() === typeFilter.toLowerCase()
+      ? cost.type && cost.type.toLowerCase() === typeFilter.toLowerCase()
       : true;
+
     const costDate = new Date(cost.date);
     const matchesDate =
-      !startDate || !endDate
-        ? true
-        : costDate >= startDate && costDate <= endDate;
+    !startDate || !endDate
+      ? true
+      : costDate >= startDate && costDate <= endDate;
     const checkMatches =
       checkFilter === ""
         ? true
         : checkFilter === "check"
         ? cost.check_number
         : !cost.check_number;
+
     const checkNumberMatches = checkNumberSearch
       ? cost.check_number?.toString().includes(checkNumberSearch)
       : true;
+
     return (
       matchesName &&
       matchesType &&
@@ -186,83 +190,85 @@ function CostTable({ costsUpdated, refetchCosts }) {
   return (
     <div dir="rtl" className="container mx-auto px-4">
       {/* Filters */}
-      <div
- 
-  className="mb-4 flex flex-wrap justify-between md:items-center gap-6"
->
-  <div className="flex flex-wrap gap-4 w-full">
-    {/* Name Filter */}
-    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
-      <input
-        dir="rtl"
-        type="text"
-        value={nameFilter}
-        onChange={(e) => setNameFilter(e.target.value)}
-        placeholder="بحث حسب اسم الكلفة"
-        className="border border-gray-300 p-2 rounded w-full"
-      />
-    </div>
+      <div className="mb-4 flex flex-wrap justify-between md:items-center gap-6">
+        <div className="flex flex-wrap gap-4 w-full">
+          {/* Name Filter */}
+          <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+            <input
+              dir="rtl"
+              type="text"
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              placeholder="بحث حسب اسم الكلفة"
+              className="border border-gray-300 p-2 rounded w-full"
+            />
+          </div>
 
-    {/* Type Filter */}
-    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
-      <select
-        value={typeFilter}
-        onChange={(e) => setTypeFilter(e.target.value)}
-        className="border border-gray-300 p-2 rounded w-full"
-      >
-        <option dir="rtl" value="">
-          اختر
-        </option>
-        {types.map((t) => (
-          <option dir="rtl" key={t.id} value={t.name.toLowerCase()}>
-            {t.name}
-          </option>
-        ))}
-      </select>
-    </div>
+          {/* Type Filter */}
+          <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="border border-gray-300 p-2 rounded w-full"
+            >
+              <option dir="rtl" value="">
+                اختر
+              </option>
+              {types.map((t) => (
+                <option dir="rtl" key={t.id} value={t.name.toLowerCase()}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-    {/* Check Filter */}
-    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
-      <select
-        dir="rtl"
-        value={checkFilter}
-        onChange={(e) => setCheckFilter(e.target.value)}
-        className="border border-gray-300 p-2 rounded w-full"
-      >
-        <option value="">كل طرق الدفع</option>
-        <option value="check">مدفوع بشيك</option>
-        <option value="cash">مدفوع نقدي</option>
-      </select>
-    </div>
+          {/* Check Filter */}
+          <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+            <select
+              dir="rtl"
+              value={checkFilter}
+              onChange={(e) => setCheckFilter(e.target.value)}
+              className="border border-gray-300 p-2 rounded w-full"
+            >
+              <option value="">كل طرق الدفع</option>
+              <option value="check">مدفوع بشيك</option>
+              <option value="cash">مدفوع نقدي</option>
+            </select>
+          </div>
 
-    {/* Check Number Search */}
-    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
-      <input
-        dir="rtl"
-        type="text"
-        placeholder="بحث حسب رقم الشيك"
-        value={checkNumberSearch}
-        onChange={(e) => setCheckNumberSearch(e.target.value)}
-        className="border border-gray-300 p-2 rounded w-full"
-      />
-    </div>
+          {/* Check Number Search */}
+          <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+            <input
+              dir="rtl"
+              type="text"
+              placeholder="بحث حسب رقم الشيك"
+              value={checkNumberSearch}
+              onChange={(e) => setCheckNumberSearch(e.target.value)}
+              className="border border-gray-300 p-2 rounded w-full"
+            />
+          </div>
 
-    {/* Date Range Filter */}
-    <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
-      <DatePicker
-        selected={startDate}
-        onChange={(update) => setDateRange(update)}
-        startDate={startDate}
-        endDate={endDate}
-        selectsRange
-        isClearable
-        placeholderText="Select a date range"
-        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-      />
-    </div>
-  </div>
-</div>
-
+          {/* Date Range Filter */}
+          <div className="w-full sm:w-1/5 md:w-1/5 lg:w-1/6">
+            <DatePicker
+              selected={startDate}
+              onChange={(update) => {
+                if (Array.isArray(update)) {
+                  setDateRange(update);
+                } else {
+                  setDateRange([null, null]);
+                }
+              }}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              isClearable
+              placeholderText="Select a date range"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Summary Table */}
       <div className="mb-4">

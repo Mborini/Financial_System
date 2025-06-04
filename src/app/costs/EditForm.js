@@ -21,12 +21,24 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
     if (selectedCost) {
       setAmount(selectedCost.amount);
       setDescription(selectedCost.description);
-      setDate(format(new Date(selectedCost.date), "yyyy-MM-dd")); // Format the date for input[type="date"]
+      setDate(format(new Date(selectedCost.date), "yyyy-MM-dd"));
       setName(selectedCost.name);
-      setType(selectedCost.type.toLowerCase());
+      const costType = selectedCost.type.toLowerCase();
+      setType(costType);
+  
+      // تعيين check number و idsup بناءً على بيانات موجودة
+      setCheckNumber(selectedCost.check_number || "");
+  
+      // نحدد المورد بناءً على النوع المخزن
+      const supplierName = types.find((t) => t.name.toLowerCase() === costType)?.supplier_name || "";
+      setIdSup(supplierName);
+      
+      const supplierId = types.find((t) => t.name.toLowerCase() === costType)?.supplier || "";
+      setSupplierId(supplierId);
+      
     }
-  }, [selectedCost]);
-
+  }, [selectedCost, types]);
+  
   // Fetch the cost types when the component mounts
   useEffect(() => {
     const fetchTypes = async () => {
@@ -54,11 +66,11 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
     const selectedType = e.target.value;
     setType(selectedType);
 
-    const supplierName = types.find((t) => t.name === selectedType)?.supplier_name || "";
-    setIdSup(supplierName); // Update the idsup state
+    const supplierName = types.find((t) => t.name.toLowerCase() === selectedType.toLowerCase())?.supplier_name || "";
+    setIdSup(supplierName);
     
-    const SupplierId = types.find((t) => t.name === selectedType)?.supplier || "";
-    setSupplierId(SupplierId); // Update the Supplier state
+    const SupplierId = types.find((t) => t.name.toLowerCase() === selectedType.toLowerCase())?.supplier || "";
+    setSupplierId(SupplierId);
     
   };
   const handleSubmit = async (e) => {
@@ -74,17 +86,16 @@ export default function EditForm({ selectedCost, refetchCosts, setOpen }) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        amount,
-        description,
-        date,
-        name,
-        type: type.toLowerCase(),
-        id: selectedCost.id,
-        check_number: checkField ? checkNumber : null, // Add check_number only if applicable
-        idsup,
-        SupplierId 
-      }),
+     body: JSON.stringify({
+  amount,
+  description,
+  date,
+  name,
+  type: type.toLowerCase(),
+  id: selectedCost.id,
+  check_number: checkField ? checkNumber : null,
+  idsup: SupplierId ? Number(SupplierId) : null  // <-- convert to number or null
+}),
     });
 
     if (response.ok) {
