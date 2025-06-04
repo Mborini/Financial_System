@@ -161,7 +161,6 @@ export default function PayingSalariesForm({
             employeeId: selectedEmployeeId,
             finallRemining: adjustedRemainingSalary - amountToPay,
             check_number: checkField ? checkNumber : null, // Add check_number only if applicable
-
           }),
         });
 
@@ -217,41 +216,49 @@ export default function PayingSalariesForm({
 
   return (
     <div className="container mx-auto mb-8 px-4">
-      <form className="mb-4">
-            <label className="font-bold ">اختر الموظف والشهر:</label>
-        <div className="flex justify-between mt-2 mb-4 border-b-4 pb-4">
-          <select
-            value={selectedEmployee}
-            onChange={(e) => {
-              const employeeId =
-                e.target.options[e.target.selectedIndex].getAttribute(
-                  "data-id"
-                );
-              setSelectedEmployee(e.target.value);
-              setSelectedEmployeeId(employeeId); // Update selected employee ID
-            }}
-            className="border border-gray-300 rounded-md p-2"
-            required
-          >
-            <option value="">اخر الموظف</option>
-            {employees.map((employee) => (
-              <option
-                key={employee.id}
-                value={employee.name}
-                data-id={employee.id}
-              >
-                {" "}
-                {/* Added data-id attribute */}
-                {employee.name}
-              </option>
-            ))}
-          </select>
-          <input
-            type="month"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="border border-gray-300 rounded-md p-2"
-          />
+      <label className="font-bold">استعلم :</label>
+
+      <form className="mt-5 mb-4">
+        <div className="flex flex-col md:flex-row gap-4 justify-between mb-4">
+          <div>
+            <label className="font-bold "> الموظف </label>
+            <select
+              value={selectedEmployee}
+              onChange={(e) => {
+                const employeeId =
+                  e.target.options[e.target.selectedIndex].getAttribute(
+                    "data-id"
+                  );
+                setSelectedEmployee(e.target.value);
+                setSelectedEmployeeId(employeeId); // Update selected employee ID
+              }}
+              className="border border-gray-300 rounded-md p-2"
+              required
+            >
+              <option value="">اخر الموظف</option>
+              {employees.map((employee) => (
+                <option
+                  key={employee.id}
+                  value={employee.name}
+                  data-id={employee.id}
+                >
+                  {" "}
+                  {/* Added data-id attribute */}
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="font-bold "> الشهر </label>
+
+            <input
+              type="month"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="border border-gray-300 rounded-md p-2"
+            />
+          </div>
         </div>
       </form>
 
@@ -283,13 +290,16 @@ export default function PayingSalariesForm({
               />
             </div>
             <div className="mb-4">
-              <label className="font-bold">تاريخ الدفع:</label>
+              <label className="font-bold">وذلك عن شهر :</label>
               <input
                 type="date"
                 value={PaidDate}
                 onChange={(e) => setPaidDate(e.target.value)}
                 className="border border-gray-300 rounded-md p-2 w-full"
               />
+              <label className="text-sm text-red-500">
+                *تاريخ استحقاق الراتب
+              </label>
             </div>
             <div className="mb-4">
               <label className="font-bold">المبلغ:</label>
@@ -302,42 +312,42 @@ export default function PayingSalariesForm({
               />
             </div>
             {message && <div className="text-red-500 text-sm">{message}</div>}
- {/* Check field and check number */}
- <div className="flex items-center gap-2 justify-start">
-        <input
-          type="checkbox"
-          id="checkField"
-          name="checkField"
-          checked={checkField}
-          onChange={() => setCheckField(!checkField)}
-        />
-        <label
-          htmlFor="checkField"
-          className="block text-sm font-medium text-gray-700"
-        >
-          هل الدفع بشيك؟
-        </label>
-      </div>
+            {/* Check field and check number */}
+            <div className="flex items-center gap-2 justify-start">
+              <input
+                type="checkbox"
+                id="checkField"
+                name="checkField"
+                checked={checkField}
+                onChange={() => setCheckField(!checkField)}
+              />
+              <label
+                htmlFor="checkField"
+                className="block text-sm font-medium text-gray-700"
+              >
+                هل الدفع بشيك؟
+              </label>
+            </div>
 
-      {checkField && (
-        <div>
-          <label
-            htmlFor="checkNumber"
-            className="block text-sm mt-2  font-medium text-gray-700"
-          >
-            رقم الشيك
-          </label>
-          <input
-            id="checkNumber"
-            type="text"
-            value={checkNumber}
-            onChange={(e) => setCheckNumber(e.target.value)}
-            placeholder="ادخل رقم الشيك"
-            required
-            className="mt-1 block mb-2 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-      )}
+            {checkField && (
+              <div>
+                <label
+                  htmlFor="checkNumber"
+                  className="block text-sm mt-2  font-medium text-gray-700"
+                >
+                  رقم الشيك
+                </label>
+                <input
+                  id="checkNumber"
+                  type="text"
+                  value={checkNumber}
+                  onChange={(e) => setCheckNumber(e.target.value)}
+                  placeholder="ادخل رقم الشيك"
+                  required
+                  className="mt-1 block mb-2 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+            )}
             <div className="mb-4">
               <label className="font-bold">ملاحظات:</label>
               <textarea

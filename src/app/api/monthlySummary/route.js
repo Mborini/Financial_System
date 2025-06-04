@@ -48,17 +48,26 @@ export async function GET(request) {
     });
 
     const [
-      totalSales, totalDeductions, totalStaffFood, totalPurchases, totalCosts, 
-      totalWithdrawals, payingSalaries, totalVacationDeductions, 
-      totalNonWorkingHours, totalPaymentAmountForOverTime, totalCashWithdrawals
+      totalSales,
+      totalDeductions,
+      totalStaffFood,
+      totalPurchases,
+      totalCosts,
+      totalWithdrawals,
+      totalCashWithdrawals,
+      payingSalaries,
+      totalVacationDeductions,
+      totalNonWorkingHours,
+      totalPaymentAmountForOverTime
     ] = totals;
-
+    
+    
     // Calculate total summary
     const totalSummary =
       totalSales + totalVacationDeductions + totalDeductions + totalNonWorkingHours +
       totalStaffFood - totalPurchases - totalCosts - totalPaymentAmountForOverTime - totalCashWithdrawals -
       totalWithdrawals - payingSalaries;
-
+console.log("totalCashWithdrawals", totalCashWithdrawals)
     return new Response(
       JSON.stringify({
         totalSales,
